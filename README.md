@@ -9,6 +9,6 @@ To compile this project:
 ------------------------
 * I use Visual Studio 2017.
 * Requires Windows 10 SDK (not the OS itself).
-* Extract lib.7z contents into the same folder that contains AnyRace_CoachAI.sln, so that a "lib" folder with these contents gets created.
+* Extract [lib.7z](https://drive.google.com/open?id=1UyIE_go2FRpS1OaRAl0JE_jcbV8ZfVqf) contents into the same folder that contains AnyRace_CoachAI.sln, so that a "lib" folder with these contents gets created.
 
 Contact: captain.majid@gmail.com
