@@ -535,7 +535,7 @@ void AnyRace_CoachAI::onFrame()	// Called every game frame.
 	if (strstr(mapName.c_str(), "| iCCup | "))
 		mapName.replace(mapName.find("| iCCup | "), 10, "");
 	Broodwar->drawTextScreen(215, 25, "%c%s %c%s", Text::Purple, mapName.c_str(), Text::Brown, m.c_str());
-	Broodwar->drawTextScreen(180, 0, "%c:: CoachAI v2.9.1.3 ::", Text::Tan);
+	Broodwar->drawTextScreen(205 , 5, "%cCoachAI v2.9.1.3", Text::Tan);
 
 	Broodwar->drawTextScreen(310, 15, "%cWorkers production stopped for: %c%s", Text::Grey, Text::BrightRed, getTime(workersProductionStopped / FPS).c_str());
 	Broodwar->drawTextScreen(520, 15, "%cFPS: %c%d, %cFrame: %c%d", 14, 4, FPS, 14, 4, FrameCount);
