@@ -536,7 +536,7 @@ void AnyRace_CoachAI::onFrame()	// Called every game frame.
 	if (strstr(mapName.c_str(), "| iCCup | "))
 		mapName.replace(mapName.find("| iCCup | "), 10, "");
 	Broodwar->drawTextScreen(215, 25, "%c%s %c%s", Text::Purple, mapName.c_str(), Text::Brown, m.c_str());
-	Broodwar->drawTextScreen(205, 0, "%cCoachAI v2.9.1.4", Text::Tan);
+	Broodwar->drawTextScreen(205, 5, "%cCoachAI v2.9.1.4", Text::Tan);
 	//2.9.1.4:
 	//* Ability to include/exclude non-Worker units in the MacroLog (AnyRace_CoachAI.json -> logUnitsProduction)
 
