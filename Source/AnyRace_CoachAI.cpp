@@ -52,6 +52,7 @@ json j;
 bool autoMine;
 bool autoTrainWorkers;
 bool logWorkersAndSupplyProduction;
+bool logUnitsProduction;
 int autoBuildSuppliesBeforeBlocked;
 int maxWorkers;
 int maxProductionBuildingQueue;
@@ -258,7 +259,7 @@ void AnyRace_CoachAI::onFrame()	// Called every game frame.
 	workersProductionStoppedDuring = j["Control Panel"]["workersProductionStoppedDuring"].get<int>() * FPS;
 
 	logWorkersAndSupplyProduction = j["Control Panel"]["logWorkersAndSupplyProduction"].get<bool>();
-
+	logUnitsProduction = j["Control Panel"]["logUnitsProduction"].get<bool>();
 	if (Broodwar->isReplay())
 		return Replay();
 
@@ -535,7 +536,9 @@ void AnyRace_CoachAI::onFrame()	// Called every game frame.
 	if (strstr(mapName.c_str(), "| iCCup | "))
 		mapName.replace(mapName.find("| iCCup | "), 10, "");
 	Broodwar->drawTextScreen(215, 25, "%c%s %c%s", Text::Purple, mapName.c_str(), Text::Brown, m.c_str());
-	Broodwar->drawTextScreen(205 , 5, "%cCoachAI v2.9.1.3", Text::Tan);
+	Broodwar->drawTextScreen(205, 0, "%cCoachAI v2.9.1.4", Text::Tan);
+	//2.9.1.4:
+	//* Ability to include/exclude non-Worker units in the MacroLog (AnyRace_CoachAI.json -> logUnitsProduction)
 
 	Broodwar->drawTextScreen(310, 15, "%cWorkers production stopped for: %c%s", Text::Grey, Text::BrightRed, getTime(workersProductionStopped / FPS).c_str());
 	Broodwar->drawTextScreen(520, 15, "%cFPS: %c%d, %cFrame: %c%d", 14, 4, FPS, 14, 4, FrameCount);
@@ -990,14 +993,12 @@ void AnyRace_CoachAI::onUnitMorph(BWAPI::Unit unit)
 
 	if (unit->getPlayer() == Broodwar->self() && un != "Egg")
 	{
-		if (logWorkersAndSupplyProduction)
-			macroLogMap[un + " #" + std::to_string(unit->getID())] = gameTime;
+		if (!logWorkersAndSupplyProduction && (ut.isWorker() || ut == Broodwar->self()->getRace().getSupplyProvider()))
+			return;
+		else if (!logUnitsProduction && (!ut.isWorker() && ut != Broodwar->self()->getRace().getSupplyProvider() && !ut.isBuilding()))
+			return;
 		else
-		{
-			if (ut.isWorker() || ut == Broodwar->self()->getRace().getSupplyProvider())
-				return;
-			else macroLogMap[un + " #" + std::to_string(unit->getID())] = gameTime;
-		}
+			macroLogMap[un + " #" + std::to_string(unit->getID())] = gameTime;
 	}
 
 	if (Broodwar->isReplay())
@@ -1020,14 +1021,12 @@ void AnyRace_CoachAI::onUnitCreate(BWAPI::Unit unit)
 
 	if (FrameCount > 0 && unit->getPlayer() == Broodwar->self() && un != "Larva") //!unit->getPlayer()->isNeutral())
 	{
-		if (logWorkersAndSupplyProduction)
-			macroLogMap[un + " #" + std::to_string(unit->getID())] = gameTime;
+		if (!logWorkersAndSupplyProduction && (ut.isWorker() || ut == Broodwar->self()->getRace().getSupplyProvider()))
+			return;
+		else if (!logUnitsProduction && (!ut.isWorker() && ut != Broodwar->self()->getRace().getSupplyProvider() && !ut.isBuilding()))
+			return;
 		else
-		{
-			if (ut.isWorker() || ut == Broodwar->self()->getRace().getSupplyProvider())
-				return;
-			else macroLogMap[un + " #" + std::to_string(unit->getID())] = gameTime;
-		}
+			macroLogMap[un + " #" + std::to_string(unit->getID())] = gameTime;
 	}
 }
 
