@@ -88,18 +88,18 @@ int	idleWorkersFor;
 //	return 0;
 //}
 
-string getTime(int seconds)
+string getTime(int s)
 {
 	string time = "";
-	hours = seconds / 3600;
-	seconds = seconds % 3600;
-	minutes = seconds / 60;
-	seconds = seconds % 60;
-	string seconds_str = to_string(seconds);
+	hours = s / 3600;
+	s = s % 3600;
+	minutes = s / 60;
+	s = s % 60;
+	string seconds_str = to_string(s);
 	string minutes_str = to_string(minutes);
 
-	if (seconds < 10)
-		seconds_str = '0' + to_string(seconds);
+	if (s < 10)
+		seconds_str = '0' + to_string(s);
 	if (minutes < 10)
 		minutes_str = '0' + to_string(minutes);
 	if (hours > 0)
@@ -242,7 +242,7 @@ void AnyRace_CoachAI::onFrame()	// Called every game frame.
 	if (FPS < 1)
 		return;
 
-	gameTime = getTime(FrameCount / 23.81); //Broodwar->elapsedTime();
+	gameTime = getTime(FrameCount / 23.81); //Broodwar->elapsedTime() * 0.6728971962616822
 
 	std::ifstream i("bwapi-data\\AnyRace_CoachAI.json");
 	j = json::parse(i);
@@ -531,8 +531,8 @@ void AnyRace_CoachAI::onFrame()	// Called every game frame.
 	const char * match = m.c_str();
 
 	Broodwar->drawTextScreen(215, 25, "%c%s %c%s", Text::Purple, mapName.c_str(), Text::Brown, m.c_str());
-	Broodwar->drawTextScreen(180, 5, "%c:: CoachAI v2.9.2 ::", Text::Tan);
-	//2.9.1.4:
+	Broodwar->drawTextScreen(180, 5, "%c:: CoachAI v2.9.3 ::", Text::Tan);
+	//2.9.3:
 	//- Ability to include/exclude non-Worker units in the MacroLog (AnyRace_CoachAI.json -> logUnitsProduction)
 	//- (Both) Showing the unit & building infos in the replay.
 	//- (RepOnly) Showing replay name, map name, replay duration.
@@ -540,7 +540,7 @@ void AnyRace_CoachAI::onFrame()	// Called every game frame.
 
 	Broodwar->drawTextScreen(310, 15, "%cWorkers production stopped for: %c%s", Text::Grey, Text::BrightRed, getTime(workersProductionStopped / FPS).c_str());
 	Broodwar->drawTextScreen(520, 150, "%cFPS: %c%d, %cFrame: %c%d", 14, 4, FPS, 14, 4, FrameCount);
-	Broodwar->drawTextScreen(520, 15, "%cFPS: %c%d, %ceTime: %c%s", 14, 4, FPS, 14, 4, gameTime.c_str());
+	Broodwar->drawTextScreen(520, 15, "%ceS: %c%d, %ceT: %c%s", 14, 4, Broodwar->elapsedTime(), 14, 4, gameTime.c_str());
 
 	if (Broodwar->self()->getRace() == Races::Zerg)
 		Broodwar->drawTextScreen(5, 65, "%cIdle production: %c%d Larvae\n\r\n\r%cIdle fighting units: \n\r%c%s", 5, 25, idleProdBuildOrLarva, 5, 25, idleFightUnitsFinal.c_str());
@@ -607,7 +607,7 @@ void AnyRace_CoachAI::onFrame()	// Called every game frame.
 		}
 
 		Broodwar->drawTextScreen(150, 25, "%cMacroLog: \n\r%s", Text::Blue, str1.c_str());
-		Broodwar->drawTextScreen(190, 25, "\n\r%c%s", Text::Default, str2.c_str());
+		Broodwar->drawTextScreen(185, 25, "\n\r%c%s", Text::Default, str2.c_str());
 	}
 	if (F6_Pressed == 0)
 	{
@@ -730,9 +730,9 @@ void AnyRace_CoachAI::populatePage()
 void AnyRace_CoachAI::Replay()
 {
 	int repFrames = Broodwar->getReplayFrameCount();
-	int seconds = Broodwar->getReplayFrameCount() / 23.81;
+	int scnds = Broodwar->getReplayFrameCount() / 23.81;
 
-	Broodwar->drawTextScreen(180, 333, "%c%s / %s / %c%s", 29, Broodwar->mapFileName().c_str(), mapName.c_str(), 7, getTime(seconds).c_str());
+	Broodwar->drawTextScreen(180, 333, "%c%s / %s / %c%s", 29, Broodwar->mapFileName().c_str(), mapName.c_str(), 7, getTime(scnds).c_str());
 	Broodwar->drawTextScreen(5, 95, "\n\r%cMinerals spent + %cGas spent = %cMacro", 31, 7, 17);
 
 	int y1 = 120;
@@ -765,7 +765,6 @@ void AnyRace_CoachAI::Replay()
 				{
 					isThereAllies = true;
 					string pTempName = pTemp->getName().substr(0, 6);
-					string pName = p->getName().substr(0, 6);
 					allies.append(pTempName + " ");
 					color2 = pTemp->getTextColor();
 					if (color2 == 2)
@@ -777,7 +776,7 @@ void AnyRace_CoachAI::Replay()
 				allies = "";
 
 			Broodwar->drawTextScreen(5, y1, "%c(%s) %s %c%s: %c%d + %c%d = %c%d",
-				color, p->getRace().getName().substr(0, 1).c_str(), pName.c_str(), color2, allies.c_str(), 31, Minerals, 7, Gas, 17, Minerals + Gas);
+				color, p->getRace().getName().substr(0, 1).c_str(), p->getName().substr(0, 6).c_str(), color2, allies.c_str(), 31, Minerals, 7, Gas, 17, Minerals + Gas);
 			y1 += 10;
 		}
 		else
