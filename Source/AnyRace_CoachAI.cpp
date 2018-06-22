@@ -21,6 +21,9 @@ multimap<string, string>::iterator iter;
 multimap<string, string>::iterator pos;
 int indexNow;
 bool replayCenteredOnNexus;
+string mapName;
+string gameType;
+bool isThereAllies;
 
 int seconds;
 int minutes;
@@ -87,6 +90,7 @@ int	idleWorkersFor;
 
 string getTime(int seconds)
 {
+	string time = "";
 	hours = seconds / 3600;
 	seconds = seconds % 3600;
 	minutes = seconds / 60;
@@ -98,9 +102,11 @@ string getTime(int seconds)
 		seconds_str = '0' + to_string(seconds);
 	if (minutes < 10)
 		minutes_str = '0' + to_string(minutes);
-	string t = minutes_str + ":" + seconds_str;
-
-	return t;
+	if (hours > 0)
+		time = to_string(hours) + ":" + minutes_str + ":" + seconds_str;
+	else
+		time = minutes_str + ":" + seconds_str;
+	return time;
 }
 
 std::string formated(UnitType ut)
@@ -114,18 +120,18 @@ std::string formated(UnitType ut)
 		unitName.replace(unitName.find("Zerg_"), 5, "");
 	return unitName;
 }
-std::string formatedReplay(UnitType ut)
-{
-	std::string unitName = ut.getName();
-
-	if (ut.getRace() == Races::Protoss)
-		unitName.erase(0, 8);
-	if (ut.getRace() == Races::Terran)
-		unitName.erase(0, 7);
-	if (ut == Races::Zerg)
-		unitName.erase(0, 5);
-	return unitName;
-}
+//std::string formatedReplay(UnitType ut)
+//{
+//	std::string unitName = ut.getName();
+//
+//	if (ut.getRace() == Races::Protoss)
+//		unitName.erase(0, 8);
+//	if (ut.getRace() == Races::Terran)
+//		unitName.erase(0, 7);
+//	if (ut == Races::Zerg)
+//		unitName.erase(0, 5);
+//	return unitName;
+//}
 
 bool idleWorkersEvery()
 {
@@ -182,6 +188,10 @@ bool idleWorkersEvery()
 void AnyRace_CoachAI::onStart()
 {
 	//Broodwar->setLocalSpeed(42);
+	mapName = Broodwar->mapName();
+	if (strstr(mapName.c_str(), "| iCCup | "))
+		mapName.replace(mapName.find("| iCCup | "), 10, "");
+
 
 	// Print the map name. BWAPI returns std::string when retrieving a string, don't forget to add .c_str() when printing!
 	//Broodwar << "The map is " << Broodwar->mapName() << "!" << std::endl;
@@ -224,7 +234,7 @@ void AnyRace_CoachAI::onEnd(bool isWinner)
 
 void AnyRace_CoachAI::onFrame()	// Called every game frame.
 {
-	std::string GameType = Broodwar->getGameType().getName();
+	gameType = Broodwar->getGameType().getName();
 
 	FrameCount = Broodwar->getFrameCount();
 	avgFPS = Broodwar->getAverageFPS();
@@ -232,19 +242,7 @@ void AnyRace_CoachAI::onFrame()	// Called every game frame.
 	if (FPS < 1)
 		return;
 
-	seconds = FrameCount / 23.81;
-	hours = seconds / 3600;
-	seconds = seconds % 3600;
-	minutes = seconds / 60;
-	seconds = seconds % 60;
-	string seconds_str = to_string(seconds);
-	string minutes_str = to_string(minutes);
-
-	if (seconds < 10)
-		seconds_str = '0' + to_string(seconds);
-	if (minutes < 10)
-		minutes_str = '0' + to_string(minutes);
-	gameTime = minutes_str + ":" + seconds_str;
+	gameTime = getTime(FrameCount / 23.81); //Broodwar->elapsedTime();
 
 	std::ifstream i("bwapi-data\\AnyRace_CoachAI.json");
 	j = json::parse(i);
@@ -532,16 +530,17 @@ void AnyRace_CoachAI::onFrame()	// Called every game frame.
 	string m = Broodwar->self()->getRace().getName().substr(0, 1) + "v" + Broodwar->enemy()->getRace().getName().substr(0, 1);
 	const char * match = m.c_str();
 
-	string mapName = Broodwar->mapName();
-	if (strstr(mapName.c_str(), "| iCCup | "))
-		mapName.replace(mapName.find("| iCCup | "), 10, "");
 	Broodwar->drawTextScreen(215, 25, "%c%s %c%s", Text::Purple, mapName.c_str(), Text::Brown, m.c_str());
-	Broodwar->drawTextScreen(205, 5, "%cCoachAI v2.9.1.4", Text::Tan);
+	Broodwar->drawTextScreen(180, 5, "%c:: CoachAI v2.9.2 ::", Text::Tan);
 	//2.9.1.4:
-	//* Ability to include/exclude non-Worker units in the MacroLog (AnyRace_CoachAI.json -> logUnitsProduction)
+	//- Ability to include/exclude non-Worker units in the MacroLog (AnyRace_CoachAI.json -> logUnitsProduction)
+	//- (Both) Showing the unit & building infos in the replay.
+	//- (RepOnly) Showing replay name, map name, replay duration.
+	//- (RepOnly) Showing if playerX allied with playerY, and if playerY did the same.
 
 	Broodwar->drawTextScreen(310, 15, "%cWorkers production stopped for: %c%s", Text::Grey, Text::BrightRed, getTime(workersProductionStopped / FPS).c_str());
-	Broodwar->drawTextScreen(520, 15, "%cFPS: %c%d, %cFrame: %c%d", 14, 4, FPS, 14, 4, FrameCount);
+	Broodwar->drawTextScreen(520, 150, "%cFPS: %c%d, %cFrame: %c%d", 14, 4, FPS, 14, 4, FrameCount);
+	Broodwar->drawTextScreen(520, 15, "%cFPS: %c%d, %ceTime: %c%s", 14, 4, FPS, 14, 4, gameTime.c_str());
 
 	if (Broodwar->self()->getRace() == Races::Zerg)
 		Broodwar->drawTextScreen(5, 65, "%cIdle production: %c%d Larvae\n\r\n\r%cIdle fighting units: \n\r%c%s", 5, 25, idleProdBuildOrLarva, 5, 25, idleFightUnitsFinal.c_str());
@@ -608,7 +607,7 @@ void AnyRace_CoachAI::onFrame()	// Called every game frame.
 		}
 
 		Broodwar->drawTextScreen(150, 25, "%cMacroLog: \n\r%s", Text::Blue, str1.c_str());
-		Broodwar->drawTextScreen(180, 25, "\n\r%c%s", Text::Default, str2.c_str());
+		Broodwar->drawTextScreen(190, 25, "\n\r%c%s", Text::Default, str2.c_str());
 	}
 	if (F6_Pressed == 0)
 	{
@@ -730,13 +729,17 @@ void AnyRace_CoachAI::populatePage()
 
 void AnyRace_CoachAI::Replay()
 {
-	Broodwar->drawTextScreen(200, 345, "Replay: %c%s", Text::Purple, Broodwar->mapFileName().c_str());
+	int repFrames = Broodwar->getReplayFrameCount();
+	int seconds = Broodwar->getReplayFrameCount() / 23.81;
 
-	int y1 = 15;
+	Broodwar->drawTextScreen(180, 333, "%c%s / %s / %c%s", 29, Broodwar->mapFileName().c_str(), mapName.c_str(), 7, getTime(seconds).c_str());
+	Broodwar->drawTextScreen(5, 95, "\n\r%cMinerals spent + %cGas spent = %cMacro", 31, 7, 17);
+
+	int y1 = 120;
 	std::list<Player> playersList;
 	for (auto p : players)
 	{
-		if (!p->isNeutral() && !p->isObserver())
+		if (!p->isNeutral() && !p->isObserver() && p->spentMinerals() != 0)
 			playersList.push_back(p);
 	}
 
@@ -748,11 +751,33 @@ void AnyRace_CoachAI::Replay()
 		{
 			int Minerals = p->spentMinerals() - p->refundedMinerals();
 			int Gas = p->spentGas() - p->refundedGas();
+			char color2 = 15;
 			char color = p->getTextColor();
 			if (color == 2)
 				color = 17;
 
-			Broodwar->drawTextScreen(250, y1, "%c(%s) %s: %c%d + %c%d = %c%d (Macro)", color, p->getRace().getName().substr(0, 1).c_str(), p->getName().c_str(), 31, Minerals, 7, Gas, 17, Minerals + Gas);
+			Player pTemp;
+			string allies = "allied ";
+			for (int i = 0; i < playersList.size(); i++)
+			{
+				pTemp = Broodwar->getPlayer(i);
+				if (p != pTemp && p->isAlly(pTemp))
+				{
+					isThereAllies = true;
+					string pTempName = pTemp->getName().substr(0, 6);
+					string pName = p->getName().substr(0, 6);
+					allies.append(pTempName + " ");
+					color2 = pTemp->getTextColor();
+					if (color2 == 2)
+						color2 = 17;
+				}
+			}
+
+			if (!isThereAllies)
+				allies = "";
+
+			Broodwar->drawTextScreen(5, y1, "%c(%s) %s %c%s: %c%d + %c%d = %c%d",
+				color, p->getRace().getName().substr(0, 1).c_str(), pName.c_str(), color2, allies.c_str(), 31, Minerals, 7, Gas, 17, Minerals + Gas);
 			y1 += 10;
 		}
 		else
@@ -766,11 +791,13 @@ void AnyRace_CoachAI::Replay()
 					char color = f_p->getTextColor();
 					if (color == 2)
 						color = 17;
-
-					Broodwar->drawTextScreen(250, y1, "%c(%s) %s: %c%d + %c%d = %c%d (Macro)", color, f_p->getRace().getName().substr(0, 1).c_str(), f_p->getName().c_str(), 31, Minerals, 7, Gas, 17, Minerals + Gas);
-					y1 += 10;
+					if (f_p->spentMinerals() != 0)
+					{
+						Broodwar->drawTextScreen(5, y1, "%c(%s) %s: %c%d + %c%d = %c%d", color, f_p->getRace().getName().substr(0, 1).c_str(), f_p->getName().c_str(), 31, Minerals, 7, Gas, 17, Minerals + Gas);
+						y1 += 10;
+					}
 				}
-				Broodwar->drawTextScreen(250, y1, "\n\r");
+				Broodwar->drawTextScreen(0, y1, "\n\r");
 				y1 += 10;
 				forceList.push_back(forceName);
 				forceList.unique();
@@ -822,6 +849,58 @@ void AnyRace_CoachAI::Replay()
 	{
 		std::list<std::string> upgrades;
 		std::list<std::string> techno;
+		std::list<std::string> listOfUnits;
+		std::list<std::string> listOfBuildings;
+		std::list<std::string> listOfInCompleteUnits;
+		std::list<std::string> listOfInCompleteBuildings;
+
+		for (auto &up : u->getPlayer()->getUnits())
+		{
+			if (!up->getType().isBuilding())
+			{
+				if (up->isCompleted())
+					listOfUnits.push_back(formated(up->getType()));
+				else listOfInCompleteUnits.push_back(formated(up->getType()));
+			}
+			if (up->getType().isBuilding())
+			{
+				if (up->isCompleted())
+					listOfBuildings.push_back(formated(up->getType()));
+				else listOfInCompleteBuildings.push_back(formated(up->getType()));
+			}
+		}
+		listOfUnits.sort();
+		listOfBuildings.sort();
+		listOfInCompleteUnits.sort();
+		listOfInCompleteBuildings.sort();
+		std::map<std::string, int> UnitsMap;
+		for (std::string item : listOfUnits)
+			UnitsMap[item]++;
+		std::map<std::string, int> BuildingsMap;
+		for (std::string item : listOfBuildings)
+			BuildingsMap[item]++;
+		std::string BuildingsFinal;
+		for (auto entry : BuildingsMap)
+			BuildingsFinal += std::to_string(entry.second) + " " + entry.first + "\n\r";
+		std::string UnitsFinal;
+		for (auto entry : UnitsMap)
+			UnitsFinal += std::to_string(entry.second) + " " + entry.first + "\n\r";
+
+		std::map<std::string, int> inCompleteUnitsMap;
+		for (std::string item : listOfInCompleteUnits)
+			inCompleteUnitsMap[item]++;
+		std::map<std::string, int> inCompleteBuildingsMap;
+		for (std::string item : listOfInCompleteBuildings)
+			inCompleteBuildingsMap[item]++;
+		std::string inCompleteBuildingsFinal;
+		for (auto entry : inCompleteBuildingsMap)
+			inCompleteBuildingsFinal += std::to_string(entry.second) + " " + entry.first + "\n\r";
+		std::string inCompleteUnitsFinal;
+		for (auto entry : inCompleteUnitsMap)
+			inCompleteUnitsFinal += std::to_string(entry.second) + " " + entry.first + "\n\r";
+		Broodwar->drawTextScreen(385, 25, "%cUnits:\n\r%c%s%cUnits in progress:\n\r%c%s", Text::DarkGreen, Text::GreyGreen, UnitsFinal.c_str(), Text::DarkGreen, Text::GreyGreen, inCompleteUnitsFinal.c_str());
+		Broodwar->drawTextScreen(520, 25, "%cBuildings:\n\r%c%s%cBuildings in progress:\n\r%c%s", Text::DarkGreen, Text::GreyGreen, BuildingsFinal.c_str(), Text::DarkGreen, Text::GreyGreen, inCompleteBuildingsFinal.c_str());
+
 		for (auto &ug : UpgradeTypes::allUpgradeTypes())
 		{
 			if (u->getPlayer()->getUpgradeLevel(ug))
@@ -830,7 +909,7 @@ void AnyRace_CoachAI::Replay()
 				{
 					if (ug.maxRepeats() > 1)
 						upgrades.push_back(ug.getName() + " +" + std::to_string(u->getPlayer()->getUpgradeLevel(ug)));
-					else upgrades.push_back(formatedReplay(ut) + "s " + ug.getName());
+					else upgrades.push_back(formated(ut) + "s " + ug.getName());
 				}
 			}
 		}
@@ -850,7 +929,7 @@ void AnyRace_CoachAI::Replay()
 		std::string technoFinal;
 		for (auto entry : techno)
 			technoFinal += entry + "\n\r";
-		Broodwar->drawTextScreen(120, 95, "%cTech: \n\r%c%s%cUpgrades: \n\r%c%s", Text::Blue, Text::Teal, technoFinal.c_str(), Text::Blue, Text::Teal, upgradesFinal.c_str());
+		Broodwar->drawTextScreen(220, 25, "%cTech: \n\r%c%s%cUpgrades: \n\r%c%s", Text::Blue, Text::Teal, technoFinal.c_str(), Text::Blue, Text::Teal, upgradesFinal.c_str());
 	}
 	return;
 }
