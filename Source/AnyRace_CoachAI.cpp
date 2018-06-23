@@ -242,7 +242,7 @@ void AnyRace_CoachAI::onFrame()	// Called every game frame.
 	if (FPS < 1)
 		return;
 
-	gameTime = getTime(FrameCount / 23.81); //Broodwar->elapsedTime() * 0.6728971962616822
+	gameTime = getTime(Broodwar->elapsedTime() * 0.6718); //FrameCount / 23.81
 
 	std::ifstream i("bwapi-data\\AnyRace_CoachAI.json");
 	j = json::parse(i);
@@ -539,8 +539,7 @@ void AnyRace_CoachAI::onFrame()	// Called every game frame.
 	//- (RepOnly) Showing if playerX allied with playerY, and if playerY did the same.
 
 	Broodwar->drawTextScreen(310, 15, "%cWorkers production stopped for: %c%s", Text::Grey, Text::BrightRed, getTime(workersProductionStopped / FPS).c_str());
-	Broodwar->drawTextScreen(520, 150, "%cFPS: %c%d, %cFrame: %c%d", 14, 4, FPS, 14, 4, FrameCount);
-	//Broodwar->drawTextScreen(520, 15, "%ceS: %c%d, %ceT: %c%s", 14, 4, Broodwar->elapsedTime(), 14, 4, gameTime.c_str());
+	Broodwar->drawTextScreen(520, 15, "%cFPS: %c%d, %Time: %c%d", 14, 4, FPS, 14, 4, gameTime.c_str());
 
 	if (Broodwar->self()->getRace() == Races::Zerg)
 		Broodwar->drawTextScreen(5, 65, "%cIdle production: %c%d Larvae\n\r\n\r%cIdle fighting units: \n\r%c%s", 5, 25, idleProdBuildOrLarva, 5, 25, idleFightUnitsFinal.c_str());
