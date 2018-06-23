@@ -539,7 +539,7 @@ void AnyRace_CoachAI::onFrame()	// Called every game frame.
 	//- (RepOnly) Showing if playerX allied with playerY, and if playerY did the same.
 
 	Broodwar->drawTextScreen(310, 15, "%cWorkers production stopped for: %c%s", Text::Grey, Text::BrightRed, getTime(workersProductionStopped / FPS).c_str());
-	Broodwar->drawTextScreen(520, 15, "%cFPS: %c%d, %Time: %c%d", 14, 4, FPS, 14, 4, gameTime.c_str());
+	Broodwar->drawTextScreen(520, 15, "%cFPS: %c%d, %cTime: %c%s", 14, 4, FPS, 14, 4, gameTime.c_str());
 
 	if (Broodwar->self()->getRace() == Races::Zerg)
 		Broodwar->drawTextScreen(5, 65, "%cIdle production: %c%d Larvae\n\r\n\r%cIdle fighting units: \n\r%c%s", 5, 25, idleProdBuildOrLarva, 5, 25, idleFightUnitsFinal.c_str());
