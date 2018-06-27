@@ -13,6 +13,9 @@ using namespace BWAPI;
 using namespace Filter;
 using namespace std;
 
+std::map<std::string, string> hkAll;
+std::map<std::string, list<string>> hkAllRaw;
+
 map<string, string> macroLogMap;
 multimap<string, string> multiMap;
 string str1;
@@ -118,6 +121,14 @@ std::string formated(UnitType ut)
 		unitName.replace(unitName.find("Terran_"), 7, "");
 	if (strstr(unitName.c_str(), "Zerg_"))
 		unitName.replace(unitName.find("Zerg_"), 5, "");
+
+	if (strstr(unitName.c_str(), "Siege_Mode"))
+		unitName.replace(unitName.find("Siege_Mode"), 10, "S");
+	if (strstr(unitName.c_str(), "Tank_Mode"))
+		unitName.replace(unitName.find("Tank_Mode"), 9, "T");
+	if (strstr(unitName.c_str(), "Vulture_"))
+		unitName.replace(unitName.find("Vulture_"), 8, "");
+
 	return unitName;
 }
 //std::string formatedReplay(UnitType ut)
@@ -261,7 +272,42 @@ void AnyRace_CoachAI::onFrame()	// Called every game frame.
 	if (Broodwar->isReplay())
 		return Replay();
 
-	F5 = Broodwar->getKeyState(Key::K_F5);
+	bool shift = Broodwar->getKeyState(Key::K_SHIFT);
+
+	if ((Broodwar->getKeyState(Key::K_CONTROL) || shift) && Broodwar->getKeyState(Key::K_1))
+		hkAll["1"] = getHotKeyGroup(Broodwar->getSelectedUnits(), shift, "1");
+	if ((Broodwar->getKeyState(Key::K_CONTROL) || shift) && Broodwar->getKeyState(Key::K_2))
+		hkAll["2"] = getHotKeyGroup(Broodwar->getSelectedUnits(), shift, "2");
+	if ((Broodwar->getKeyState(Key::K_CONTROL) || shift) && Broodwar->getKeyState(Key::K_3))
+		hkAll["3"] = getHotKeyGroup(Broodwar->getSelectedUnits(), shift, "3");
+	if ((Broodwar->getKeyState(Key::K_CONTROL) || shift) && Broodwar->getKeyState(Key::K_4))
+		hkAll["4"] = getHotKeyGroup(Broodwar->getSelectedUnits(), shift, "4");
+	if ((Broodwar->getKeyState(Key::K_CONTROL) || shift) && Broodwar->getKeyState(Key::K_5))
+		hkAll["5"] = getHotKeyGroup(Broodwar->getSelectedUnits(), shift, "5");
+	if ((Broodwar->getKeyState(Key::K_CONTROL) || shift) && Broodwar->getKeyState(Key::K_6))
+		hkAll["6"] = getHotKeyGroup(Broodwar->getSelectedUnits(), shift, "6");
+	if ((Broodwar->getKeyState(Key::K_CONTROL) || shift) && Broodwar->getKeyState(Key::K_7))
+		hkAll["7"] = getHotKeyGroup(Broodwar->getSelectedUnits(), shift, "7");
+	if ((Broodwar->getKeyState(Key::K_CONTROL) || shift) && Broodwar->getKeyState(Key::K_8))
+		hkAll["8"] = getHotKeyGroup(Broodwar->getSelectedUnits(), shift, "8");
+	if ((Broodwar->getKeyState(Key::K_CONTROL) || shift) && Broodwar->getKeyState(Key::K_9))
+		hkAll["9"] = getHotKeyGroup(Broodwar->getSelectedUnits(), shift, "9");
+	if ((Broodwar->getKeyState(Key::K_CONTROL) || shift) && Broodwar->getKeyState(Key::K_0))
+		hkAll["0"] = getHotKeyGroup(Broodwar->getSelectedUnits(), shift, "0");
+	if (shift && Broodwar->getKeyState(Key::K_F3))
+		hkAll["F3"] = getHotKeyGroup(Broodwar->getSelectedUnits(), false, "");
+	if (shift && Broodwar->getKeyState(Key::K_F4))
+		hkAll["F4"] = getHotKeyGroup(Broodwar->getSelectedUnits(), false, "");
+
+	string HKunits = "";
+	for (auto entry : hkAll)
+	{
+		if (entry.first == "F3" || entry.first == "F4")
+			HKunits += "\n\r#" + entry.first + " " + entry.second + "\n\r";
+		else HKunits += "#" + entry.first + " " + entry.second + "\n\r";
+	}
+	//Broodwar->drawTextScreen(150, 25, "%cHotkeys: \n\r%s", Text::BrightRed, HKunits.c_str());
+
 	DOWN = Broodwar->getKeyState(Key::K_DOWN);
 	UP = Broodwar->getKeyState(Key::K_UP);
 
@@ -536,7 +582,8 @@ void AnyRace_CoachAI::onFrame()	// Called every game frame.
 	//- Ability to include/exclude non-Worker units in the MacroLog (AnyRace_CoachAI.json -> logUnitsProduction)
 	//- (Both) Showing the unit & building infos in the replay.
 	//- (RepOnly) Showing replay name, map name, replay duration.
-	//- (RepOnly) Showing if playerX allied with playerY, and if playerY did the same.
+	//- (RepOnly) If players team up after game begins, showing if playerX allied with playerY, and if playerY also did the same.
+	//- Hotkey tracking system.
 
 	Broodwar->drawTextScreen(310, 15, "%cWorkers production stopped for: %c%s", Text::Grey, Text::BrightRed, getTime(workersProductionStopped / FPS).c_str());
 	Broodwar->drawTextScreen(520, 15, "%cFPS: %c%d, %cTime: %c%s", 14, 4, FPS, 14, 4, gameTime.c_str());
@@ -605,12 +652,12 @@ void AnyRace_CoachAI::onFrame()	// Called every game frame.
 			}
 		}
 
-		Broodwar->drawTextScreen(150, 25, "%cMacroLog: \n\r%s", Text::Blue, str1.c_str());
-		Broodwar->drawTextScreen(185, 25, "\n\r%c%s", Text::Default, str2.c_str());
+		Broodwar->drawTextScreen(190, 25, "%cMacroLog: \n\r%s", Text::Blue, str1.c_str());
+		Broodwar->drawTextScreen(225, 25, "\n\r%c%s", Text::Default, str2.c_str());
 	}
 	if (F6_Pressed == 0)
 	{
-		Broodwar->drawTextScreen(385, 25, "%cUnits:\n\r%c%s%cUnits in progress:\n\r%c%s", Text::DarkGreen, Text::GreyGreen, UnitsFinal.c_str(), Text::DarkGreen, Text::GreyGreen, inCompleteUnitsFinal.c_str());
+		Broodwar->drawTextScreen(425, 25, "%cUnits:\n\r%c%s%cUnits in progress:\n\r%c%s", Text::DarkGreen, Text::GreyGreen, UnitsFinal.c_str(), Text::DarkGreen, Text::GreyGreen, inCompleteUnitsFinal.c_str());
 		Broodwar->drawTextScreen(520, 25, "%cBuildings:\n\r%c%s%cBuildings in progress:\n\r%c%s", Text::DarkGreen, Text::GreyGreen, BuildingsFinal.c_str(), Text::DarkGreen, Text::GreyGreen, inCompleteBuildingsFinal.c_str());
 	}
 	else if (F6_Pressed == 1)
@@ -726,6 +773,43 @@ void AnyRace_CoachAI::populatePage()
 	}
 }
 
+Unitset usTemp;
+std::string AnyRace_CoachAI::getHotKeyGroup(Unitset us, bool shift, string hkey)
+{
+	list<std::string> hkSelfUnitsList;
+	std::string hkSelfString = "";
+	std::map<std::string, int> hkSelfUnitsMap;
+
+
+	for (Unit u : us)
+	{
+		if ((u->getType().isBuilding() && shift && hkAll[hkey].size() != 0))
+			return hkAll[hkey];
+		hkSelfUnitsList.push_back(formated(u->getType()));
+	}
+
+	if (shift)
+	{
+		list<std::string> old;
+		for (auto entry : hkAllRaw[hkey])
+			old.push_back(entry);
+		old.sort();
+		hkSelfUnitsList.sort();
+
+		hkSelfUnitsList.merge(old);
+	}
+	hkAllRaw[hkey] = hkSelfUnitsList;
+
+	for (std::string item : hkSelfUnitsList)
+		hkSelfUnitsMap[item]++;
+
+	for (auto entry : hkSelfUnitsMap)
+		hkSelfString += std::to_string(entry.second) + " " + entry.first + ", ";
+
+	usTemp = us;
+	return hkSelfString;
+}
+
 void AnyRace_CoachAI::Replay()
 {
 	int repFrames = Broodwar->getReplayFrameCount();
@@ -763,7 +847,7 @@ void AnyRace_CoachAI::Replay()
 				if (p != pTemp && p->isAlly(pTemp))
 				{
 					isThereAllies = true;
-					string pTempName = pTemp->getName().substr(0, 6);
+					string pTempName = pTemp->getName().substr(0, 3);
 					allies.append(pTempName + " ");
 					color2 = pTemp->getTextColor();
 					if (color2 == 2)
@@ -774,8 +858,8 @@ void AnyRace_CoachAI::Replay()
 			if (!isThereAllies)
 				allies = "";
 
-			Broodwar->drawTextScreen(5, y1, "%c(%s) %s %c%s: %c%d + %c%d = %c%d",
-				color, p->getRace().getName().substr(0, 1).c_str(), p->getName().substr(0, 6).c_str(), color2, allies.c_str(), 31, Minerals, 7, Gas, 17, Minerals + Gas);
+			Broodwar->drawTextScreen(5, y1, "%c(%s) %s %c%s: %c%d+%c%d=%c%d %c%d/%d",
+				color, p->getRace().getName().substr(0, 1).c_str(), p->getName().substr(0, 3).c_str(), color2, allies.c_str(), 31, Minerals, 7, Gas, 17, Minerals + Gas, 15, p->supplyUsed() / 2, p->supplyTotal() / 2);
 			y1 += 10;
 		}
 		else
@@ -791,7 +875,7 @@ void AnyRace_CoachAI::Replay()
 						color = 17;
 					if (f_p->spentMinerals() != 0)
 					{
-						Broodwar->drawTextScreen(5, y1, "%c(%s) %s: %c%d + %c%d = %c%d", color, f_p->getRace().getName().substr(0, 1).c_str(), f_p->getName().c_str(), 31, Minerals, 7, Gas, 17, Minerals + Gas);
+						Broodwar->drawTextScreen(5, y1, "%c(%s) %s: %c%d+%c%d=%c%d %c%d/%d", color, f_p->getRace().getName().substr(0, 1).c_str(), f_p->getName().c_str(), 31, Minerals, 7, Gas, 17, Minerals + Gas, 15, f_p->supplyUsed() / 2, f_p->supplyTotal() / 2);
 						y1 += 10;
 					}
 				}
@@ -845,6 +929,11 @@ void AnyRace_CoachAI::Replay()
 
 	for (auto &u : Broodwar->getSelectedUnits())
 	{
+		Player pl = u->getPlayer();
+		char color = pl->getTextColor();
+		if (color == 2)
+			color = 17;
+
 		std::list<std::string> upgrades;
 		std::list<std::string> techno;
 		std::list<std::string> listOfUnits;
@@ -896,7 +985,7 @@ void AnyRace_CoachAI::Replay()
 		std::string inCompleteUnitsFinal;
 		for (auto entry : inCompleteUnitsMap)
 			inCompleteUnitsFinal += std::to_string(entry.second) + " " + entry.first + "\n\r";
-		Broodwar->drawTextScreen(385, 25, "%cUnits:\n\r%c%s%cUnits in progress:\n\r%c%s", Text::DarkGreen, Text::GreyGreen, UnitsFinal.c_str(), Text::DarkGreen, Text::GreyGreen, inCompleteUnitsFinal.c_str());
+		Broodwar->drawTextScreen(425, 25, "%cUnits:\n\r%c%s%cUnits in progress:\n\r%c%s", Text::DarkGreen, Text::GreyGreen, UnitsFinal.c_str(), Text::DarkGreen, Text::GreyGreen, inCompleteUnitsFinal.c_str());
 		Broodwar->drawTextScreen(520, 25, "%cBuildings:\n\r%c%s%cBuildings in progress:\n\r%c%s", Text::DarkGreen, Text::GreyGreen, BuildingsFinal.c_str(), Text::DarkGreen, Text::GreyGreen, inCompleteBuildingsFinal.c_str());
 
 		for (auto &ug : UpgradeTypes::allUpgradeTypes())
@@ -927,7 +1016,8 @@ void AnyRace_CoachAI::Replay()
 		std::string technoFinal;
 		for (auto entry : techno)
 			technoFinal += entry + "\n\r";
-		Broodwar->drawTextScreen(220, 25, "%cTech: \n\r%c%s%cUpgrades: \n\r%c%s", Text::Blue, Text::Teal, technoFinal.c_str(), Text::Blue, Text::Teal, upgradesFinal.c_str());
+		Broodwar->drawTextScreen(255, 15, "%c%s", color, pl->getName().c_str());
+		Broodwar->drawTextScreen(255, 25, "%cTech: \n\r%c%s%cUpgrades: \n\r%c%s", Text::Blue, Text::Teal, technoFinal.c_str(), Text::Blue, Text::Teal, upgradesFinal.c_str());
 	}
 	return;
 }

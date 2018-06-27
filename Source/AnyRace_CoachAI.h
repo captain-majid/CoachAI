@@ -13,6 +13,8 @@ public:
   virtual void onFrame() override;
   void populatePage();
   void Replay();
+  std::string getHotKeyGroup(BWAPI::Unitset us, bool shift, std::string hkey);
+
   void buildSupply(const BWAPI::Unit & u, BWAPI::UnitType &supplyUnit, int &lastChecked);
   virtual void onSendText(std::string text) override;
   virtual void onReceiveText(BWAPI::Player player, std::string text)override ;
