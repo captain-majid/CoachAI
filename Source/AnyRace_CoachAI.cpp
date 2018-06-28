@@ -595,12 +595,6 @@ void AnyRace_CoachAI::onFrame()	// Called every game frame.
 
 	Broodwar->drawTextScreen(245, 25, "%c%s %c%s", Text::Purple, mapName.c_str(), Text::Brown, m.c_str());
 	Broodwar->drawTextScreen(180, 5, "%c:: CoachAI v2.9.3 ::", Text::Tan);
-	//2.9.3:
-	//- Ability to include/exclude non-Worker units in the MacroLog (AnyRace_CoachAI.json -> logUnitsProduction)
-	//- Hotkey tracking during the game.
-	//- (Both) Showing the unit & building infos in the replay.
-	//- (RepOnly) Showing replay name, map name, replay duration.
-	//- (RepOnly) In team replays showing if playerX allied with playerY, and if playerY also did the same.
 
 	Broodwar->drawTextScreen(310, 15, "%cWorkers production stopped for: %c%s", Text::Grey, Text::BrightRed, getTime(workersProductionStopped / FPS).c_str());
 	Broodwar->drawTextScreen(520, 15, "%cFPS: %c%d, %cTime: %c%s", 14, 4, FPS, 14, 4, gameTime.c_str());
