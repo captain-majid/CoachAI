@@ -1016,7 +1016,7 @@ void AnyRace_CoachAI::Replay()
 		std::string technoFinal;
 		for (auto entry : techno)
 			technoFinal += entry + "\n\r";
-		Broodwar->drawTextScreen(255, 15, "%c%s", color, pl->getName().c_str());
+		Broodwar->drawTextScreen(255, 15, "%c%s ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::", color, pl->getName().c_str());
 		Broodwar->drawTextScreen(255, 25, "%cTech: \n\r%c%s%cUpgrades: \n\r%c%s", Text::Blue, Text::Teal, technoFinal.c_str(), Text::Blue, Text::Teal, upgradesFinal.c_str());
 	}
 	return;
