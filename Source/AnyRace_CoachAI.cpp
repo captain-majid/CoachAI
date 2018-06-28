@@ -122,12 +122,22 @@ std::string formated(UnitType ut)
 	if (strstr(unitName.c_str(), "Zerg_"))
 		unitName.replace(unitName.find("Zerg_"), 5, "");
 
-	if (strstr(unitName.c_str(), "Siege_Mode"))
-		unitName.replace(unitName.find("Siege_Mode"), 10, "S");
-	if (strstr(unitName.c_str(), "Tank_Mode"))
-		unitName.replace(unitName.find("Tank_Mode"), 9, "T");
+	if (strstr(unitName.c_str(), "Siege_Tank_Siege_Mode"))
+		unitName.replace(unitName.find("Siege_Tank_Siege_Mode"), 21, "Tank_S");
+	if (strstr(unitName.c_str(), "Siege_Tank_Tank_Mode"))
+		unitName.replace(unitName.find("Siege_Tank_Tank_Mode"), 20, "Tank_T");
 	if (strstr(unitName.c_str(), "Vulture_"))
 		unitName.replace(unitName.find("Vulture_"), 8, "");
+
+	if (strstr(unitName.c_str(), "High_Templar"))
+		unitName.replace(unitName.find("High_Templar"), 12, "HT");
+	if (strstr(unitName.c_str(), "Dark_Templar"))
+		unitName.replace(unitName.find("Dark_Templar"), 12, "DT");
+	if (strstr(unitName.c_str(), "Dark_Archon"))
+		unitName.replace(unitName.find("Dark_Archon"), 11, "DA");
+
+	if (strstr(unitName.c_str(), "Special_Map_Revealer"))
+		unitName.replace(unitName.find("Special_Map_Revealer"), 8, "");
 
 	return unitName;
 }
@@ -274,6 +284,19 @@ void AnyRace_CoachAI::onFrame()	// Called every game frame.
 
 	bool shift = Broodwar->getKeyState(Key::K_SHIFT);
 
+	hkAll["1"];
+	hkAll["2"];
+	hkAll["3"];
+	hkAll["4"];
+	hkAll["5"];
+	hkAll["6"];
+	hkAll["7"];
+	hkAll["8"];
+	hkAll["9"];
+	hkAll["0"];
+	hkAll["F3"];
+	hkAll["F4"];
+
 	if ((Broodwar->getKeyState(Key::K_CONTROL) || shift) && Broodwar->getKeyState(Key::K_1))
 		hkAll["1"] = getHotKeyGroup(Broodwar->getSelectedUnits(), shift, "1");
 	if ((Broodwar->getKeyState(Key::K_CONTROL) || shift) && Broodwar->getKeyState(Key::K_2))
@@ -295,22 +318,14 @@ void AnyRace_CoachAI::onFrame()	// Called every game frame.
 	if ((Broodwar->getKeyState(Key::K_CONTROL) || shift) && Broodwar->getKeyState(Key::K_0))
 		hkAll["0"] = getHotKeyGroup(Broodwar->getSelectedUnits(), shift, "0");
 	if (shift && Broodwar->getKeyState(Key::K_F3))
-		hkAll["F3"] = getHotKeyGroup(Broodwar->getSelectedUnits(), false, "");
+		hkAll["F3"] = "Set";
 	if (shift && Broodwar->getKeyState(Key::K_F4))
-		hkAll["F4"] = getHotKeyGroup(Broodwar->getSelectedUnits(), false, "");
-
-	string HKunits = "";
-	for (auto entry : hkAll)
-	{
-		if (entry.first == "F3" || entry.first == "F4")
-			HKunits += "\n\r#" + entry.first + " " + entry.second + "\n\r";
-		else HKunits += "#" + entry.first + " " + entry.second + "\n\r";
-	}
-	//Broodwar->drawTextScreen(150, 25, "%cHotkeys: \n\r%s", Text::BrightRed, HKunits.c_str());
+		hkAll["F4"] = "Set";
 
 	DOWN = Broodwar->getKeyState(Key::K_DOWN);
 	UP = Broodwar->getKeyState(Key::K_UP);
 
+	F5 = Broodwar->getKeyState(Key::K_F5);
 	F6 = Broodwar->getKeyState(Key::K_F6);
 
 	static int lastCheckedFrame4 = 0;
@@ -318,6 +333,8 @@ void AnyRace_CoachAI::onFrame()	// Called every game frame.
 	{
 		lastCheckedFrame4 = FrameCount;
 		F5_Pressed++;
+		if (F5_Pressed == 2)
+			F5_Pressed = 0;
 	}
 
 	static int lastCheckedFrame5 = 0;
@@ -576,14 +593,14 @@ void AnyRace_CoachAI::onFrame()	// Called every game frame.
 	string m = Broodwar->self()->getRace().getName().substr(0, 1) + "v" + Broodwar->enemy()->getRace().getName().substr(0, 1);
 	const char * match = m.c_str();
 
-	Broodwar->drawTextScreen(215, 25, "%c%s %c%s", Text::Purple, mapName.c_str(), Text::Brown, m.c_str());
+	Broodwar->drawTextScreen(245, 25, "%c%s %c%s", Text::Purple, mapName.c_str(), Text::Brown, m.c_str());
 	Broodwar->drawTextScreen(180, 5, "%c:: CoachAI v2.9.3 ::", Text::Tan);
 	//2.9.3:
 	//- Ability to include/exclude non-Worker units in the MacroLog (AnyRace_CoachAI.json -> logUnitsProduction)
+	//- Hotkey tracking during the game.
 	//- (Both) Showing the unit & building infos in the replay.
 	//- (RepOnly) Showing replay name, map name, replay duration.
-	//- (RepOnly) If players team up after game begins, showing if playerX allied with playerY, and if playerY also did the same.
-	//- Hotkey tracking system.
+	//- (RepOnly) In team replays showing if playerX allied with playerY, and if playerY also did the same.
 
 	Broodwar->drawTextScreen(310, 15, "%cWorkers production stopped for: %c%s", Text::Grey, Text::BrightRed, getTime(workersProductionStopped / FPS).c_str());
 	Broodwar->drawTextScreen(520, 15, "%cFPS: %c%d, %cTime: %c%s", 14, 4, FPS, 14, 4, gameTime.c_str());
@@ -601,7 +618,7 @@ void AnyRace_CoachAI::onFrame()	// Called every game frame.
 	Broodwar->drawTextScreen(250, 330, "%cSupply maxed with: %c%d %s", 3, Text::BrightRed, (200 - Broodwar->self()->supplyTotal() / 2) / 8, formated(supplyName).c_str());
 
 
-	if (F5_Pressed % 2 == 0)
+	if (F5_Pressed == 0)
 	{
 		if (macroLogMap.size() != multiMap.size())
 		{
@@ -651,10 +668,20 @@ void AnyRace_CoachAI::onFrame()	// Called every game frame.
 				populatePage();
 			}
 		}
-
 		Broodwar->drawTextScreen(190, 25, "%cMacroLog: \n\r%s", Text::Blue, str1.c_str());
 		Broodwar->drawTextScreen(225, 25, "\n\r%c%s", Text::Default, str2.c_str());
 	}
+	else if (F5_Pressed == 1)
+	{
+		Broodwar->drawTextScreen(150, 25, "%cHotkeys:", 8);
+		int y = 35;
+		for (auto entry : hkAll)
+		{
+			Broodwar->drawTextScreen(150, y, "%c%s: %c%s", 8, entry.first.c_str(), 27, entry.second.c_str());
+			y += 10;
+		}
+	}
+
 	if (F6_Pressed == 0)
 	{
 		Broodwar->drawTextScreen(425, 25, "%cUnits:\n\r%c%s%cUnits in progress:\n\r%c%s", Text::DarkGreen, Text::GreyGreen, UnitsFinal.c_str(), Text::DarkGreen, Text::GreyGreen, inCompleteUnitsFinal.c_str());
@@ -774,25 +801,32 @@ void AnyRace_CoachAI::populatePage()
 }
 
 Unitset usTemp;
+string hkeyTemp;
 std::string AnyRace_CoachAI::getHotKeyGroup(Unitset us, bool shift, string hkey)
 {
+	if (usTemp == us && hkeyTemp == hkey)
+		return hkAll[hkey];
+
 	list<std::string> hkSelfUnitsList;
 	std::string hkSelfString = "";
 	std::map<std::string, int> hkSelfUnitsMap;
 
-
 	for (Unit u : us)
 	{
-		if ((u->getType().isBuilding() && shift && hkAll[hkey].size() != 0))
+		if (u->getType().isBuilding() && shift && hkAll[hkey].size() != 0)//don't add building to a used hotkey
 			return hkAll[hkey];
 		hkSelfUnitsList.push_back(formated(u->getType()));
 	}
 
-	if (shift)
+	if (shift)//A trivial display bug here where you can combine unit(s) with a building
 	{
 		list<std::string> old;
 		for (auto entry : hkAllRaw[hkey])
 			old.push_back(entry);
+		int allowedSize = 12 - old.size();
+
+		if (old.size() + hkSelfUnitsList.size() > 12)
+			hkSelfUnitsList.resize(allowedSize);
 		old.sort();
 		hkSelfUnitsList.sort();
 
@@ -802,11 +836,11 @@ std::string AnyRace_CoachAI::getHotKeyGroup(Unitset us, bool shift, string hkey)
 
 	for (std::string item : hkSelfUnitsList)
 		hkSelfUnitsMap[item]++;
-
 	for (auto entry : hkSelfUnitsMap)
 		hkSelfString += std::to_string(entry.second) + " " + entry.first + ", ";
 
 	usTemp = us;
+	hkeyTemp = hkey;
 	return hkSelfString;
 }
 
