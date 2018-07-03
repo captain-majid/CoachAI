@@ -3,8 +3,6 @@
 #include <fstream>
 #include <list>
 #include <map>
-#include <vector>
-
 #include "nlohmann\json.hpp"
 #include "algorithm"
 
@@ -208,6 +206,7 @@ bool idleWorkersEvery()
 
 void AnyRace_CoachAI::onStart()
 {
+	gameType = Broodwar->getGameType().getName();
 	//Broodwar->setLocalSpeed(42);
 	mapName = Broodwar->mapName();
 	if (strstr(mapName.c_str(), "| iCCup | "))
@@ -255,10 +254,7 @@ void AnyRace_CoachAI::onEnd(bool isWinner)
 
 void AnyRace_CoachAI::onFrame()	// Called every game frame.
 {
-	gameType = Broodwar->getGameType().getName();
-
 	FrameCount = Broodwar->getFrameCount();
-	avgFPS = Broodwar->getAverageFPS();
 	FPS = Broodwar->getFPS();
 	if (FPS < 1)
 		return;
@@ -611,7 +607,6 @@ void AnyRace_CoachAI::onFrame()	// Called every game frame.
 	UnitType supplyName = Broodwar->self()->getRace().getSupplyProvider();
 	Broodwar->drawTextScreen(250, 330, "%cSupply maxed with: %c%d %s", 3, Text::BrightRed, (200 - Broodwar->self()->supplyTotal() / 2) / 8, formated(supplyName).c_str());
 
-
 	if (F5_Pressed == 0)
 	{
 		if (macroLogMap.size() != multiMap.size())
@@ -841,7 +836,7 @@ std::string AnyRace_CoachAI::getHotKeyGroup(Unitset us, bool shift, string hkey)
 void AnyRace_CoachAI::Replay()
 {
 	int repFrames = Broodwar->getReplayFrameCount();
-	int scnds = Broodwar->getReplayFrameCount() / 23.81;
+	int scnds = Broodwar->getReplayFrameCount() / 23.809523809523809523809523809524;
 
 	Broodwar->drawTextScreen(180, 333, "%c%s / %s / %c%s", 29, Broodwar->mapFileName().c_str(), mapName.c_str(), 7, getTime(scnds).c_str());
 	Broodwar->drawTextScreen(5, 95, "\n\r%cMinerals spent + %cGas spent = %cMacro", 31, 7, 17);
