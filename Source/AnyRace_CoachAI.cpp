@@ -18,6 +18,7 @@ list<Key> keysPressed;
 Unit Probe_SCV_Larva;
 bool OvIsMorphing;
 bool droneIsMorphing;
+string unitName;
 
 map<string, string> macroLogMap;
 multimap<string, string> multiMap;
@@ -117,7 +118,7 @@ string getTime(int s)
 
 std::string formated(UnitType ut)
 {
-	std::string unitName = ut.getName();
+	unitName = ut.getName();
 	if (strstr(unitName.c_str(), "Protoss_"))
 		unitName.replace(unitName.find("Protoss_"), 8, "");
 	if (strstr(unitName.c_str(), "Terran_"))
@@ -276,85 +277,31 @@ void AnyRace_CoachAI::onFrame()	// Called every game frame.
 	FPS = Broodwar->getFPS();
 	if (FPS < 1)
 		return;
-
 	gameTime = getTime(Broodwar->elapsedTime() * 0.6718); //FrameCount / 23.81
 
-	std::ifstream i("bwapi-data\\AnyRace_CoachAI.json");
-	j = json::parse(i);
-	autoTrainWorkers = j["Control Panel"]["autoTrainWorkers"].get<bool>();
-	autoMine = j["Control Panel"]["autoMine"].get<bool>();
-	autoBuildSuppliesBeforeBlocked = j["Control Panel"]["autoBuildSuppliesBeforeBlocked"].get<int>();
-	maxWorkers = j["Control Panel"]["maxWorkers"].get<int>();
-	maxProductionBuildingQueue = j["Control Panel"]["maxProductionBuildingQueue"].get<int>();
-	idleWorkerWarningEvery = j["Control Panel"]["idleWorkerWarningEvery"].get<int>() * FPS;
-	idleProductionBuildingWarningEvery = j["Control Panel"]["idleProductionBuildingWarningEvery"].get<int>() * FPS;
-	idleFightingUnitWarningEvery = j["Control Panel"]["idleFightingUnitWarningEvery"].get<int>() * FPS;
-	workersProductionStoppedDuring = j["Control Panel"]["workersProductionStoppedDuring"].get<int>() * FPS;
+	static int lastCheckedFrame11 = 0;
+	if (lastCheckedFrame11 + FPS < FrameCount)
+	{
+		lastCheckedFrame11 = FrameCount;
+		std::ifstream i("bwapi-data\\AnyRace_CoachAI.json");
+		j = json::parse(i);
+		autoTrainWorkers = j["Control Panel"]["autoTrainWorkers"].get<bool>();
+		autoMine = j["Control Panel"]["autoMine"].get<bool>();
+		autoBuildSuppliesBeforeBlocked = j["Control Panel"]["autoBuildSuppliesBeforeBlocked"].get<int>();
+		maxWorkers = j["Control Panel"]["maxWorkers"].get<int>();
+		maxProductionBuildingQueue = j["Control Panel"]["maxProductionBuildingQueue"].get<int>();
+		idleWorkerWarningEvery = j["Control Panel"]["idleWorkerWarningEvery"].get<int>() * FPS;
+		idleProductionBuildingWarningEvery = j["Control Panel"]["idleProductionBuildingWarningEvery"].get<int>() * FPS;
+		idleFightingUnitWarningEvery = j["Control Panel"]["idleFightingUnitWarningEvery"].get<int>() * FPS;
+		workersProductionStoppedDuring = j["Control Panel"]["workersProductionStoppedDuring"].get<int>() * FPS;
 
-	logWorkersAndSupplyProduction = j["Control Panel"]["logWorkersAndSupplyProduction"].get<bool>();
-	logUnitsProduction = j["Control Panel"]["logUnitsProduction"].get<bool>();
+		logWorkersAndSupplyProduction = j["Control Panel"]["logWorkersAndSupplyProduction"].get<bool>();
+		logUnitsProduction = j["Control Panel"]["logUnitsProduction"].get<bool>();
+	}
 	if (Broodwar->isReplay())
 		return Replay();
 
-	bool shift = Broodwar->getKeyState(Key::K_SHIFT);
-
-	if ((Broodwar->getKeyState(Key::K_CONTROL) || shift) && Broodwar->getKeyState(Key::K_1))
-		hkAll["1"] = getHotKeyGroup(Broodwar->getSelectedUnits(), shift, "1");
-	if ((Broodwar->getKeyState(Key::K_CONTROL) || shift) && Broodwar->getKeyState(Key::K_2))
-		hkAll["2"] = getHotKeyGroup(Broodwar->getSelectedUnits(), shift, "2");
-	if ((Broodwar->getKeyState(Key::K_CONTROL) || shift) && Broodwar->getKeyState(Key::K_3))
-		hkAll["3"] = getHotKeyGroup(Broodwar->getSelectedUnits(), shift, "3");
-	if ((Broodwar->getKeyState(Key::K_CONTROL) || shift) && Broodwar->getKeyState(Key::K_4))
-		hkAll["4"] = getHotKeyGroup(Broodwar->getSelectedUnits(), shift, "4");
-	if ((Broodwar->getKeyState(Key::K_CONTROL) || shift) && Broodwar->getKeyState(Key::K_5))
-		hkAll["5"] = getHotKeyGroup(Broodwar->getSelectedUnits(), shift, "5");
-	if ((Broodwar->getKeyState(Key::K_CONTROL) || shift) && Broodwar->getKeyState(Key::K_6))
-		hkAll["6"] = getHotKeyGroup(Broodwar->getSelectedUnits(), shift, "6");
-	if ((Broodwar->getKeyState(Key::K_CONTROL) || shift) && Broodwar->getKeyState(Key::K_7))
-		hkAll["7"] = getHotKeyGroup(Broodwar->getSelectedUnits(), shift, "7");
-	if ((Broodwar->getKeyState(Key::K_CONTROL) || shift) && Broodwar->getKeyState(Key::K_8))
-		hkAll["8"] = getHotKeyGroup(Broodwar->getSelectedUnits(), shift, "8");
-	if ((Broodwar->getKeyState(Key::K_CONTROL) || shift) && Broodwar->getKeyState(Key::K_9))
-		hkAll["9"] = getHotKeyGroup(Broodwar->getSelectedUnits(), shift, "9");
-	if ((Broodwar->getKeyState(Key::K_CONTROL) || shift) && Broodwar->getKeyState(Key::K_0))
-		hkAll["0"] = getHotKeyGroup(Broodwar->getSelectedUnits(), shift, "0");
-	if (shift && Broodwar->getKeyState(Key::K_F3))
-		hkAll["F3"] = "Set";
-	if (shift && Broodwar->getKeyState(Key::K_F4))
-		hkAll["F4"] = "Set";
-
-	list<Key> keysList = { Key::K_1, Key::K_2, Key::K_3, Key::K_4, Key::K_5, Key::K_6, Key::K_7, Key::K_8, Key::K_9, Key::K_0,
-		Key::K_F2, Key::K_F3, Key::K_F4 };
-
-	for (Key &k : keysList)
-	{
-		if (Broodwar->getKeyState(k) && !Broodwar->getKeyState(Key::K_CONTROL) && !Broodwar->getKeyState(Key::K_SHIFT)
-			&& hkAll[convertAsciiToString(k)].size() > 0)
-			keysPressed.push_back(k);
-	}
-	std::map<string, int> keysPressedMap;
-	keysPressedMap["1"];
-	keysPressedMap["2"];
-	keysPressedMap["3"];
-	keysPressedMap["4"];
-	keysPressedMap["5"];
-	keysPressedMap["6"];
-	keysPressedMap["7"];
-	keysPressedMap["8"];
-	keysPressedMap["9"];
-	keysPressedMap["0"];
-	keysPressedMap["F2"];
-	keysPressedMap["F3"];
-	keysPressedMap["F4"];
-	for (auto k : keysPressed)
-		keysPressedMap[convertAsciiToString(k)]++;
-
-	int y = 35;
-	for (auto entry : keysPressedMap)
-	{
-		Broodwar->drawTextScreen(140, y, "%c%d %s", 27, entry.second, entry.first.c_str());
-		y += 10;
-	}
+	hotKeyHandler();
 
 	DOWN = Broodwar->getKeyState(Key::K_DOWN);
 	UP = Broodwar->getKeyState(Key::K_UP);
@@ -399,8 +346,6 @@ void AnyRace_CoachAI::onFrame()	// Called every game frame.
 		}
 	}
 
-	//std::list<std::string> upgrades;
-	//std::list<std::string> techno;
 	std::string ugName;
 	for (auto &ug : UpgradeTypes::allUpgradeTypes())
 	{
@@ -432,7 +377,6 @@ void AnyRace_CoachAI::onFrame()	// Called every game frame.
 		}
 	}
 
-
 	for (auto &tech : TechTypes::allTechTypes())
 	{
 		std::string techName = tech.getName();
@@ -459,17 +403,6 @@ void AnyRace_CoachAI::onFrame()	// Called every game frame.
 			}
 		}
 	}
-	//upgrades.unique();
-	//upgrades.sort();
-	//techno.unique();
-	//techno.sort();
-	//std::string upgradesFinal;
-	//for (auto entry : upgrades)
-	//	upgradesFinal += entry + "\n\r";
-	//std::string technoFinal;
-	//for (auto entry : techno)
-	//	technoFinal += entry + "\n\r";
-
 	idleProdBuildOrLarva = 0;
 	idleFightUnits = 0;
 	std::list<std::string> listOfUnits;
@@ -517,13 +450,6 @@ void AnyRace_CoachAI::onFrame()	// Called every game frame.
 			idleFightUnits++;
 			listOfIdleFightUnits.push_back(formated(u->getType()));
 		}
-
-		//if (u->canAttackMove())//draw circle to show tank splash radius
-		//{
-		//	Broodwar->drawCircleMap(u->getPosition(), 25, Color(128, 0, 0), false);//nothing
-		//	Broodwar->drawCircleMap(u->getPosition(), 40, Color(64, 0, 0), false);
-		//}
-		//newUID = u->getID();
 		if (u->canSetRallyPoint())
 		{
 			Position building = u->getPosition();
@@ -555,13 +481,6 @@ void AnyRace_CoachAI::onFrame()	// Called every game frame.
 			}
 		}
 	}
-	//listOfUnits.sort();
-	//listOfBuildings.sort();
-	//listOfInCompleteUnits.sort();
-	//listOfInCompleteBuildings.sort();
-	//listOfIdleFightUnits.sort();
-	//listOfIdleBuildings.sort();
-
 	std::map<std::string, int> UnitsMap;
 	for (std::string item : listOfUnits)
 		UnitsMap[item]++;
@@ -834,32 +753,66 @@ void AnyRace_CoachAI::onFrame()	// Called every game frame.
 	} // closure: unit iterator
 }
 
-string AnyRace_CoachAI::convertAsciiToString(BWAPI::Key & k)
+void AnyRace_CoachAI::hotKeyHandler()
 {
-	string kStr;
-	int kk = k;
-	if (kk > 47 && kk < 58)
-	{
-		kk -= 48;
-		kStr = to_string(kk);
-	}
-	else if (k == 113)
-		kStr = "F2";
-	else if (k == 114)
-		kStr = "F3";
-	else if (k == 115)
-		kStr = "F4";
-	return kStr;
-}
+	bool shift = Broodwar->getKeyState(Key::K_SHIFT);
 
-void AnyRace_CoachAI::populatePage()
-{
-	int posIndex = std::distance(iter, pos);
-	str1 = ""; str2 = "";
-	for (pos; std::distance(iter, pos) < posIndex + 22 && pos != multiMap.end(); pos++)
+	if ((Broodwar->getKeyState(Key::K_CONTROL) || shift) && Broodwar->getKeyState(Key::K_1))
+		hkAll["1"] = getHotKeyGroup(Broodwar->getSelectedUnits(), shift, "1");
+	if ((Broodwar->getKeyState(Key::K_CONTROL) || shift) && Broodwar->getKeyState(Key::K_2))
+		hkAll["2"] = getHotKeyGroup(Broodwar->getSelectedUnits(), shift, "2");
+	if ((Broodwar->getKeyState(Key::K_CONTROL) || shift) && Broodwar->getKeyState(Key::K_3))
+		hkAll["3"] = getHotKeyGroup(Broodwar->getSelectedUnits(), shift, "3");
+	if ((Broodwar->getKeyState(Key::K_CONTROL) || shift) && Broodwar->getKeyState(Key::K_4))
+		hkAll["4"] = getHotKeyGroup(Broodwar->getSelectedUnits(), shift, "4");
+	if ((Broodwar->getKeyState(Key::K_CONTROL) || shift) && Broodwar->getKeyState(Key::K_5))
+		hkAll["5"] = getHotKeyGroup(Broodwar->getSelectedUnits(), shift, "5");
+	if ((Broodwar->getKeyState(Key::K_CONTROL) || shift) && Broodwar->getKeyState(Key::K_6))
+		hkAll["6"] = getHotKeyGroup(Broodwar->getSelectedUnits(), shift, "6");
+	if ((Broodwar->getKeyState(Key::K_CONTROL) || shift) && Broodwar->getKeyState(Key::K_7))
+		hkAll["7"] = getHotKeyGroup(Broodwar->getSelectedUnits(), shift, "7");
+	if ((Broodwar->getKeyState(Key::K_CONTROL) || shift) && Broodwar->getKeyState(Key::K_8))
+		hkAll["8"] = getHotKeyGroup(Broodwar->getSelectedUnits(), shift, "8");
+	if ((Broodwar->getKeyState(Key::K_CONTROL) || shift) && Broodwar->getKeyState(Key::K_9))
+		hkAll["9"] = getHotKeyGroup(Broodwar->getSelectedUnits(), shift, "9");
+	if ((Broodwar->getKeyState(Key::K_CONTROL) || shift) && Broodwar->getKeyState(Key::K_0))
+		hkAll["0"] = getHotKeyGroup(Broodwar->getSelectedUnits(), shift, "0");
+	if (shift && Broodwar->getKeyState(Key::K_F3))
+		hkAll["F3"] = "Set";
+	if (shift && Broodwar->getKeyState(Key::K_F4))
+		hkAll["F4"] = "Set";
+
+	list<Key> keysList = { Key::K_1, Key::K_2, Key::K_3, Key::K_4, Key::K_5, Key::K_6, Key::K_7, Key::K_8, Key::K_9, Key::K_0,
+		Key::K_F2, Key::K_F3, Key::K_F4 };
+
+	for (Key &k : keysList)
 	{
-		str1 += (*pos).first + "\n\r";
-		str2 += (*pos).second + "\n\r";
+		if (Broodwar->getKeyState(k) && !Broodwar->getKeyState(Key::K_CONTROL) && !Broodwar->getKeyState(Key::K_SHIFT)
+			&& hkAll[convertAsciiToString(k)].size() > 0)
+			keysPressed.push_back(k);
+	}
+	std::map<string, int> keysPressedMap;
+	keysPressedMap["1"];
+	keysPressedMap["2"];
+	keysPressedMap["3"];
+	keysPressedMap["4"];
+	keysPressedMap["5"];
+	keysPressedMap["6"];
+	keysPressedMap["7"];
+	keysPressedMap["8"];
+	keysPressedMap["9"];
+	keysPressedMap["0"];
+	keysPressedMap["F2"];
+	keysPressedMap["F3"];
+	keysPressedMap["F4"];
+	for (auto k : keysPressed)
+		keysPressedMap[convertAsciiToString(k)]++;
+
+	int y = 35;
+	for (auto entry : keysPressedMap)
+	{
+		Broodwar->drawTextScreen(140, y, "%c%d %s", 27, entry.second, entry.first.c_str());
+		y += 10;
 	}
 }
 
@@ -905,6 +858,35 @@ std::string AnyRace_CoachAI::getHotKeyGroup(Unitset us, bool shift, string hkey)
 	usTemp = us;
 	hkeyTemp = hkey;
 	return hkSelfString;
+}
+
+string AnyRace_CoachAI::convertAsciiToString(BWAPI::Key & k)
+{
+	string kStr;
+	int kk = k;
+	if (kk > 47 && kk < 58)
+	{
+		kk -= 48;
+		kStr = to_string(kk);
+	}
+	else if (k == 113)
+		kStr = "F2";
+	else if (k == 114)
+		kStr = "F3";
+	else if (k == 115)
+		kStr = "F4";
+	return kStr;
+}
+
+void AnyRace_CoachAI::populatePage()
+{
+	int posIndex = std::distance(iter, pos);
+	str1 = ""; str2 = "";
+	for (pos; std::distance(iter, pos) < posIndex + 22 && pos != multiMap.end(); pos++)
+	{
+		str1 += (*pos).first + "\n\r";
+		str2 += (*pos).second + "\n\r";
+	}
 }
 
 void AnyRace_CoachAI::Replay()
@@ -1061,10 +1043,6 @@ void AnyRace_CoachAI::Replay()
 				else listOfInCompleteBuildings.push_back(formated(up->getType()));
 			}
 		}
-		//listOfUnits.sort();
-		//listOfBuildings.sort();
-		//listOfInCompleteUnits.sort();
-		//listOfInCompleteBuildings.sort();
 		std::map<std::string, int> UnitsMap;
 		for (std::string item : listOfUnits)
 			UnitsMap[item]++;
