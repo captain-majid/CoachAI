@@ -11,8 +11,13 @@ using namespace BWAPI;
 using namespace Filter;
 using namespace std;
 
+static int lastChecked;
 std::map<std::string, string> hkAll;
 std::map<std::string, list<string>> hkAllRaw;
+list<Key> keysPressed;
+Unit Probe_SCV_Larva;
+bool OvIsMorphing;
+bool droneIsMorphing;
 
 map<string, string> macroLogMap;
 multimap<string, string> multiMap;
@@ -212,6 +217,19 @@ void AnyRace_CoachAI::onStart()
 	if (strstr(mapName.c_str(), "| iCCup | "))
 		mapName.replace(mapName.find("| iCCup | "), 10, "");
 
+	hkAll["1"];
+	hkAll["2"];
+	hkAll["3"];
+	hkAll["4"];
+	hkAll["5"];
+	hkAll["6"];
+	hkAll["7"];
+	hkAll["8"];
+	hkAll["9"];
+	hkAll["0"];
+	hkAll["F2"] = "Set";
+	hkAll["F3"];
+	hkAll["F4"];
 
 	// Print the map name. BWAPI returns std::string when retrieving a string, don't forget to add .c_str() when printing!
 	//Broodwar << "The map is " << Broodwar->mapName() << "!" << std::endl;
@@ -280,19 +298,6 @@ void AnyRace_CoachAI::onFrame()	// Called every game frame.
 
 	bool shift = Broodwar->getKeyState(Key::K_SHIFT);
 
-	hkAll["1"];
-	hkAll["2"];
-	hkAll["3"];
-	hkAll["4"];
-	hkAll["5"];
-	hkAll["6"];
-	hkAll["7"];
-	hkAll["8"];
-	hkAll["9"];
-	hkAll["0"];
-	hkAll["F3"];
-	hkAll["F4"];
-
 	if ((Broodwar->getKeyState(Key::K_CONTROL) || shift) && Broodwar->getKeyState(Key::K_1))
 		hkAll["1"] = getHotKeyGroup(Broodwar->getSelectedUnits(), shift, "1");
 	if ((Broodwar->getKeyState(Key::K_CONTROL) || shift) && Broodwar->getKeyState(Key::K_2))
@@ -317,6 +322,39 @@ void AnyRace_CoachAI::onFrame()	// Called every game frame.
 		hkAll["F3"] = "Set";
 	if (shift && Broodwar->getKeyState(Key::K_F4))
 		hkAll["F4"] = "Set";
+
+	list<Key> keysList = { Key::K_1, Key::K_2, Key::K_3, Key::K_4, Key::K_5, Key::K_6, Key::K_7, Key::K_8, Key::K_9, Key::K_0,
+		Key::K_F2, Key::K_F3, Key::K_F4 };
+
+	for (Key &k : keysList)
+	{
+		if (Broodwar->getKeyState(k) && !Broodwar->getKeyState(Key::K_CONTROL) && !Broodwar->getKeyState(Key::K_SHIFT)
+			&& hkAll[convertAsciiToString(k)].size() > 0)
+			keysPressed.push_back(k);
+	}
+	std::map<string, int> keysPressedMap;
+	keysPressedMap["1"];
+	keysPressedMap["2"];
+	keysPressedMap["3"];
+	keysPressedMap["4"];
+	keysPressedMap["5"];
+	keysPressedMap["6"];
+	keysPressedMap["7"];
+	keysPressedMap["8"];
+	keysPressedMap["9"];
+	keysPressedMap["0"];
+	keysPressedMap["F2"];
+	keysPressedMap["F3"];
+	keysPressedMap["F4"];
+	for (auto k : keysPressed)
+		keysPressedMap[convertAsciiToString(k)]++;
+
+	int y = 35;
+	for (auto entry : keysPressedMap)
+	{
+		Broodwar->drawTextScreen(140, y, "%c%d %s", 27, entry.second, entry.first.c_str());
+		y += 10;
+	}
 
 	DOWN = Broodwar->getKeyState(Key::K_DOWN);
 	UP = Broodwar->getKeyState(Key::K_UP);
@@ -448,7 +486,15 @@ void AnyRace_CoachAI::onFrame()	// Called every game frame.
 		{
 			if (u->isCompleted())
 				listOfUnits.push_back(formated(u->getType()));
-			else listOfInCompleteUnits.push_back(formated(u->getType()));
+			else
+			{
+				UnitType ut;
+				if (u->getType().getName() == "Zerg_Egg")
+					ut = u->getBuildType();
+				else ut = u->getType();
+
+				listOfInCompleteUnits.push_back(formated(ut));
+			}
 		}
 
 		if (u->getType().isBuilding())
@@ -509,12 +555,12 @@ void AnyRace_CoachAI::onFrame()	// Called every game frame.
 			}
 		}
 	}
-	listOfUnits.sort();
-	listOfBuildings.sort();
-	listOfInCompleteUnits.sort();
-	listOfInCompleteBuildings.sort();
-	listOfIdleFightUnits.sort();
-	listOfIdleBuildings.sort();
+	//listOfUnits.sort();
+	//listOfBuildings.sort();
+	//listOfInCompleteUnits.sort();
+	//listOfInCompleteBuildings.sort();
+	//listOfIdleFightUnits.sort();
+	//listOfIdleBuildings.sort();
 
 	std::map<std::string, int> UnitsMap;
 	for (std::string item : listOfUnits)
@@ -747,17 +793,23 @@ void AnyRace_CoachAI::onFrame()	// Called every game frame.
 		}
 		else if (u->getType().isResourceDepot()) // A resource depot is a Command Center, Nexus, or Hatchery
 		{
-			static int lastChecked = 0;
-			static int lastChecked2 = 0;
-			//supplyProviderType
-			UnitType supplyUnit = u->getType().getRace().getSupplyProvider();
 			//============
 			//Build Worker: Order the depot to construct more workers, But only when it is idle.
 			//============
-			if (Broodwar->self()->minerals() >= 50 && lastChecked2 < FrameCount && !u->isTraining() && workers < maxWorkers && autoTrainWorkers)
+			if (autoTrainWorkers && Broodwar->self()->minerals() >= 50 && !u->isTraining()
+				&& workers < maxWorkers && !droneIsMorphing)
 			{
-				lastChecked2 = FrameCount + FPS * 0;
-				u->train(u->getType().getRace().getWorker());
+				UnitType worker = u->getType().getRace().getWorker();
+				if (u->getType().getRace().getName() == "Zerg")
+				{
+					Unit larva = u->getClosestUnit(GetType == worker.whatBuilds().first);
+					if (larva != nullptr) //If a unit was found (Probe_SCV_Larva)
+					{
+						larva->morph(worker);
+						droneIsMorphing = larva->getBuildType().getName() == "Zerg_Drone";
+					}
+				}
+				else u->train(worker);
 
 				// If that fails, draw the error at the location so that you can visibly see what went wrong!
 				// However, drawing the error once will only appear for a single frame, so create an event that keeps it on the screen for some frames
@@ -768,14 +820,36 @@ void AnyRace_CoachAI::onFrame()	// Called every game frame.
 						nullptr,    // condition
 						Broodwar->getLatencyFrames());  // frames to run
 			} // closure: failed to train idle unit
-
+		}
+		else
+		{
+			//supplyProviderType
+			UnitType supplyUnit = u->getType().getRace().getSupplyProvider();
 			std::string supplyName = supplyUnit.getName().c_str();
 			//============
 			//Build supply:
 			//============
-			buildSupply(u, supplyUnit, lastChecked);
+			buildSupply(u, supplyUnit);
 		}
 	} // closure: unit iterator
+}
+
+string AnyRace_CoachAI::convertAsciiToString(BWAPI::Key & k)
+{
+	string kStr;
+	int kk = k;
+	if (kk > 47 && kk < 58)
+	{
+		kk -= 48;
+		kStr = to_string(kk);
+	}
+	else if (k == 113)
+		kStr = "F2";
+	else if (k == 114)
+		kStr = "F3";
+	else if (k == 115)
+		kStr = "F4";
+	return kStr;
 }
 
 void AnyRace_CoachAI::populatePage()
@@ -970,7 +1044,15 @@ void AnyRace_CoachAI::Replay()
 			{
 				if (up->isCompleted())
 					listOfUnits.push_back(formated(up->getType()));
-				else listOfInCompleteUnits.push_back(formated(up->getType()));
+				else
+				{
+					UnitType ut;
+					if (up->getType().getName() == "Zerg_Egg")
+						ut = up->getBuildType();
+					else ut = up->getType();
+
+					listOfInCompleteUnits.push_back(formated(ut));
+				}
 			}
 			if (up->getType().isBuilding())
 			{
@@ -979,10 +1061,10 @@ void AnyRace_CoachAI::Replay()
 				else listOfInCompleteBuildings.push_back(formated(up->getType()));
 			}
 		}
-		listOfUnits.sort();
-		listOfBuildings.sort();
-		listOfInCompleteUnits.sort();
-		listOfInCompleteBuildings.sort();
+		//listOfUnits.sort();
+		//listOfBuildings.sort();
+		//listOfInCompleteUnits.sort();
+		//listOfInCompleteBuildings.sort();
 		std::map<std::string, int> UnitsMap;
 		for (std::string item : listOfUnits)
 			UnitsMap[item]++;
@@ -1045,24 +1127,24 @@ void AnyRace_CoachAI::Replay()
 	return;
 }
 
-void AnyRace_CoachAI::buildSupply(const BWAPI::Unit & u, BWAPI::UnitType &supplyUnit, int &lastChecked)
+void AnyRace_CoachAI::buildSupply(const BWAPI::Unit & u, BWAPI::UnitType &supplyUnit)
 {
-	//supplyBuilder
-	Unit Probe_SCV_Hatchery = u->getClosestUnit(GetType == supplyUnit.whatBuilds().first && (IsIdle || IsGatheringMinerals) && IsOwned);//
-
-	if (Probe_SCV_Hatchery != nullptr) //If a unit was found (Probe_SCV_Hatchery)
+	// previously:lastErr == Errors::Insufficient_Supply ---> was below
+	if (supplyAvailable / 2 <= autoBuildSuppliesBeforeBlocked && lastChecked < FrameCount && Broodwar->self()->minerals() >= 100
+		&& Broodwar->self()->incompleteUnitCount(supplyUnit) == 0 && !OvIsMorphing)
 	{
-		int i = Probe_SCV_Hatchery->getID();
+		lastChecked = FrameCount + FPS * 10;// 600 = #frames for Overload to finish (600 * 0.042 = 25s) or FPS * 25
 
-		int inProgressSupplies = Broodwar->self()->incompleteUnitCount(supplyUnit);
+		Probe_SCV_Larva = u->getClosestUnit(GetType == supplyUnit.whatBuilds().first && (IsIdle || IsGatheringMinerals) && IsOwned);
 
-		// previously:lastErr == Errors::Insufficient_Supply ---> was below
-		if (Broodwar->self()->minerals() >= 100 && lastChecked < FrameCount && supplyAvailable / 2 <= autoBuildSuppliesBeforeBlocked && Broodwar->self()->incompleteUnitCount(supplyUnit) == 0)
+		if (Probe_SCV_Larva != nullptr) //If a unit was found (Probe_SCV_Larva)
 		{
-			lastChecked = FrameCount + FPS * 10;
+			int i = Probe_SCV_Larva->getID();
+			int inProgressSupplies = Broodwar->self()->incompleteUnitCount(supplyUnit);
+
 			if (supplyUnit.isBuilding())
 			{
-				TilePosition targetBuildLocation = Broodwar->getBuildLocation(supplyUnit, Probe_SCV_Hatchery->getTilePosition());
+				TilePosition targetBuildLocation = Broodwar->getBuildLocation(supplyUnit, Probe_SCV_Larva->getTilePosition());
 				if (targetBuildLocation)
 				{
 					// Register an event that draws the target build location
@@ -1072,15 +1154,19 @@ void AnyRace_CoachAI::buildSupply(const BWAPI::Unit & u, BWAPI::UnitType &supply
 					//========================
 					//Build Pylon/Supply Depot:
 					//========================
-					Probe_SCV_Hatchery->build(supplyUnit, targetBuildLocation);
+					Probe_SCV_Larva->build(supplyUnit, targetBuildLocation);
 				}
 			}
 			//==============
 			//Build Overload:
 			//==============
-			else Probe_SCV_Hatchery->train(supplyUnit);// Train the supply provider (Overlord) if the provider is not a structure
-		} // closure: supplyBuilder is valid
-	} // closure: insufficient supply
+			else
+			{
+				Probe_SCV_Larva->morph(supplyUnit);// Train the supply provider (Overlord) if the provider is not a structure
+				OvIsMorphing = Probe_SCV_Larva->getBuildType().getName() == "Zerg_Overlord";
+			}
+		}
+	}
 }
 
 void AnyRace_CoachAI::onSendText(std::string text)
@@ -1178,10 +1264,18 @@ void AnyRace_CoachAI::onSaveGame(std::string gameName)
 
 void AnyRace_CoachAI::onUnitMorph(BWAPI::Unit unit)
 {
-	UnitType ut = unit->getType();
-	string un = formated(ut);
+	if (unit->getType().getName() == "Zerg_Overlord")
+		OvIsMorphing = false;
+	if (unit->getType().getName() == "Zerg_Drone")
+		droneIsMorphing = false;
 
-	if (unit->getPlayer() == Broodwar->self() && un != "Egg")
+	UnitType ut;
+	if (unit->getType().getName() == "Zerg_Egg")
+		ut = unit->getBuildType();
+	else ut = unit->getType();
+
+	string un = formated(ut);
+	if (unit->getPlayer() == Broodwar->self() && un != "None")
 	{
 		if (!logWorkersAndSupplyProduction && (ut.isWorker() || ut == Broodwar->self()->getRace().getSupplyProvider()))
 			return;

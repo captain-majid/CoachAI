@@ -11,11 +11,12 @@ public:
   virtual void onStart() override;
   virtual void onEnd(bool isWinner) override;
   virtual void onFrame() override;
+  std::string convertAsciiToString(BWAPI::Key & k);
   void populatePage();
   void Replay();
   std::string getHotKeyGroup(BWAPI::Unitset us, bool shift, std::string hkey);
 
-  void buildSupply(const BWAPI::Unit & u, BWAPI::UnitType &supplyUnit, int &lastChecked);
+  void buildSupply(const BWAPI::Unit & u, BWAPI::UnitType &supplyUnit);
   virtual void onSendText(std::string text) override;
   virtual void onReceiveText(BWAPI::Player player, std::string text)override ;
   virtual void onPlayerLeft(BWAPI::Player player) override;
