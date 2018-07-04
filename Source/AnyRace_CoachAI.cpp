@@ -15,6 +15,7 @@ static int lastChecked;
 std::map<std::string, string> hkAll;
 std::map<std::string, list<string>> hkAllRaw;
 list<Key> keysPressed;
+
 Unit Probe_SCV_Larva;
 bool OvIsMorphing;
 bool droneIsMorphing;
@@ -280,9 +281,9 @@ void AnyRace_CoachAI::onFrame()	// Called every game frame.
 	gameTime = getTime(Broodwar->elapsedTime() * 0.6718); //FrameCount / 23.81
 
 	static int lastCheckedFrame11 = 0;
-	if (lastCheckedFrame11 + FPS < FrameCount)
+	if (lastCheckedFrame11 < FrameCount)
 	{
-		lastCheckedFrame11 = FrameCount;
+		lastCheckedFrame11 = FrameCount + FPS;
 		std::ifstream i("bwapi-data\\AnyRace_CoachAI.json");
 		j = json::parse(i);
 		autoTrainWorkers = j["Control Panel"]["autoTrainWorkers"].get<bool>();
@@ -549,7 +550,7 @@ void AnyRace_CoachAI::onFrame()	// Called every game frame.
 
 	Broodwar->drawTextScreen(5, 25, "%cMinerals workers: %c%d", Text::Turquoise, Text::BrightRed, mineralsWorker);
 	Broodwar->drawTextScreen(5, 35, "%cGas workers: %c%d", Text::Green, Text::BrightRed, gasWorker);
-	Broodwar->drawTextScreen(5, 45, "%cIdle workers: %c%d, %cTime: %c%s", Text::Grey, Text::BrightRed, idleWorkers, Text::Grey, Text::BrightRed, getTime(idleWorkersFor / FPS).c_str());
+	Broodwar->drawTextScreen(5, 45, "%cIdle workers: %c%d, %s", Text::Grey, Text::BrightRed, idleWorkers, getTime(idleWorkersFor / FPS).c_str());
 
 	string m = Broodwar->self()->getRace().getName().substr(0, 1) + "v" + Broodwar->enemy()->getRace().getName().substr(0, 1);
 	const char * match = m.c_str();
@@ -561,7 +562,7 @@ void AnyRace_CoachAI::onFrame()	// Called every game frame.
 	Broodwar->drawTextScreen(520, 15, "%cFPS: %c%d, %cTime: %c%s", 14, 4, FPS, 14, 4, gameTime.c_str());
 
 	if (Broodwar->self()->getRace() == Races::Zerg)
-		Broodwar->drawTextScreen(5, 65, "%cIdle production: %c%d Larvae\n\r\n\r%cIdle fighting units: \n\r%c%s", 5, 25, idleProdBuildOrLarva, 5, 25, idleFightUnitsFinal.c_str());
+		Broodwar->drawTextScreen(5, 65, "%cIdle production: \n\r%c%d Larvae\n\r%cIdle fighting units: \n\r%c%s", 5, 25, idleProdBuildOrLarva, 5, 25, idleFightUnitsFinal.c_str());
 	else Broodwar->drawTextScreen(5, 65, "%cIdle production: \n\r%c%s\n\r%cIdle fighting units: \n\r%c%s", 5, 25, idleBuildingsFinal.c_str(), 5, 25, idleFightUnitsFinal.c_str());
 
 	int Minerals = Broodwar->self()->spentMinerals() - Broodwar->self()->refundedMinerals();
@@ -627,11 +628,11 @@ void AnyRace_CoachAI::onFrame()	// Called every game frame.
 	}
 	else if (F5_Pressed == 1)
 	{
-		Broodwar->drawTextScreen(150, 25, "%cHotkeys:", 8);
+		Broodwar->drawTextScreen(138, 25, "%cHotkeys:", 8);
 		int y = 35;
 		for (auto entry : hkAll)
 		{
-			Broodwar->drawTextScreen(150, y, "%c%s: %c%s", 8, entry.first.c_str(), 27, entry.second.c_str());
+			Broodwar->drawTextScreen(138, y, "%c%s: %c%s", 8, entry.first.c_str(), 27, entry.second.c_str());
 			y += 10;
 		}
 	}
@@ -740,16 +741,13 @@ void AnyRace_CoachAI::onFrame()	// Called every game frame.
 						Broodwar->getLatencyFrames());  // frames to run
 			} // closure: failed to train idle unit
 		}
-		else
-		{
-			//supplyProviderType
-			UnitType supplyUnit = u->getType().getRace().getSupplyProvider();
-			std::string supplyName = supplyUnit.getName().c_str();
-			//============
-			//Build supply:
-			//============
-			buildSupply(u, supplyUnit);
-		}
+		//supplyProviderType
+		UnitType supplyUnit = u->getType().getRace().getSupplyProvider();
+		std::string supplyName = supplyUnit.getName().c_str();
+		//============
+		//Build supply:
+		//============
+		buildSupply(u, supplyUnit);
 	} // closure: unit iterator
 }
 
@@ -785,11 +783,17 @@ void AnyRace_CoachAI::hotKeyHandler()
 	list<Key> keysList = { Key::K_1, Key::K_2, Key::K_3, Key::K_4, Key::K_5, Key::K_6, Key::K_7, Key::K_8, Key::K_9, Key::K_0,
 		Key::K_F2, Key::K_F3, Key::K_F4 };
 
-	for (Key &k : keysList)
+	static int lastCheckedFrame12 = 0;
+	if (lastCheckedFrame12 < FrameCount)
 	{
-		if (Broodwar->getKeyState(k) && !Broodwar->getKeyState(Key::K_CONTROL) && !Broodwar->getKeyState(Key::K_SHIFT)
-			&& hkAll[convertAsciiToString(k)].size() > 0)
-			keysPressed.push_back(k);
+		lastCheckedFrame12 = FrameCount + 2;
+
+		for (Key &k : keysList)
+		{
+			if (Broodwar->getKeyState(k) && !Broodwar->getKeyState(Key::K_CONTROL) && !Broodwar->getKeyState(Key::K_SHIFT)
+				&& hkAll[convertAsciiToString(k)].size() > 0)
+				keysPressed.push_back(k);
+		}
 	}
 	std::map<string, int> keysPressedMap;
 	keysPressedMap["1"];
@@ -808,11 +812,14 @@ void AnyRace_CoachAI::hotKeyHandler()
 	for (auto k : keysPressed)
 		keysPressedMap[convertAsciiToString(k)]++;
 
-	int y = 35;
-	for (auto entry : keysPressedMap)
+	if (F5_Pressed == 1)
 	{
-		Broodwar->drawTextScreen(140, y, "%c%d %s", 27, entry.second, entry.first.c_str());
-		y += 10;
+		int y = 35;
+		for (auto entry : keysPressedMap)
+		{
+			Broodwar->drawTextScreen(120, y, "%c%d", 6, entry.second);
+			y += 10;
+		}
 	}
 }
 
@@ -1109,7 +1116,7 @@ void AnyRace_CoachAI::buildSupply(const BWAPI::Unit & u, BWAPI::UnitType &supply
 {
 	// previously:lastErr == Errors::Insufficient_Supply ---> was below
 	if (supplyAvailable / 2 <= autoBuildSuppliesBeforeBlocked && lastChecked < FrameCount && Broodwar->self()->minerals() >= 100
-		&& Broodwar->self()->incompleteUnitCount(supplyUnit) == 0 && !OvIsMorphing)
+		&& Broodwar->self()->incompleteUnitCount(supplyUnit) == 0)
 	{
 		lastChecked = FrameCount + FPS * 10;// 600 = #frames for Overload to finish (600 * 0.042 = 25s) or FPS * 25
 
@@ -1140,8 +1147,11 @@ void AnyRace_CoachAI::buildSupply(const BWAPI::Unit & u, BWAPI::UnitType &supply
 			//==============
 			else
 			{
-				Probe_SCV_Larva->morph(supplyUnit);// Train the supply provider (Overlord) if the provider is not a structure
-				OvIsMorphing = Probe_SCV_Larva->getBuildType().getName() == "Zerg_Overlord";
+				if (u->getType().getRace().getName() == "Zerg" && !OvIsMorphing)
+				{
+					Probe_SCV_Larva->morph(supplyUnit);// Train the supply provider (Overlord) if the provider is not a structure
+					OvIsMorphing = Probe_SCV_Larva->getBuildType().getName() == "Zerg_Overlord";
+				}
 			}
 		}
 	}
