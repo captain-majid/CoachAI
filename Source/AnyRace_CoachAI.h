@@ -15,6 +15,7 @@ public:
   std::string convertAsciiToString(BWAPI::Key & k);
   void populatePage();
   void Replay();
+  void getUnitInfo(BWAPI::Unit u);
   std::string getHotKeyGroup(BWAPI::Unitset us, bool shift, std::string hkey);
 
   void buildSupply(const BWAPI::Unit & u, BWAPI::UnitType &supplyUnit);
