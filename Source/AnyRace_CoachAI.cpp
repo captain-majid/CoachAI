@@ -319,7 +319,6 @@ void AnyRace_CoachAI::onFrame()	// Called every game frame.
 		logWorkersAndSupplyProduction = j["Control Panel"]["logWorkersAndSupplyProduction"].get<bool>();
 		logUnitsProduction = j["Control Panel"]["logUnitsProduction"].get<bool>();
 	}
-
 	hotKeyHandler();
 
 	DOWN = Broodwar->getKeyState(Key::K_DOWN);
@@ -591,7 +590,7 @@ void AnyRace_CoachAI::onFrame()	// Called every game frame.
 	const char * match = m.c_str();
 
 	Broodwar->drawTextScreen(245, 25, "%c%s %c%s", Text::Purple, mapName.c_str(), Text::Brown, m.c_str());
-	Broodwar->drawTextScreen(180, 5, "%c:: CoachAI v2.9.3 ::", Text::Tan);
+	Broodwar->drawTextScreen(180, 5, "%c:: CoachAI v2.9.4 ::", Text::Tan);
 
 	Broodwar->drawTextScreen(310, 15, "%cWorkers production stopped for: %c%s", Text::Grey, Text::BrightRed, getTime(workersProductionStopped / FPS).c_str());
 	Broodwar->drawTextScreen(520, 15, "%cFPS: %c%d, %cTime: %c%s", 14, 4, FPS, 14, 4, gameTime.c_str());
@@ -663,7 +662,7 @@ void AnyRace_CoachAI::onFrame()	// Called every game frame.
 	}
 	else if (F5_Pressed == 1)
 	{
-		Broodwar->drawTextScreen(138, 25, "%cHotkeys:", 8);
+		Broodwar->drawTextScreen(138, 25, "%cHotkeys: (%c%d%c)", 8, 17, keysPressed.size(), 8);
 		int y = 35;
 		for (auto entry : hkAll)
 		{
@@ -676,9 +675,14 @@ void AnyRace_CoachAI::onFrame()	// Called every game frame.
 		minerals_250++;
 	if (Broodwar->self()->minerals() > 500)
 		minerals_500++;
+	if (Broodwar->self()->minerals() > 750)
+		minerals_750++;
+	if (Broodwar->self()->minerals() > 1000)
+		minerals_1000++;
 
-	Broodwar->drawTextScreen(100, 205, "%cMinerals:\n\r> 250: %c%s\n\r%c> 500: %c%s", 31, 8, getTime(minerals_250 / FPS).c_str(),
-		31, 8, getTime(minerals_500 / FPS).c_str());
+	Broodwar->drawTextScreen(100, 175, "%cMinerals:\n\r> 250: %c%s\n\r%c> 500: %c%s\n\r%c> 750: %c%s\n\r%c> 1000: %c%s",
+		31, 8, getTime(minerals_250 / FPS).c_str(),	31, 8, getTime(minerals_500 / FPS).c_str(),
+		31, 8, getTime(minerals_750 / FPS).c_str(), 31, 8, getTime(minerals_1000 / FPS).c_str());
 
 	if (F6_Pressed == 0)
 	{
@@ -686,9 +690,9 @@ void AnyRace_CoachAI::onFrame()	// Called every game frame.
 			inCompleteUnitsFinal += item + "\n\r";
 		for (string item : listOfInCompleteBuildings)
 			inCompleteBuildingsFinal += item + "\n\r";
-		
+
 		Broodwar->drawTextScreen(400, 25, "%cUnits:\n\r%c%s%cUnits in progress:\n\r%c%s", Text::DarkGreen, Text::GreyGreen, UnitsFinal.c_str(), Text::DarkGreen, Text::GreyGreen, inCompleteUnitsFinal.c_str());
-		Broodwar->drawTextScreen(505, 25, "%cBuildings:\n\r%c%s%cBuildings in progress:\n\r%c%s%cTech/Upgrade in progress:\n\r%c%s", Text::DarkGreen, Text::GreyGreen, BuildingsFinal.c_str(), Text::DarkGreen, Text::GreyGreen, inCompleteBuildingsFinal.c_str(), 24, 29, inProgressUpgradeTech.c_str());
+		Broodwar->drawTextScreen(500, 25, "%cBuildings:\n\r%c%s%cBuildings in progress:\n\r%c%s%cTech/Upgrade in progress:\n\r%c%s", Text::DarkGreen, Text::GreyGreen, BuildingsFinal.c_str(), Text::DarkGreen, Text::GreyGreen, inCompleteBuildingsFinal.c_str(), 24, 29, inProgressUpgradeTech.c_str());
 	}
 	else if (F6_Pressed == 1)
 	{
@@ -1224,7 +1228,7 @@ void AnyRace_CoachAI::Replay()
 			Broodwar->drawTextScreen(425, 25, "%cUnits:\n\r%c%s%cUnits in progress:\n\r%c%s", Text::DarkGreen, Text::GreyGreen, UnitsFinal.c_str(), Text::GreyBlue, Text::GreyGreen, inCompleteUnitsFinal.c_str());
 			Broodwar->drawTextScreen(530, 25, "%cBuildings:\n\r%c%s%cBuildings in progress:\n\r%c%s", Text::DarkGreen, Text::GreyGreen, BuildingsFinal.c_str(), Text::GreyBlue, Text::GreyGreen, inCompleteBuildingsFinal.c_str());
 		}
-		Broodwar->drawTextScreen(255, 15, "%c%s ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::", color, pl->getName().c_str());
+		Broodwar->drawTextScreen(255, 15, "%c%s ==================================================================", color, pl->getName().c_str());
 		Broodwar->drawTextScreen(255, 25, "%cTech: \n\r%c%s%cUpgrades: \n\r%c%s", Text::Blue, Text::Teal, technoFinal.c_str(), Text::Blue, Text::Teal, upgradesFinal.c_str());
 	}
 }
