@@ -616,6 +616,7 @@ void AnyRace_CoachAI::onFrame()	// Called every game frame.
 	string m = Broodwar->self()->getRace().getName().substr(0, 1) + "v" + Broodwar->enemy()->getRace().getName().substr(0, 1);
 	const char * match = m.c_str();
 
+
 	Broodwar->drawTextScreen(245, 25, "%c%s %c%s", Text::Purple, mapName.c_str(), Text::Brown, m.c_str());
 	Broodwar->drawTextScreen(180, 5, "%c:: CoachAI v2.9.4.1 ::", Text::Tan);
 
