@@ -316,7 +316,7 @@ void AnyRace_CoachAI::onFrame()	// Called every game frame.
 	{
 		lastCheckedFrame11 = FrameCount + FPS;
 		ifstream i("bwapi-data\\AnyRace_CoachAI.json");
-		j = json::parse(i);	
+		j = json::parse(i);
 		autoTrainWorkers = j["Control Panel"]["autoTrainWorkers"].get<bool>();
 		autoMine = j["Control Panel"]["autoMine"].get<bool>();
 		autoBuildSuppliesBeforeBlocked = j["Control Panel"]["autoBuildSuppliesBeforeBlocked"].get<int>();
@@ -331,22 +331,6 @@ void AnyRace_CoachAI::onFrame()	// Called every game frame.
 		logUnitsProduction = j["Control Panel"]["logUnitsProduction"].get<bool>();
 	}
 	hotKeyHandler();
-
-	Unitset baseMineralsWorkers;
-	int px;
-	for (auto u : Broodwar->self()->getUnits())
-	{
-		if (u->getType().isResourceDepot())
-		{
-			Position p = u->getPosition();
-			baseMineralsWorkers = Broodwar->getUnitsInRadius(p, 300, IsWorker && IsGatheringMinerals);
-			Broodwar->drawCircleMap(p, 10, Colors::Black, true);
-			if (baseMineralsWorkers.size() < 10)
-				px = p.x - 2;
-			else px = p.x - 5;
-			Broodwar->drawTextMap(px, p.y - 5, "%d", baseMineralsWorkers.size());
-		}
-	}
 
 	DOWN = Broodwar->getKeyState(Key::K_DOWN);
 	UP = Broodwar->getKeyState(Key::K_UP);
@@ -529,9 +513,11 @@ void AnyRace_CoachAI::onFrame()	// Called every game frame.
 			idleFightUnits++;
 			listOfIdleFightUnits.push_back(formated(ut));
 		}
+
 		if (u->canSetRallyPoint())
 		{
 			Position building = u->getPosition();
+
 			Position RP = u->getRallyPosition();
 			if (RP.y != 0)
 			{
@@ -547,6 +533,22 @@ void AnyRace_CoachAI::onFrame()	// Called every game frame.
 			}
 		}
 		//oldUID = newUID;
+
+		Unitset baseMineralsWorkers;
+		int px;
+		for (auto u : Broodwar->self()->getUnits())
+		{
+			if (u->getType().isResourceDepot())
+			{
+				Position p = u->getPosition();
+				baseMineralsWorkers = Broodwar->getUnitsInRadius(p, 300, IsWorker && IsGatheringMinerals && IsOwned);
+				Broodwar->drawCircleMap(p, 10, Colors::Black, true);
+				if (baseMineralsWorkers.size() < 10)
+					px = p.x - 2;
+				else px = p.x - 5;
+				Broodwar->drawTextMap(px, p.y - 5, "%d", baseMineralsWorkers.size());
+			}
+		}
 
 		if (Broodwar->self()->getRace() != Races::Zerg && ut.isResourceDepot() && u->isIdle() && FrameCount < workersProductionStoppedDuring)
 			workersProductionStopped++;
@@ -618,7 +620,7 @@ void AnyRace_CoachAI::onFrame()	// Called every game frame.
 
 
 	Broodwar->drawTextScreen(245, 25, "%c%s %c%s", Text::Purple, mapName.c_str(), Text::Brown, m.c_str());
-	Broodwar->drawTextScreen(180, 5, "%c:: CoachAI v2.9.4.1 ::", Text::Tan);
+	Broodwar->drawTextScreen(180, 5, "%c:: CoachAI v2.9.4.2 ::", Text::Tan);
 
 	Broodwar->drawTextScreen(310, 15, "%cWorkers production stopped for: %c%s", Text::Grey, Text::BrightRed, getTime(workersProductionStopped / FPS).c_str());
 	Broodwar->drawTextScreen(520, 15, "%cFPS: %c%d, %cTime: %c%s", 14, 4, FPS, 14, 4, gameTime.c_str());
@@ -1189,6 +1191,27 @@ void AnyRace_CoachAI::Replay()
 
 		for (auto u : pl->getUnits())
 		{
+			Unitset baseMineralsWorkers;
+			int px;
+			if (u->getType().isResourceDepot())
+			{
+				Position p = u->getPosition();
+
+				baseMineralsWorkers = Broodwar->getUnitsInRadius(p, 300, IsWorker && IsGatheringMinerals); // && isOwned ?
+				//baseMineralsWorkers.erase_if(e);
+				for (auto worker : baseMineralsWorkers)
+				{
+					if (worker->getPlayer()->getID() != pl->getID())
+						baseMineralsWorkers.erase(worker);
+				}
+
+				Broodwar->drawCircleMap(p, 10, Colors::Black, true);
+				if (baseMineralsWorkers.size() < 10)
+					px = p.x - 2;
+				else px = p.x - 5;
+				Broodwar->drawTextMap(px, p.y - 5, "%d", baseMineralsWorkers.size());
+			}
+
 			UnitType ut = u->getType();
 			if (!ut.isBuilding())
 			{
