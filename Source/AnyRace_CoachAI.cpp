@@ -316,7 +316,7 @@ void AnyRace_CoachAI::onFrame()	// Called every game frame.
 	FPS = Broodwar->getFPS();
 	if (FPS < 1)
 		return;
-
+	Broodwar->drawTextScreen(180, 5, "%c:: CoachAI v2.9.4.3 ::", Text::Tan);
 	gameTime = getTime(Broodwar->elapsedTime() * 0.6718); //FrameCount / 23.81
 
 
@@ -631,8 +631,6 @@ void AnyRace_CoachAI::onFrame()	// Called every game frame.
 	const char * match = m.c_str();
 
 	Broodwar->drawTextScreen(245, 25, "%c%s %c%s", Text::Purple, mapName.c_str(), Text::Brown, m.c_str());
-	Broodwar->drawTextScreen(180, 5, "%c:: CoachAI v2.9.4.3 ::", Text::Tan);
-
 	Broodwar->drawTextScreen(310, 15, "%cWorkers production stopped for: %c%s", Text::Grey, Text::BrightRed, getTime(workersProductionStopped / FPS).c_str());
 	Broodwar->drawTextScreen(520, 15, "%cFPS: %c%d, %cTime: %c%s", 14, 4, FPS, 14, 4, gameTime.c_str());
 
@@ -1091,11 +1089,11 @@ void AnyRace_CoachAI::Replay()
 
 		if (F5_Pressed == 0)
 		{
-			Broodwar->drawTextScreen(5, 195, "==> Idle workers, Max idle, Workers cut");
-			Broodwar->drawTextScreen(5, y, "%c(%s) %s:  %s (%s),  %d (%s),  %s", color, race.c_str(), name.c_str(),
-				to_string(idleWorkersAll[p->getID()] = idleWorkers).c_str(), getTime((idleWorkersForAll[p->getID()] += idleWorkersFor) / FPS).c_str(),
-				idleWorkersMaxAll[p->getID()], idleWorkersMaxTimeAll[p->getID()].c_str(),
-				getTime((workersProductionStoppedAll[p->getID()] += workersProductionStopped) / FPS).c_str());
+			//Broodwar->drawTextScreen(5, 195, "==> Idle workers, Max idle, Workers cut");
+			//Broodwar->drawTextScreen(5, y, "%c(%s) %s:  %s (%s),  %d (%s),  %s", color, race.c_str(), name.c_str(),
+			//	to_string(idleWorkersAll[p->getID()] = idleWorkers).c_str(), getTime((idleWorkersForAll[p->getID()] += idleWorkersFor) / FPS).c_str(),
+			//	idleWorkersMaxAll[p->getID()], idleWorkersMaxTimeAll[p->getID()].c_str(),
+			//	getTime((workersProductionStoppedAll[p->getID()] += workersProductionStopped) / FPS).c_str());
 			y += 10;
 		}
 
