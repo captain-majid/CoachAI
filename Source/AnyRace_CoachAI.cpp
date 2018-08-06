@@ -93,10 +93,15 @@ int idleFightingUnitWarningEvery;
 int idleFightUnits;
 int idleFightFrameCounter;
 int workersProductionStoppedDuring;
+int workersProductionStoppedSeconds;
 
 int mineralsWorker;
 int gasWorker;
 int workers;
+
+string idleTime;
+string workerCut;
+
 int	idleWorkers = 0;
 int	idleWorkersFor = 0;
 int inProgressWorkers = 0;
@@ -319,7 +324,7 @@ void AnyRace_CoachAI::onFrame()	// Called every game frame.
 	FPS = Broodwar->getFPS();
 	if (FPS < 1)
 		return;
-	Broodwar->drawTextScreen(180, 5, "%c:: CoachAI v2.9.4.3 ::", Text::Tan);
+	Broodwar->drawTextScreen(180, 5, "%c:: CoachAI v2.9.4.5 ::", Text::Tan);
 	// FrameCount / (1000/42), the in-game (but not with replay) time is accurate with the previous even if speed has changed,
 	// this why sscait doesn't bother themselves finding solution for when a saved game loaded and FrameCount starts from 0. 
 	gameTime = getTime(Broodwar->elapsedTime() * 0.6718);
@@ -339,6 +344,7 @@ void AnyRace_CoachAI::onFrame()	// Called every game frame.
 		idleProductionBuildingWarningEvery = j["Control Panel"]["idleProductionBuildingWarningEvery"].get<int>() * FPS;
 		idleFightingUnitWarningEvery = j["Control Panel"]["idleFightingUnitWarningEvery"].get<int>() * FPS;
 		workersProductionStoppedDuring = j["Control Panel"]["workersProductionStoppedDuring"].get<int>() * FPS;
+		workersProductionStoppedSeconds = j["Control Panel"]["workersProductionStoppedDuring"].get<int>();
 
 		logWorkersAndSupplyProduction = j["Control Panel"]["logWorkersAndSupplyProduction"].get<bool>();
 		logUnitsProduction = j["Control Panel"]["logUnitsProduction"].get<bool>();
@@ -511,7 +517,7 @@ void AnyRace_CoachAI::onFrame()	// Called every game frame.
 			{
 				if (ut.getName() == "Zerg_Egg")
 					ut = u->getBuildType();
-				if (F6_Pressed == 0)
+				if (F6_Pressed == 1)
 					listOfInCompleteUnits.push_back(formated(ut) + " " + to_string(u->getRemainingBuildTime() / FPS));
 				else listOfInCompleteUnits.push_back(formated(ut));
 			}
@@ -527,13 +533,13 @@ void AnyRace_CoachAI::onFrame()	// Called every game frame.
 					right = ut.tileWidth() * 16 - ut.dimensionRight() - 1;
 					up = ut.tileHeight() * 16 - ut.dimensionUp();
 					down = ut.tileHeight() * 16 - ut.dimensionDown() - 1;
-					
+
 					//if (left/right/up/down) > 9 then circle.x + 2
 					Broodwar->drawCircleMap(u->getPosition().x - 1, u->getPosition().y + 20, 7, 20, true);
 					Broodwar->drawCircleMap(u->getPosition().x - 1, u->getPosition().y - 20, 7, 20, true);
 					Broodwar->drawCircleMap(u->getPosition().x + 19, u->getPosition().y, 7, 20, true);
 					Broodwar->drawCircleMap(u->getPosition().x - 21, u->getPosition().y, 7, 20, true);
-					
+
 					Broodwar->drawTextMap(u->getPosition().x - 5, u->getPosition().y + 15, "%d", down);
 					Broodwar->drawTextMap(u->getPosition().x - 5, u->getPosition().y - 25, "%d", up);
 					Broodwar->drawTextMap(u->getPosition().x + 15, u->getPosition().y - 5, "%d", right);
@@ -550,7 +556,7 @@ void AnyRace_CoachAI::onFrame()	// Called every game frame.
 			}
 			else
 			{
-				if (F6_Pressed == 0)
+				if (F6_Pressed == 1)
 					listOfInCompleteBuildings.push_back(formated(ut) + " " + to_string(u->getRemainingBuildTime() / FPS));
 				else listOfInCompleteBuildings.push_back(formated(ut));
 			}
@@ -701,7 +707,7 @@ void AnyRace_CoachAI::onFrame()	// Called every game frame.
 	UnitType supplyName = Broodwar->self()->getRace().getSupplyProvider();
 	Broodwar->drawTextScreen(250, 330, "%cSupply maxed with: %c%d %s", 3, Text::BrightRed, (200 - Broodwar->self()->supplyTotal() / 2) / 8, formated(supplyName).c_str());
 
-	if (F5_Pressed == 0)
+	if (F5_Pressed == 1)
 	{
 		if (macroLogMap.size() != multiMap.size())
 		{
@@ -754,7 +760,7 @@ void AnyRace_CoachAI::onFrame()	// Called every game frame.
 		Broodwar->drawTextScreen(190, 25, "%cMacroLog: \n\r%s", Text::Blue, str1.c_str());
 		Broodwar->drawTextScreen(225, 25, "\n\r%c%s", Text::Default, str2.c_str());
 	}
-	else if (F5_Pressed == 1)
+	else if (F5_Pressed == 0)
 	{
 		Broodwar->drawTextScreen(143, 25, "%cHotkeys: (%c%d%c)", 8, 17, keysPressed.size(), 8);
 		int y = 35;
@@ -764,17 +770,17 @@ void AnyRace_CoachAI::onFrame()	// Called every game frame.
 			y += 10;
 		}
 	}
-	if (F6_Pressed == 0)
+	if (F6_Pressed == 1)
 	{
 		for (string item : listOfInCompleteUnits)
 			inCompleteUnitsFinal += item + "\n\r";
 		for (string item : listOfInCompleteBuildings)
 			inCompleteBuildingsFinal += item + "\n\r";
 
-		Broodwar->drawTextScreen(400, 25, "%cUnits:\n\r%c%s%cUnits in progress:\n\r%c%s", Text::DarkGreen, Text::GreyGreen, UnitsFinal.c_str(), Text::DarkGreen, Text::GreyGreen, inCompleteUnitsFinal.c_str());
-		Broodwar->drawTextScreen(500, 25, "%cBuildings:\n\r%c%s%cBuildings in progress:\n\r%c%s%cTech/Upgrade in progress:\n\r%c%s", Text::DarkGreen, Text::GreyGreen, BuildingsFinal.c_str(), Text::DarkGreen, Text::GreyGreen, inCompleteBuildingsFinal.c_str(), 24, 29, inProgressUpgradeTech.c_str());
+		Broodwar->drawTextScreen(400, 25, "%cUnits:\n\r%c%s%cUnits in progress:\n\r%c%s", Text::DarkGreen, Text::GreyGreen, UnitsFinal.c_str(), 28, Text::GreyGreen, inCompleteUnitsFinal.c_str());
+		Broodwar->drawTextScreen(500, 25, "%cBuildings:\n\r%c%s%cBuildings in progress:\n\r%c%s%cTech/Upgrade in progress:\n\r%c%s", Text::DarkGreen, Text::GreyGreen, BuildingsFinal.c_str(), 28, Text::GreyGreen, inCompleteBuildingsFinal.c_str(), 24, 29, inProgressUpgradeTech.c_str());
 	}
-	else if (F6_Pressed == 1)
+	else if (F6_Pressed == 0)
 	{
 		for (string item : listOfInCompleteUnits)
 			inCompleteUnitsMap[item]++;
@@ -784,8 +790,8 @@ void AnyRace_CoachAI::onFrame()	// Called every game frame.
 			inCompleteBuildingsFinal += to_string(entry.second) + " " + entry.first + "\n\r";
 		for (auto entry : inCompleteUnitsMap)
 			inCompleteUnitsFinal += to_string(entry.second) + " " + entry.first + "\n\r";
-		Broodwar->drawTextScreen(400, 25, "%cUnits:\n\r%c%s%cUnits in progress:\n\r%c%s", Text::DarkGreen, Text::GreyGreen, UnitsFinal.c_str(), 28, Text::GreyGreen, inCompleteUnitsFinal.c_str());
-		Broodwar->drawTextScreen(500, 25, "%cBuildings:\n\r%c%s%cBuildings in progress:\n\r%c%s%cTech/Upgrade in progress:\n\r%c%s", Text::DarkGreen, Text::GreyGreen, BuildingsFinal.c_str(), 28, Text::GreyGreen, inCompleteBuildingsFinal.c_str(), 24, 29, inProgressUpgradeTech.c_str());
+		Broodwar->drawTextScreen(400, 25, "%cUnits:\n\r%c%s%cUnits in progress:\n\r%c%s", Text::DarkGreen, Text::GreyGreen, UnitsFinal.c_str(), 24, Text::GreyGreen, inCompleteUnitsFinal.c_str());
+		Broodwar->drawTextScreen(500, 25, "%cBuildings:\n\r%c%s%cBuildings in progress:\n\r%c%s%cTech/Upgrade in progress:\n\r%c%s", Text::DarkGreen, Text::GreyGreen, BuildingsFinal.c_str(), 24, Text::GreyGreen, inCompleteBuildingsFinal.c_str(), 24, 29, inProgressUpgradeTech.c_str());
 	}
 	else
 	{
@@ -962,7 +968,7 @@ void AnyRace_CoachAI::hotKeyHandler()
 	for (auto k : keysPressed)
 		keysPressedMap[convertAsciiToString(k)]++;
 
-	if (F5_Pressed == 1)
+	if (F5_Pressed == 0)
 	{
 		int y = 35;
 		for (auto entry : keysPressedMap)
@@ -1057,7 +1063,7 @@ void AnyRace_CoachAI::Replay()
 	{
 		lastCheckedFrame4 = FrameCount + FPS / 6;
 		F5_Pressed++;
-		if (F5_Pressed == 3)
+		if (F5_Pressed == 4)
 			F5_Pressed = 0;
 	}
 	static int lastCheckedFrame5 = 0;
@@ -1095,6 +1101,7 @@ void AnyRace_CoachAI::Replay()
 		string race = p->getRace().getName().substr(0, 1);
 		string name = p->getName();
 		pid = p->getID();
+
 		if (p->minerals() > 250)
 			mineralsAbove[pid]++;
 		if (p->minerals() > 500)
@@ -1148,23 +1155,34 @@ void AnyRace_CoachAI::Replay()
 			idleWorkersMaxTimeAll[pid] = gameTime;
 		}
 
-		//if (F5_Pressed == 0)
+		idleTime = getTime((idleWorkersForAll[pid] += idleWorkersFor) / FPS);
+
+		if (Broodwar->elapsedTime() * 0.6718 < workersProductionStoppedSeconds)
+		{
+			workerCut = getTime((workersProductionStoppedAll[pid] += workersProductionStopped) / FPS);
+			//Broodwar->setLocalSpeed(42);
+		}
+		else workerCut = getTime(workersProductionStoppedAll[pid] / FPS);
+
+		//if (F5_Pressed < 2)
 		//{
-		//	if (Broodwar->elapsedTime() * 0.6718 > workersProductionStoppedDuring / FPS)
-		//		Broodwar->drawTextScreen(5, 195, "==>IdleWorkers/Time, MaxIdle/When, %c%s passed !", 8, getTime(workersProductionStoppedDuring / FPS).c_str());
+		//	if (Broodwar->elapsedTime() * 0.6718 > workersProductionStoppedSeconds)
+		//		Broodwar->drawTextScreen(5, 195, "==>IdleWorkers/Time, MaxIdle/When, %c%s passed !", 8, getTime(workersProductionStoppedSeconds).c_str());
 		//	else Broodwar->drawTextScreen(5, 195, "==>IdleWorkers/Time, MaxIdle/When, WorkersCut");
 
 		//	Broodwar->drawTextScreen(5, y, "%c(%s) %s: %d/%s,   %d/%s,   %s", color, race.c_str(), name.c_str(),
-		//		idleWorkersAll[pid] = idleWorkers, getTime((idleWorkersForAll[pid] += idleWorkersFor) / FPS).c_str(), idleWorkersMaxAll[p->getID()],
-		//		idleWorkersMaxTimeAll[p->getID()].c_str(),
-		//		getTime((workersProductionStoppedAll[p->getID()] += workersProductionStopped) / FPS).c_str());
+		//		idleWorkersAll[pid] = idleWorkers, idleTime.c_str(), idleWorkersMaxAll[pid],
+		//		idleWorkersMaxTimeAll[pid].c_str(),
+		//		workerCut.c_str());
 		//	y += 10;
 		//}
 		string forceName = p->getForce()->getName();
 		string pName = p->getName();
 
-		if (F5_Pressed < 2)
+		if (F5_Pressed == 0)
 			Broodwar->drawTextScreen(5, 95, "%c==>Minerals spent + %cGas spent = %cMacro", 31, 7, 17);
+		if (F5_Pressed == 1)
+			Broodwar->drawTextScreen(5, 95, "Produced/killed/lost %cUnits+%cBuildings=%cState/Score", 31, 7, 17);
 
 		if (forceName == "" || forceName == "Random Teams")// no team players
 		{
@@ -1190,11 +1208,20 @@ void AnyRace_CoachAI::Replay()
 
 			if (!isThereAllies)
 				allies = "";
-
-			if (F5_Pressed < 2)
+			
+			if (F5_Pressed == 0)
 			{
 				Broodwar->drawTextScreen(5, y1, "%c(%s) %s %c%s: %c%d+%c%d=%c%d %c%d/%d",
 					color, p->getRace().getName().substr(0, 1).c_str(), p->getName().substr(0, 3).c_str(), color2, allies.c_str(), 31, Minerals, 7, Gas, 17, Minerals + Gas, 15, p->supplyUsed() / 2, p->supplyTotal() / 2);
+				y1 += 10;
+			}
+			if (F5_Pressed == 1)
+			{
+				int uScore = p->getUnitScore();
+				int bScore = p->getBuildingScore();
+				Broodwar->drawTextScreen(5, y1, "%c(%s) %s : %c%d+%c%d=%c%d",
+					color, p->getRace().getName().substr(0, 1).c_str(), p->getName().substr(0, 3).c_str(),
+					31, uScore, 7, bScore, 17, bScore + uScore);
 				y1 += 10;
 			}
 		}
@@ -1209,9 +1236,18 @@ void AnyRace_CoachAI::Replay()
 					char color = f_p->getTextColor();
 					if (color == 2)
 						color = 17;
-					if (F5_Pressed < 2)
+					if (F5_Pressed == 0)
 					{
 						Broodwar->drawTextScreen(5, y1, "%c(%s) %s: %c%d+%c%d=%c%d %c%d/%d", color, f_p->getRace().getName().substr(0, 1).c_str(), f_p->getName().c_str(), 31, Minerals, 7, Gas, 17, Minerals + Gas, 15, f_p->supplyUsed() / 2, f_p->supplyTotal() / 2);
+						y1 += 10;
+					}
+					if (F5_Pressed == 1)
+					{
+						int uScore = f_p->getUnitScore();
+						int bScore = f_p->getBuildingScore();
+						Broodwar->drawTextScreen(5, y1, "%c(%s) %s : %c%d+%c%d=%c%d",
+							color, f_p->getRace().getName().substr(0, 1).c_str(), f_p->getName().substr(0, 3).c_str(),
+							31, uScore, 7, bScore, 17, bScore + uScore);
 						y1 += 10;
 					}
 				}
@@ -1244,7 +1280,6 @@ void AnyRace_CoachAI::Replay()
 				up = ut.tileHeight() * 16 - ut.dimensionUp();
 				down = ut.tileHeight() * 16 - ut.dimensionDown() - 1;
 
-				//if (left/right/up/down) > 9 then circle.x + 2
 				Broodwar->drawCircleMap(u->getPosition().x - 1, u->getPosition().y + 20, 7, 20, true);
 				Broodwar->drawCircleMap(u->getPosition().x - 1, u->getPosition().y - 20, 7, 20, true);
 				Broodwar->drawCircleMap(u->getPosition().x + 19, u->getPosition().y, 7, 20, true);
@@ -1276,18 +1311,30 @@ void AnyRace_CoachAI::Replay()
 		else
 		{
 			if (F8_Pressed > 0)
-				if (!ut.isFlyer() && u->getTransport() == nullptr && u->isCompleted())
-					Broodwar->drawTextMap(u->getPosition(), "%dx%d", ut.width(), ut.height());
-
-			unitPos = u->getPosition();
-			orderPos = u->getOrderTargetPosition();
-			orderName = u->getOrder().getName();
-
-			if (unitPos.isValid() && unitPos.y != 0 && orderPos.isValid() && orderPos.y != 0)
 			{
-				Broodwar->drawLineMap(unitPos, orderPos, color);
-				Broodwar->drawTextMap(unitPos, orderName.c_str());
-				Broodwar->drawCircleMap(orderPos.x, orderPos.y, 5, color, true);
+				if (!ut.isFlyer() && u->getTransport() == nullptr && (u->isCompleted() || ut.getName() == "Zerg_Egg"))
+					Broodwar->drawTextMap(u->getPosition(), "%dx%d", ut.width(), ut.height());
+			}
+			else
+			{
+				unitPos = u->getPosition();
+				orderPos = u->getOrderTargetPosition();
+				orderName = u->getOrder().getName();
+
+				if (unitPos.isValid() && unitPos.y != 0)
+				{
+					if (orderPos.isValid() && orderPos.y != 0)
+					{
+						Broodwar->drawLineMap(unitPos, orderPos, color);
+						Broodwar->drawTextMap(unitPos, orderName.c_str());
+						Broodwar->drawCircleMap(orderPos.x, orderPos.y, 5, color, true);
+					}
+					else
+					{
+						if (orderName == "HoldPosition")
+							Broodwar->drawTextMap(unitPos, orderName.c_str());
+					}
+				}
 			}
 		}
 	}
@@ -1399,7 +1446,7 @@ void AnyRace_CoachAI::Replay()
 					if (ut.getName() == "Zerg_Egg")
 						ut = u->getBuildType();
 
-					if (F6_Pressed == 0)
+					if (F6_Pressed == 1)
 						listOfInCompleteUnits.push_back(formated(ut) + " " + to_string(u->getRemainingBuildTime() / FPS));
 					else listOfInCompleteUnits.push_back(formated(ut));
 				}
@@ -1417,7 +1464,7 @@ void AnyRace_CoachAI::Replay()
 				}
 				else
 				{
-					if (F6_Pressed == 0)
+					if (F6_Pressed == 1)
 						listOfInCompleteBuildings.push_back(formated(ut) + " " + to_string(u->getRemainingBuildTime() / FPS));
 					else listOfInCompleteBuildings.push_back(formated(ut));
 				}
@@ -1432,16 +1479,22 @@ void AnyRace_CoachAI::Replay()
 		for (auto entry : UnitsMap)
 			UnitsFinal += to_string(entry.second) + " " + entry.first + "\n\r";
 
+
+		//pl->allUnitCount(); //interesting, no need for p.getUnits()
+		int dead = pl->deadUnitCount(unit->getType());
+		Broodwar->drawTextMap(unit->getPosition().x, unit->getBottom() + 35,
+			"%c%d %s lost", color, dead, formated(unit->getType()).c_str());
+
 		//InCompleteUnits & upgrades mode (final process):
-		if (F6_Pressed == 0)
+		if (F6_Pressed == 1)
 		{
 			for (string item : listOfInCompleteUnits)
 				inCompleteUnitsFinal += item + "\n\r";
 			for (string item : listOfInCompleteBuildings)
 				inCompleteBuildingsFinal += item + "\n\r";
 
-			Broodwar->drawTextScreen(440, 25, "%cUnits:\n\r%c%s%cUnits in progress:\n\r%c%s", Text::DarkGreen, Text::GreyGreen, UnitsFinal.c_str(), Text::DarkGreen, Text::GreyGreen, inCompleteUnitsFinal.c_str());
-			Broodwar->drawTextScreen(530, 25, "%cBuildings:\n\r%c%s%cBuildings in progress:\n\r%c%s", Text::DarkGreen, Text::GreyGreen, BuildingsFinal.c_str(), Text::DarkGreen, Text::GreyGreen, inCompleteBuildingsFinal.c_str());
+			Broodwar->drawTextScreen(440, 25, "%cUnits:\n\r%c%s%cUnits in progress:\n\r%c%s", Text::DarkGreen, Text::GreyGreen, UnitsFinal.c_str(), 28, Text::GreyGreen, inCompleteUnitsFinal.c_str());
+			Broodwar->drawTextScreen(530, 25, "%cBuildings:\n\r%c%s%cBuildings in progress:\n\r%c%s", Text::DarkGreen, Text::GreyGreen, BuildingsFinal.c_str(), 28, Text::GreyGreen, inCompleteBuildingsFinal.c_str());
 		}
 		else
 		{
@@ -1454,13 +1507,13 @@ void AnyRace_CoachAI::Replay()
 			for (auto entry : inCompleteUnitsMap)
 				inCompleteUnitsFinal += to_string(entry.second) + " " + entry.first + "\n\r";
 
-			Broodwar->drawTextScreen(440, 25, "%cUnits:\n\r%c%s%cUnits in progress:\n\r%c%s", Text::DarkGreen, Text::GreyGreen, UnitsFinal.c_str(), Text::GreyBlue, Text::GreyGreen, inCompleteUnitsFinal.c_str());
-			Broodwar->drawTextScreen(530, 25, "%cBuildings:\n\r%c%s%cBuildings in progress:\n\r%c%s", Text::DarkGreen, Text::GreyGreen, BuildingsFinal.c_str(), Text::GreyBlue, Text::GreyGreen, inCompleteBuildingsFinal.c_str());
+			Broodwar->drawTextScreen(440, 25, "%cUnits:\n\r%c%s%cUnits in progress:\n\r%c%s", Text::DarkGreen, Text::GreyGreen, UnitsFinal.c_str(), 24, Text::GreyGreen, inCompleteUnitsFinal.c_str());
+			Broodwar->drawTextScreen(530, 25, "%cBuildings:\n\r%c%s%cBuildings in progress:\n\r%c%s", Text::DarkGreen, Text::GreyGreen, BuildingsFinal.c_str(), 24, Text::GreyGreen, inCompleteBuildingsFinal.c_str());
 		}
 		Broodwar->drawTextScreen(270, 25, "%cTech:\n\r%c%s%cUpgrade:\n\r%c%s", Text::Blue, Text::Teal, technoFinal.c_str(), Text::Blue, Text::Teal, upgradesFinal.c_str());
 
 		//replay BO log:
-		if (F5_Pressed == 2)
+		if (F5_Pressed == 3)
 		{
 			switch (pl->getID())
 			{
@@ -1591,8 +1644,16 @@ void AnyRace_CoachAI::onNukeDetect(BWAPI::Position target)
 	// Check if the target is a valid position
 	if (target)
 	{
+		
 		// if so, print the location of the nuclear strike target
 		Broodwar << "Nuclear Launch Detected at " << target << endl;
+		Broodwar->setScreenPosition(target);
+		
+		Broodwar->registerEvent([target](Game*) { Broodwar->drawCircleMap(target, 5, Colors::Red, false);
+		Broodwar->drawCircleMap(target, 10, Colors::Red, false); 
+		Broodwar->drawCircleMap(target, 15, Colors::Red, false); },   // action
+			nullptr,    // condition
+			240);  // frames to run
 	}
 	else
 	{
