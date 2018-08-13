@@ -11,6 +11,7 @@ public:
   virtual void onStart() override;
   virtual void onEnd(bool isWinner) override;
   virtual void onFrame() override;
+  void custom();
   void hotKeyHandler();
   std::string convertAsciiToString(BWAPI::Key & k);
   void populatePage();

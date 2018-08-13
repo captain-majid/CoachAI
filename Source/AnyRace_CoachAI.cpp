@@ -18,6 +18,7 @@ int idleWorkersMaxAll[8] = { 0, 0, 0, 0, 0, 0, 0, 0 };
 string idleWorkersMaxTimeAll[8] = { "", "", "", "", "", "", "", "" };
 int mineralsAbove[32] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 
+int groundRange, airRange;
 int ReplaySeconds;
 static int lastChecked;
 map<string, string> hkAll;
@@ -92,7 +93,6 @@ int idleProdFrameCounter;
 int idleFightingUnitWarningEvery;
 int idleFightUnits;
 int idleFightFrameCounter;
-int workersProductionStoppedDuring;
 int workersProductionStoppedSeconds;
 
 int mineralsWorker;
@@ -324,7 +324,7 @@ void AnyRace_CoachAI::onFrame()	// Called every game frame.
 	FPS = Broodwar->getFPS();
 	if (FPS < 1)
 		return;
-	Broodwar->drawTextScreen(180, 5, "%c:: CoachAI v2.9.4.5 ::", Text::Tan);
+	Broodwar->drawTextScreen(180, 5, "%c:: CoachAI v2.9.5 ::", Text::Tan);
 	// FrameCount / (1000/42), the in-game (but not with replay) time is accurate with the previous even if speed has changed,
 	// this why sscait doesn't bother themselves finding solution for when a saved game loaded and FrameCount starts from 0. 
 	gameTime = getTime(Broodwar->elapsedTime() * 0.6718);
@@ -343,7 +343,6 @@ void AnyRace_CoachAI::onFrame()	// Called every game frame.
 		idleWorkerWarningEvery = j["Control Panel"]["idleWorkerWarningEvery"].get<int>() * FPS;
 		idleProductionBuildingWarningEvery = j["Control Panel"]["idleProductionBuildingWarningEvery"].get<int>() * FPS;
 		idleFightingUnitWarningEvery = j["Control Panel"]["idleFightingUnitWarningEvery"].get<int>() * FPS;
-		workersProductionStoppedDuring = j["Control Panel"]["workersProductionStoppedDuring"].get<int>() * FPS;
 		workersProductionStoppedSeconds = j["Control Panel"]["workersProductionStoppedDuring"].get<int>();
 
 		logWorkersAndSupplyProduction = j["Control Panel"]["logWorkersAndSupplyProduction"].get<bool>();
@@ -609,9 +608,9 @@ void AnyRace_CoachAI::onFrame()	// Called every game frame.
 			Broodwar->drawTextMap(px, p.y - 5, "%d", baseMineralsWorkers.size());
 		}
 
-		if (Broodwar->self()->getRace() != Races::Zerg && ut.isResourceDepot() && u->isIdle() && FrameCount < workersProductionStoppedDuring)
+		if (Broodwar->self()->getRace() != Races::Zerg && ut.isResourceDepot() && u->isIdle() && Broodwar->elapsedTime() *  0.6718 < workersProductionStoppedSeconds)
 			workersProductionStopped++;
-		if (Broodwar->self()->getRace() != Races::Zerg && ut.isResourceDepot() && !u->isIdle() && FrameCount < workersProductionStoppedDuring)
+		if (Broodwar->self()->getRace() != Races::Zerg && ut.isResourceDepot() && !u->isIdle() && Broodwar->elapsedTime() *  0.6718 < workersProductionStoppedSeconds)
 		{
 			workersProductionStopped += notIdleResourceDepot - inProgressWorkers;
 			if (notIdleResourceDepot > 1)
@@ -811,6 +810,9 @@ void AnyRace_CoachAI::onFrame()	// Called every game frame.
 			28, 31, j["Preset Plan"]["Bo3Tips"].get<string>().c_str());
 	}
 
+
+	//custom();
+
 	// Return if the game is a replay or is paused
 	if (Broodwar->isReplay() || Broodwar->isPaused() || !Broodwar->self())
 		return;
@@ -905,6 +907,64 @@ void AnyRace_CoachAI::onFrame()	// Called every game frame.
 		//============
 		buildSupply(u, supplyUnit);
 	} // closure: unit iterator
+}
+int Dragoons;
+int tankOuterSplashRadius;
+
+void AnyRace_CoachAI::custom()
+{
+	if (Broodwar->isReplay())
+		return;
+	if (Broodwar->elapsedTime() * 0.6718 > 540 && Broodwar->elapsedTime() * 0.6718 < 550)
+		Broodwar->sendText("@9min reassign #0,#9,#8, build 4th base (10:00)", Colors::Red);
+
+	Dragoons = Broodwar->self()->allUnitCount(UnitTypes::Protoss_Dragoon);
+
+	if (Dragoons > 7 && Broodwar->self()->allUnitCount(UnitTypes::Protoss_Robotics_Facility) < 2)
+	{
+		Broodwar->sendText("on 8 Dragoons -> 2nd Robo, Stargate @7:00 (~3 scouts + ~3 corsairs_DW) RP all buildings ahead.", Colors::Red);
+	}
+
+	//tankOuterSplashRadius = WeaponTypes::Arclite_Shock_Cannon.outerSplashRadius();
+	//for (auto &u : Broodwar->self()->getUnits())
+	//{
+	//	UnitType ut = u->getType();
+	//	if (ut.canAttack() && !ut.isFlyer())// draw tank outer splash radius on ground units
+	//	{
+	//		Broodwar->drawTextMap(u->getPosition(), "%cTank Splash = %d", 8, tankOuterSplashRadius);
+	//		Broodwar->drawCircleMap(u->getPosition(), tankOuterSplashRadius, 8, false);
+	//	}
+
+	//	if (ut.canAttack() && u->isCompleted() && !ut.isWorker())// && ut.groundWeapon() && u->canAttack()
+	//	{
+	//		int extra = 0;
+	//		if (u->getTransport() != nullptr && u->getTransport()->getType() == UnitTypes::Terran_Bunker)
+	//			extra = 32;
+
+	//		groundRange = extra + Broodwar->self()->weaponMaxRange(u->getType().groundWeapon());
+	//		if (groundRange)
+	//		{
+	//			Broodwar->drawTextMap(u->getPosition().x, u->getPosition().y - 10, "%cGround range = %d", 8, groundRange / 32);
+	//			Broodwar->drawCircleMap(u->getPosition(), groundRange, 8, false);
+	//		}
+
+	//		airRange = extra + Broodwar->self()->weaponMaxRange(ut.airWeapon());
+	//		if (airRange)
+	//		{
+	//			Broodwar->drawTextMap(u->getPosition().x, u->getPosition().y - 20, "%cAir range = %d", 31, airRange / 32);
+	//			Broodwar->drawCircleMap(u->getPosition(), airRange, 31, false);
+	//		}
+	//	}
+	//}
+	//for (auto &u : Broodwar->enemy()->getUnits())
+	//{
+	//	if (u->getType() == UnitTypes::Terran_Siege_Tank_Siege_Mode)// && ut.groundWeapon() && u->canAttack()
+	//	{
+	//		groundRange = Broodwar->enemy()->weaponMaxRange(u->getType().groundWeapon());
+	//		Broodwar->drawTextMap(u->getPosition().x, u->getPosition().y - 10, "%cGround range = %d", 8, groundRange / 32);
+	//		Broodwar->drawCircleMap(u->getPosition(), groundRange, 8, false);
+	//	}
+	//}
 }
 
 void AnyRace_CoachAI::hotKeyHandler()
@@ -1123,6 +1183,28 @@ void AnyRace_CoachAI::Replay()
 
 		for (auto u : p->getUnits())
 		{
+			//UnitType ut = u->getType();
+			//if (ut.canAttack() && u->isCompleted() && !ut.isWorker())// && ut.groundWeapon() && u->canAttack()
+			//{
+			//	int extra = 0;
+			//	if (u->getTransport() != nullptr && u->getTransport()->getType() == UnitTypes::Terran_Bunker)
+			//		extra = 32;
+
+			//	groundRange = extra + p->weaponMaxRange(u->getType().groundWeapon());
+			//	if (groundRange)
+			//	{
+			//		Broodwar->drawTextMap(u->getPosition().x, u->getPosition().y - 10, "%cGround range = %d", 8, groundRange / 32);
+			//		Broodwar->drawCircleMap(u->getPosition(), groundRange, 8, false);
+			//	}
+
+			//	airRange = extra + p->weaponMaxRange(ut.airWeapon());
+			//	if (airRange)
+			//	{
+			//		Broodwar->drawTextMap(u->getPosition().x, u->getPosition().y - 20, "%cAir range = %d", 31, airRange / 32);
+			//		Broodwar->drawCircleMap(u->getPosition(), airRange, 31, false);
+			//	}
+			//}
+
 			if (u->getType().isResourceDepot() && !u->isIdle() && u->isCompleted()) //working ResourceDepot
 				notIdleResourceDepot++;
 			if (u->getType().isWorker() && u->isCompleted() && u->isIdle()) //idle worker
@@ -1136,9 +1218,9 @@ void AnyRace_CoachAI::Replay()
 		}
 		for (auto u : p->getUnits())//part2
 		{
-			if (p->getRace() != Races::Zerg && u->getType().isResourceDepot() && u->isIdle() && FrameCount < workersProductionStoppedDuring)
+			if (p->getRace() != Races::Zerg && u->getType().isResourceDepot() && u->isIdle() && Broodwar->elapsedTime() *  0.6718 < workersProductionStoppedSeconds)
 				workersProductionStopped++;
-			if (p->getRace() != Races::Zerg && u->getType().isResourceDepot() && !u->isIdle() && FrameCount < workersProductionStoppedDuring)
+			if (p->getRace() != Races::Zerg && u->getType().isResourceDepot() && !u->isIdle() && Broodwar->elapsedTime() *  0.6718 < workersProductionStoppedSeconds)
 			{
 				workersProductionStopped += notIdleResourceDepot - inProgressWorkers;
 				if (notIdleResourceDepot > 1)
@@ -1164,18 +1246,18 @@ void AnyRace_CoachAI::Replay()
 		}
 		else workerCut = getTime(workersProductionStoppedAll[pid] / FPS);
 
-		//if (F5_Pressed < 2)
-		//{
-		//	if (Broodwar->elapsedTime() * 0.6718 > workersProductionStoppedSeconds)
-		//		Broodwar->drawTextScreen(5, 195, "==>IdleWorkers/Time, MaxIdle/When, %c%s passed !", 8, getTime(workersProductionStoppedSeconds).c_str());
-		//	else Broodwar->drawTextScreen(5, 195, "==>IdleWorkers/Time, MaxIdle/When, WorkersCut");
+		if (F5_Pressed < 2)
+		{
+			if (Broodwar->elapsedTime() * 0.6718 > workersProductionStoppedSeconds)
+				Broodwar->drawTextScreen(5, 195, "==>IdleWorkers/Time, MaxIdle/When, %c%s passed !", 8, getTime(workersProductionStoppedSeconds).c_str());
+			else Broodwar->drawTextScreen(5, 195, "==>IdleWorkers/Time, MaxIdle/When, WorkersCut");
 
-		//	Broodwar->drawTextScreen(5, y, "%c(%s) %s: %d/%s,   %d/%s,   %s", color, race.c_str(), name.c_str(),
-		//		idleWorkersAll[pid] = idleWorkers, idleTime.c_str(), idleWorkersMaxAll[pid],
-		//		idleWorkersMaxTimeAll[pid].c_str(),
-		//		workerCut.c_str());
-		//	y += 10;
-		//}
+			Broodwar->drawTextScreen(5, y, "%c(%s) %s: %d/%s,   %d/%s,   %s", color, race.c_str(), name.c_str(),
+				idleWorkersAll[pid] = idleWorkers, idleTime.c_str(), idleWorkersMaxAll[pid],
+				idleWorkersMaxTimeAll[pid].c_str(),
+				workerCut.c_str());
+			y += 10;
+		}
 		string forceName = p->getForce()->getName();
 		string pName = p->getName();
 
@@ -1208,7 +1290,7 @@ void AnyRace_CoachAI::Replay()
 
 			if (!isThereAllies)
 				allies = "";
-			
+
 			if (F5_Pressed == 0)
 			{
 				Broodwar->drawTextScreen(5, y1, "%c(%s) %s %c%s: %c%d+%c%d=%c%d %c%d/%d",
@@ -1360,9 +1442,9 @@ void AnyRace_CoachAI::Replay()
 			color = 17;
 
 		pid = pl->getID();
-		//Broodwar->drawTextScreen(270, 15, "%cMinerals above: 250: %c%s, %c500: %c%s, %c750: %c%s, %c1000: %c%s", color,
-		//	25, getTime(mineralsAbove[pid] / FPS).c_str(), color, 25, getTime(mineralsAbove[pid + 8] / FPS).c_str(), color,
-		//	25, getTime(mineralsAbove[pid + 16] / FPS).c_str(), color, 25, getTime(mineralsAbove[pid + 24] / FPS).c_str());
+		Broodwar->drawTextScreen(270, 15, "%cMinerals above: 250: %c%s, %c500: %c%s, %c750: %c%s, %c1000: %c%s", color,
+			25, getTime(mineralsAbove[pid] / FPS).c_str(), color, 25, getTime(mineralsAbove[pid + 8] / FPS).c_str(), color,
+			25, getTime(mineralsAbove[pid + 16] / FPS).c_str(), color, 25, getTime(mineralsAbove[pid + 24] / FPS).c_str());
 
 		list<string> upgrades;
 		list<string> techno;
@@ -1644,13 +1726,13 @@ void AnyRace_CoachAI::onNukeDetect(BWAPI::Position target)
 	// Check if the target is a valid position
 	if (target)
 	{
-		
+
 		// if so, print the location of the nuclear strike target
 		Broodwar << "Nuclear Launch Detected at " << target << endl;
 		Broodwar->setScreenPosition(target);
-		
+
 		Broodwar->registerEvent([target](Game*) { Broodwar->drawCircleMap(target, 5, Colors::Red, false);
-		Broodwar->drawCircleMap(target, 10, Colors::Red, false); 
+		Broodwar->drawCircleMap(target, 10, Colors::Red, false);
 		Broodwar->drawCircleMap(target, 15, Colors::Red, false); },   // action
 			nullptr,    // condition
 			240);  // frames to run
