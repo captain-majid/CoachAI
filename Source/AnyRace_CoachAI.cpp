@@ -5,6 +5,7 @@
 #include <map>
 #include "nlohmann\json.hpp"
 #include "algorithm"
+#include <thread>
 
 using json = nlohmann::json;
 using namespace BWAPI;
@@ -70,6 +71,7 @@ int oldUID;
 int newUID;
 int FrameCount;
 int FPS;
+int prevFPS;
 double avgFPS;
 int LatencyFrame;
 int initialFrameCount;
@@ -229,7 +231,8 @@ bool idleWorkersEvery()
 			if (u->isIdle())
 			{
 				idleWorkers++;
-				idleWorkersFor++;
+				if (!Broodwar->isPaused())
+					idleWorkersFor++;
 			}
 		}
 		else if (u->getType().isWorker() && !u->isCompleted())
@@ -322,11 +325,15 @@ void AnyRace_CoachAI::onFrame()	// Called every game frame.
 {
 	FrameCount = Broodwar->getFrameCount();
 	FPS = Broodwar->getFPS();
-	if (FPS < 1)
-		return;
-	Broodwar->drawTextScreen(180, 5, "%c:: CoachAI v2.9.5 ::", Text::Tan);
+
+	Broodwar->drawTextScreen(180, 5, "%c:: CoachAI v2.9.6 ::", Text::Tan);
+	
+	if (FPS < 1) //gamePaused
+		FPS = 24;
+
 	// FrameCount / (1000/42), the in-game (but not with replay) time is accurate with the previous even if speed has changed,
 	// this why sscait doesn't bother themselves finding solution for when a saved game loaded and FrameCount starts from 0. 
+
 	gameTime = getTime(Broodwar->elapsedTime() * 0.6718);
 
 	static int lastCheckedFrame11 = 0;
@@ -608,11 +615,12 @@ void AnyRace_CoachAI::onFrame()	// Called every game frame.
 			Broodwar->drawTextMap(px, p.y - 5, "%d", baseMineralsWorkers.size());
 		}
 
-		if (Broodwar->self()->getRace() != Races::Zerg && ut.isResourceDepot() && u->isIdle() && Broodwar->elapsedTime() *  0.6718 < workersProductionStoppedSeconds)
+		if (!Broodwar->isPaused() && Broodwar->self()->getRace() != Races::Zerg && ut.isResourceDepot() && u->isIdle() && Broodwar->elapsedTime() *  0.6718 < workersProductionStoppedSeconds)
 			workersProductionStopped++;
 		if (Broodwar->self()->getRace() != Races::Zerg && ut.isResourceDepot() && !u->isIdle() && Broodwar->elapsedTime() *  0.6718 < workersProductionStoppedSeconds)
 		{
-			workersProductionStopped += notIdleResourceDepot - inProgressWorkers;
+			if (!Broodwar->isPaused())
+				workersProductionStopped += notIdleResourceDepot - inProgressWorkers;
 			if (notIdleResourceDepot > 1)
 			{
 				notIdleResourceDepot = 0;
@@ -681,14 +689,17 @@ void AnyRace_CoachAI::onFrame()	// Called every game frame.
 	Broodwar->drawTextScreen(310, 15, "%cWorkers production stopped for: %c%s", Text::Grey, Text::BrightRed, getTime(workersProductionStopped / FPS).c_str());
 	Broodwar->drawTextScreen(520, 15, "%cFPS: %c%d, %cTime: %c%s", 14, 4, FPS, 14, 4, gameTime.c_str());
 
-	if (Broodwar->self()->minerals() > 250)
-		minerals_250++;
-	if (Broodwar->self()->minerals() > 500)
-		minerals_500++;
-	if (Broodwar->self()->minerals() > 750)
-		minerals_750++;
-	if (Broodwar->self()->minerals() > 1000)
-		minerals_1000++;
+	if (!Broodwar->isPaused())
+	{
+		if (Broodwar->self()->minerals() > 250)
+			minerals_250++;
+		if (Broodwar->self()->minerals() > 500)
+			minerals_500++;
+		if (Broodwar->self()->minerals() > 750)
+			minerals_750++;
+		if (Broodwar->self()->minerals() > 1000)
+			minerals_1000++;
+	}
 
 	Broodwar->drawTextScreen(5, 63, "%cMinerals above:\n\r250: %c%s, %c500: %c%s\n\r%c750: %c%s, %c1000: %c%s",
 		31, 25, getTime(minerals_250 / FPS).c_str(), 31, 25, getTime(minerals_500 / FPS).c_str(),
@@ -814,13 +825,14 @@ void AnyRace_CoachAI::onFrame()	// Called every game frame.
 	//custom();
 
 	// Return if the game is a replay or is paused
-	if (Broodwar->isReplay() || Broodwar->isPaused() || !Broodwar->self())
+	if (Broodwar->isReplay() || !Broodwar->self())
 		return;
 
 	// Prevent spamming by only running our onFrame once every number of latency frames.
 	// Latency frames are the number of frames before commands are processed.
 	if (FrameCount % Broodwar->getLatencyFrames() != 0)// LatencyFrames() seems to be 2 all the time.
 		return;
+
 
 	// Iterate through all the units that we own
 	for (auto &u : Broodwar->self()->getUnits())
@@ -1220,6 +1232,7 @@ void AnyRace_CoachAI::Replay()
 		{
 			if (p->getRace() != Races::Zerg && u->getType().isResourceDepot() && u->isIdle() && Broodwar->elapsedTime() *  0.6718 < workersProductionStoppedSeconds)
 				workersProductionStopped++;
+
 			if (p->getRace() != Races::Zerg && u->getType().isResourceDepot() && !u->isIdle() && Broodwar->elapsedTime() *  0.6718 < workersProductionStoppedSeconds)
 			{
 				workersProductionStopped += notIdleResourceDepot - inProgressWorkers;
