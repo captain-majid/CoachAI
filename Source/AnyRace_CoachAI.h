@@ -1,7 +1,6 @@
 #pragma once
 #include <BWAPI.h>
 
-
 // Remember not to use "Broodwar" in any global class constructor!
 
 class AnyRace_CoachAI : public BWAPI::AIModule
