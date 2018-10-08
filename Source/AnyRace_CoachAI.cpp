@@ -109,6 +109,7 @@ int maxWorkers;
 int maxProductionBuildingQueue;
 int idleWorkerWarningEvery;
 int sameScreenOrSelectionWarningEvery;
+int workerCutWarningEvery;
 int totalTimeOnScreenOrSelectionAbove;
 int idleProductionBuildingWarningEvery;
 int idleProdBuildOrLarva;
@@ -377,7 +378,7 @@ void AnyRace_CoachAI::onFrame()	// Called every game frame.
 	else
 		FrameCount++;
 
-	Broodwar->drawTextScreen(180, 5, "%c:: CoachAI v3.0 ::", Text::Tan);
+	Broodwar->drawTextScreen(180, 5, "%c:: CoachAI v3.0.0.1 ::", Text::Tan);
 
 	if (FPS < 1) //gamePaused
 		FPS = 24;
@@ -400,6 +401,7 @@ void AnyRace_CoachAI::onFrame()	// Called every game frame.
 		idleWorkerWarningEvery = j["Control Panel"]["idleWorkerWarningEvery"].get<int>() * FPS;
 		sameScreenOrSelectionWarningEvery = j["Control Panel"]["sameScreenOrSelectionWarningEvery"].get<int>() * FPS;
 		totalTimeOnScreenOrSelectionAbove = j["Control Panel"]["totalTimeOnScreenOrSelectionAbove"].get<int>();
+		workerCutWarningEvery = j["Control Panel"]["workerCutWarningEvery"].get<int>() * FPS;
 		idleProductionBuildingWarningEvery = j["Control Panel"]["idleProductionBuildingWarningEvery"].get<int>() * FPS;
 		idleFightingUnitWarningEvery = j["Control Panel"]["idleFightingUnitWarningEvery"].get<int>() * FPS;
 		workersProductionStoppedSeconds = j["Control Panel"]["workersProductionStoppedDuring"].get<int>();
@@ -420,20 +422,20 @@ void AnyRace_CoachAI::onFrame()	// Called every game frame.
 		if (prevScreen == currScreen)
 		{
 			screenCounter++;
-			if (lastCheckedFrame14 < FrameCount && FrameCount > sameScreenOrSelectionWarningEvery)
+			if (lastCheckedFrame14 < FrameCount && FrameCount > sameScreenOrSelectionWarningEvery)// initial notification delay, 2nd bool is only for game start.
 			{
-				lastCheckedFrame14 = FrameCount + FPS * 1; // warning frequency every 1s
+				lastCheckedFrame14 = FrameCount + FPS * 1; // repeat warning every 1s, if same screen
 				PlaySound(L".\\bwapi-data\\2- multitask.wav", NULL, SND_ASYNC);
 				Broodwar << Text::BrightRed << "Switch screens, divide tasks !" << endl;
 			}
 		}
-		else // screens not the same, reset counter.
+		else // screens not the same
 		{
 			static int lastCheckedFrame1 = 0;
 			if (lastCheckedFrame1 < FrameCount)
 			{
-				lastCheckedFrame14 = FrameCount + sameScreenOrSelectionWarningEvery; // warning initialized after ?s
-				lastCheckedFrame1 = FrameCount + FPS / 12; // capture screen difference every .5s
+				lastCheckedFrame1 = FrameCount + FPS / 12; // check difference every .5s
+				lastCheckedFrame14 = FrameCount + sameScreenOrSelectionWarningEvery; // reset counter, and re-initialized notification delay
 				screenJumps.push_back(screenCounter / FPS);
 				screenCounter = 0;
 			}
@@ -445,32 +447,21 @@ void AnyRace_CoachAI::onFrame()	// Called every game frame.
 			selectedUnitsCounter++;
 			if (lastCheckedFrame2 < FrameCount && FrameCount > sameScreenOrSelectionWarningEvery)
 			{
-				lastCheckedFrame2 = FrameCount + FPS * 1; // warning frequency every 1s
+				lastCheckedFrame2 = FrameCount + FPS * 1;
 				PlaySound(L".\\bwapi-data\\2- multitask.wav", NULL, SND_ASYNC);
 				Broodwar << Text::Orange << "Switch units, divide tasks !" << endl;
 			}
 		}
-		else // screens not the same, reset counter.
+		else
 		{
 			static int lastCheckedFrame3 = 0;
 			if (lastCheckedFrame3 < FrameCount)
 			{
-				lastCheckedFrame2 = FrameCount + sameScreenOrSelectionWarningEvery; // warning initialized after ?s
-				lastCheckedFrame3 = FrameCount + FPS / 12; // capture screen difference every .5s
+				lastCheckedFrame2 = FrameCount + sameScreenOrSelectionWarningEvery;
+				lastCheckedFrame3 = FrameCount + FPS / 12;
 				selectedUnitsJumps.push_back(selectedUnitsCounter / FPS);
 				selectedUnitsCounter = 0;
 			}
-		}
-	}
-
-	static int lastCheckedFrame15 = 0;
-	if (workersProductionStopped != workersProductionStoppedPrev)
-	{
-		if (lastCheckedFrame15 < FrameCount + 1)
-		{
-			lastCheckedFrame15 = FrameCount + FPS * 1; // warning frequency every 1s
-			PlaySound(L".\\bwapi-data\\3- workerCut.wav", NULL, SND_ASYNC);
-			Broodwar << Text::White << "Worker production stopped !" << endl;
 		}
 	}
 
@@ -574,7 +565,7 @@ void AnyRace_CoachAI::onFrame()	// Called every game frame.
 		if (u->canTrain() && unitName != "Protoss_Reaver" && unitName != "Protoss_Carrier")
 		{
 			if (u->getTrainingQueue().size() > maxProductionBuildingQueue)
-			{	
+			{
 				u->cancelTrain();
 				Broodwar << "Not allowed to queue units more than " << maxProductionBuildingQueue << endl;
 			}
@@ -672,12 +663,14 @@ void AnyRace_CoachAI::onFrame()	// Called every game frame.
 	if (Broodwar->enemy()) // First make sure there is an enemy
 	{
 		for (auto &enemy : Broodwar->enemies())
-			enemies.push_back(enemy);
-		static int lastCheckedFrame13 = 0;
-		if (Broodwar->isMultiplayer() && lastCheckedFrame13 + 240 < FrameCount && !okUDAI)
 		{
-			lastCheckedFrame13 = FrameCount;
-			Broodwar->sendText("I have top intel about u \"%s\", accept playing by typing UDAI.", Broodwar->enemy()->getName().c_str());
+			static int lastCheckedFrame13 = 0;
+			if (!okUDAI && enemy->getType() == PlayerTypes::Player && lastCheckedFrame13 + 240 < FrameCount)
+			{
+				lastCheckedFrame13 = FrameCount;
+				Broodwar->sendText("I have top intel about u \"%s\", accept playing by typing UDAI.", enemy->getName().c_str());
+			}
+			enemies.push_back(enemy);
 		}
 	}
 	if (enemies.size() > 0 && F8_Pressed > -1)
@@ -996,6 +989,27 @@ void AnyRace_CoachAI::onFrame()	// Called every game frame.
 			}
 		}
 	}
+
+	static int lastCheckedFrame90 = 0;
+	if (workersProductionStopped != workersProductionStoppedPrev) //workerStopped
+	{
+		if (lastCheckedFrame90 < FrameCount && FrameCount > workerCutWarningEvery)
+		{
+			lastCheckedFrame90 = FrameCount + FPS * 2;
+			PlaySound(L".\\bwapi-data\\3- workerCut.wav", NULL, SND_ASYNC);
+			Broodwar << Text::White << "Worker production stopped !" << endl;
+		}
+	}
+	else //workerProdOn
+	{
+		static int lastCheckedFrame91 = 0;
+		if (lastCheckedFrame91 < FrameCount)
+		{
+			lastCheckedFrame91 = FrameCount + FPS / 12; // check difference every .5s
+			lastCheckedFrame90 = FrameCount + workerCutWarningEvery; // reset counter, and re-initialized notification delay
+		}
+	}
+
 	for (string item : listOfUnits)
 		UnitsMap[item]++;
 	for (string item : listOfBuildings)
