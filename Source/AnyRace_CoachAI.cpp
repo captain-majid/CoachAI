@@ -72,6 +72,7 @@ int F7_Pressed = -1;
 bool F8;
 int F8_Pressed = -1;
 bool shift;
+bool ctrl;
 bool F9;
 int F9_Pressed = -1;
 bool F11;
@@ -132,6 +133,9 @@ int inProgressWorkers;
 int notIdleResourceDepot;
 int workersProductionStopped;
 int workersProductionStoppedPrev;
+int workersProductionStopped_LastTime;
+int workersProductionStopped_LastTimeCounter;
+
 vector<Position> idleWorkerPos;
 
 // To quickly test things:
@@ -378,7 +382,7 @@ void AnyRace_CoachAI::onFrame()	// Called every game frame.
 	else
 		FrameCount++;
 
-	Broodwar->drawTextScreen(180, 5, "%c:: CoachAI v3.0.0.1 ::", Text::Tan);
+	Broodwar->drawTextScreen(150, 5, "%c:: CoachAI v3.1 ::", Text::Tan);
 
 	if (FPS < 1) //gamePaused
 		FPS = 24;
@@ -488,6 +492,7 @@ void AnyRace_CoachAI::onFrame()	// Called every game frame.
 	F9 = Broodwar->getKeyState(Key::K_F9);
 	F11 = Broodwar->getKeyState(Key::K_F11);
 	shift = Broodwar->getKeyState(Key::K_SHIFT);
+	ctrl = Broodwar->getKeyState(Key::K_CONTROL);
 
 	static int lastCheckedFrame4 = 0;
 	if (F5 && lastCheckedFrame4 < FrameCount)
@@ -989,10 +994,13 @@ void AnyRace_CoachAI::onFrame()	// Called every game frame.
 			}
 		}
 	}
-
+	int counter2;
 	static int lastCheckedFrame90 = 0;
-	if (workersProductionStopped != workersProductionStoppedPrev) //workerStopped
+	if (workersProductionStopped != workersProductionStoppedPrev)
 	{
+		workersProductionStopped_LastTimeCounter++;
+		workersProductionStopped_LastTime = workersProductionStopped_LastTimeCounter;
+
 		if (lastCheckedFrame90 < FrameCount && FrameCount > workerCutWarningEvery)
 		{
 			lastCheckedFrame90 = FrameCount + FPS * 2;
@@ -1000,14 +1008,13 @@ void AnyRace_CoachAI::onFrame()	// Called every game frame.
 			Broodwar << Text::White << "Worker production stopped !" << endl;
 		}
 	}
-	else //workerProdOn
+	else
 	{
+		workersProductionStopped_LastTimeCounter = 0;
+
 		static int lastCheckedFrame91 = 0;
 		if (lastCheckedFrame91 < FrameCount)
-		{
-			lastCheckedFrame91 = FrameCount + FPS / 12; // check difference every .5s
-			lastCheckedFrame90 = FrameCount + workerCutWarningEvery; // reset counter, and re-initialized notification delay
-		}
+			lastCheckedFrame90 = FrameCount + workerCutWarningEvery; // re-initialized notification delay
 	}
 
 	for (string item : listOfUnits)
@@ -1075,8 +1082,9 @@ void AnyRace_CoachAI::onFrame()	// Called every game frame.
 			match += enemies[i]->getRace().getName().substr(0, 1);
 
 	Broodwar->drawTextScreen(245, 25, "%c%s %c%s", Text::Purple, match.c_str(), Text::White, mapName.c_str());
-	Broodwar->drawTextScreen(310, 15, "%cWorkers production stopped for: %c%s", Text::Grey, Text::BrightRed, getTime(workersProductionStopped / FPS).c_str());
-	Broodwar->drawTextScreen(520, 15, "%cFPS: %c%d, %cTime: %c%s", 14, 4, FPS, 14, 4, gameTime.c_str());
+	Broodwar->drawTextScreen(310, 15, "%cWorkers production stopped for: %c%ds,%c%s", Text::Grey, Text::Turquoise, workersProductionStopped_LastTime / FPS,
+		Text::BrightRed, getTime(workersProductionStopped / FPS).c_str());
+	Broodwar->drawTextScreen(530, 15, "%cFPS:%c%d, %cTime:%c%s", 14, 4, FPS, 14, 4, gameTime.c_str());
 
 	if (!Broodwar->isPaused())
 	{
@@ -1167,35 +1175,70 @@ void AnyRace_CoachAI::onFrame()	// Called every game frame.
 			Broodwar->drawTextScreen(143, y, "%c%s: %c%s", 8, entry.first.c_str(), 27, entry.second.c_str());
 			y += 10;
 		}
-		Broodwar->drawTextScreen(5, 106, "%cMultitasking:\n\r%c==========\n\r%cScreen counter: %c%.0fs", 14, 4, 14, 4, screenCounter / FPS);
-		Broodwar->drawTextScreen(5, 143, "%cScreen jumps: %c%d", Text::Blue, Text::White, screenJumps.size());
-		double totalStay;
-		double totalStayAbove;
-		for (auto j : screenJumps)
+		//=========================================================
+		int kCount;
+		string K0, K1, K2 = "";
+		int colSize = 0;
+		for (auto u : UnitTypes::allUnitTypes())
 		{
-			totalStay += j;
-			if (j > totalTimeOnScreenOrSelectionAbove)
+			kCount = Broodwar->self()->killedUnitCount(u);
+			if (kCount > 0)
 			{
-				totalStayAbove += j - totalTimeOnScreenOrSelectionAbove;
+				colSize++;
+				if (colSize < 14)
+					K0 += to_string(kCount) + " " + formated(u) + "\n\r";
+				if (colSize < 25 && colSize > 13)
+				{
+					K1 += to_string(kCount) + " " + formated(u) + "\n\r";
+				}
+				if (colSize > 25)
+				{
+					K2 += to_string(kCount) + " " + formated(u) + "\n\r";
+				}
 			}
 		}
-		Broodwar->drawTextScreen(5, 153, "%cAvg stay: %c%.1fs", Text::Blue, Text::White, totalStay / screenJumps.size());
-		Broodwar->drawTextScreen(5, 163, "%cTotal stay > %c%ds: %c%s", Text::Blue, 7, totalTimeOnScreenOrSelectionAbove, Text::White, getTime(totalStayAbove).c_str());
-		//=========================
-		Broodwar->drawTextScreen(5, 183, "%cSelection counter: %c%.0fs", 14, 4, selectedUnitsCounter / FPS);
-		Broodwar->drawTextScreen(5, 193, "%cSelection changed: %c%d", Text::Blue, Text::White, selectedUnitsJumps.size());
-		double totalStayUnits;
-		double totalStayAboveUnits;
-		for (auto j : selectedUnitsJumps)
+
+		if (!shift)
 		{
-			totalStayUnits += j;
-			if (j > totalTimeOnScreenOrSelectionAbove)
+			Broodwar->drawTextScreen(5, 106, "%cEnemies killed:\n\r%c%s", Text::BrightRed, Text::Tan, K0.c_str());
+			if (ctrl)
 			{
-				totalStayAboveUnits += j - totalTimeOnScreenOrSelectionAbove;
+				Broodwar->drawTextScreen(125, 165, "%c%s", 27, K1.c_str());
+				Broodwar->drawTextScreen(235, 165, "%c%s", 27, K2.c_str());
 			}
 		}
-		Broodwar->drawTextScreen(5, 203, "%cAvg selection: %c%.1fs", Text::Blue, Text::White, totalStayUnits / selectedUnitsJumps.size());
-		Broodwar->drawTextScreen(5, 213, "%cTotal selection > %c%ds: %c%s", Text::Blue, 7, totalTimeOnScreenOrSelectionAbove, Text::White, getTime(totalStayAboveUnits).c_str());
+		else
+		{
+			Broodwar->drawTextScreen(5, 106, "%cMultitasking:\n\r%c==========\n\r%cScreen counter: %c%.0fs", 14, 4, 14, 4, screenCounter / FPS);
+			Broodwar->drawTextScreen(5, 143, "%cScreen jumps: %c%d", Text::Blue, Text::White, screenJumps.size());
+			double totalStay;
+			double totalStayAbove;
+			for (auto j : screenJumps)
+			{
+				totalStay += j;
+				if (j > totalTimeOnScreenOrSelectionAbove)
+				{
+					totalStayAbove += j - totalTimeOnScreenOrSelectionAbove;
+				}
+			}
+			Broodwar->drawTextScreen(5, 153, "%cAvg stay: %c%.1fs", Text::Blue, Text::White, totalStay / screenJumps.size());
+			Broodwar->drawTextScreen(5, 163, "%cTotal stay > %c%ds: %c%s", Text::Blue, 7, totalTimeOnScreenOrSelectionAbove, Text::White, getTime(totalStayAbove).c_str());
+			//=========================
+			Broodwar->drawTextScreen(5, 183, "%cSelection counter: %c%.0fs", 14, 4, selectedUnitsCounter / FPS);
+			Broodwar->drawTextScreen(5, 193, "%cSelection changed: %c%d", Text::Blue, Text::White, selectedUnitsJumps.size());
+			double totalStayUnits;
+			double totalStayAboveUnits;
+			for (auto j : selectedUnitsJumps)
+			{
+				totalStayUnits += j;
+				if (j > totalTimeOnScreenOrSelectionAbove)
+				{
+					totalStayAboveUnits += j - totalTimeOnScreenOrSelectionAbove;
+				}
+			}
+			Broodwar->drawTextScreen(5, 203, "%cAvg selection: %c%.1fs", Text::Blue, Text::White, totalStayUnits / selectedUnitsJumps.size());
+			Broodwar->drawTextScreen(5, 213, "%cTotal selection > %c%ds: %c%s", Text::Blue, 7, totalTimeOnScreenOrSelectionAbove, Text::White, getTime(totalStayAboveUnits).c_str());
+		}
 	}
 
 	if (F6_Pressed == 1)
