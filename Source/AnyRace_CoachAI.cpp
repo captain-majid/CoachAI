@@ -21,6 +21,9 @@ string idleWorkersMaxTimeAll[8] = { "", "", "", "", "", "", "", "" };
 int mineralsAbove[32] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 bool isLeave, isGG;
 Player plSelectedTemp;
+int workerCutLimit;
+bool gameover;
+static int lastChecked16 = 0;
 
 int groundRange, airRange;
 int ReplaySeconds;
@@ -398,6 +401,7 @@ void AnyRace_CoachAI::onStart()
 	ifstream i("bwapi-data\\AnyRace_CoachAI.json");
 	j = json::parse(i);
 
+	workerCutLimit = j["Control Panel"]["workerCutLimit"].get<int>();
 	dontDrift = j["Control Panel"]["dontDrift"].get<int>();
 	if (dontDrift > 0)
 		dontDrift = dontDrift * 24;
@@ -422,9 +426,9 @@ void AnyRace_CoachAI::onFrame()	// Called every game frame.
 
 	//Broodwar->hasPath();
 	Broodwar->setTextSize(Text::Size::Huge);
-	Broodwar->drawTextScreen(135, 0, "%cCoachAI", Text::Turquoise);
+	Broodwar->drawTextScreen(134, 0, "%cCoachAI", Text::Turquoise);
 	Broodwar->setTextSize();
-	Broodwar->drawTextScreen(215, 4, "%cv3.2", Text::Turquoise);
+	Broodwar->drawTextScreen(213, 4, "%c3.2.1", Text::Turquoise);
 
 	if (FPS < 1) //gamePaused
 		FPS = 24;
@@ -474,10 +478,20 @@ void AnyRace_CoachAI::onFrame()	// Called every game frame.
 	if (Broodwar->isReplay())
 		return Replay();
 
+	if (gameover && FrameCount > lastChecked16)
+	{
+		Broodwar->sendText("%s", "game over man");
+		gameover = false;
+	}
+
 	if (dontDrift != -1)
 	{
-		if (dontDrift < 1)
-			Broodwar->leaveGame();
+		if (dontDrift < 1 && !gameover)
+		{
+			Broodwar << Text::BrightRed << Text::Align_Center << "Time out !" << endl;
+			gameover = true;
+			lastChecked16 = FrameCount + 96;
+		}
 		else
 		{
 			if (!Broodwar->isPaused())
@@ -1176,6 +1190,13 @@ void AnyRace_CoachAI::onFrame()	// Called every game frame.
 		for (int i = 0; i < enemies.size(); i++)
 			match += enemies[i]->getRace().getName().substr(0, 1);
 
+	if (!Broodwar->isPaused() && !gameover && workersProductionStopped / 24 > workerCutLimit)
+	{
+		Broodwar << Text::Blue << Text::Align_Center << "WorkerCut too high !" << endl;
+		gameover = true;
+		lastChecked16 = FrameCount + 96;
+	}
+
 	Broodwar->drawTextScreen(245, 25, "%c%s %c%s", Text::Purple, match.c_str(), Text::White, mapName.c_str());
 	Broodwar->drawTextScreen(310, 15, "%cWorkers prod., stopped for: %c%s,%c%.1fw", Text::Grey, Text::BrightRed, getTime(workersProductionStopped / FPS).c_str(),
 		Text::Turquoise, (workersProductionStopped / FPS) / 12.5);
@@ -1302,7 +1323,7 @@ void AnyRace_CoachAI::onFrame()	// Called every game frame.
 				Broodwar->drawTextScreen(290, 165, "%c%s", 27, K2.c_str());
 			}
 			//cuty
-			Broodwar->drawTextScreen(5, 106, "%cWorkersCut log:\n\r%s", Text::White, workersCutLog.c_str());
+			Broodwar->drawTextScreen(5, 106, "%cWorkersCut log: %ss\n\r%s", Text::White, to_string(workersProductionStopped_LastTime / FPS).c_str(), workersCutLog.c_str());
 			Broodwar->drawTextScreen(65, 106, "\n\r%c%s", Text::White, workersCutLog2.c_str());
 		}
 		else
