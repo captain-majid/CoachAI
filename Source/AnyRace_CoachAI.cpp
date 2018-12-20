@@ -87,6 +87,8 @@ bool F9;
 int F9_Pressed = -1;
 bool F11;
 int F11_Pressed;
+bool F12;
+int F12_Pressed;
 bool DOWN;
 bool UP;
 
@@ -429,7 +431,7 @@ void AnyRace_CoachAI::onFrame()	// Called every game frame.
 	Broodwar->setTextSize(Text::Size::Huge);
 	Broodwar->drawTextScreen(134, 0, "%cCoachAI", Text::Turquoise);
 	Broodwar->setTextSize();
-	Broodwar->drawTextScreen(213, 4, "%c3.22", Text::Turquoise);
+	Broodwar->drawTextScreen(213, 4, "%c3.24", Text::Turquoise);
 
 	if (FPS < 1) //gamePaused
 		FPS = 24;
@@ -485,6 +487,20 @@ void AnyRace_CoachAI::onFrame()	// Called every game frame.
 		gameover = false;
 	}
 
+	static int lastCheckedFrame_minerals1 = 0;
+	static int lastCheckedFrame_minerals2 = 0;
+	if (!Broodwar->isPaused() && Broodwar->elapsedTime() *  0.6718 < 900 && lastCheckedFrame_minerals1 < FrameCount && Broodwar->self()->minerals() > 500 && Broodwar->self()->minerals() < 750)
+	{
+		lastCheckedFrame_minerals1 = FrameCount + FPS * 3;
+		PlaySound(L".\\bwapi-data\\5- spend_more_minerals.wav", NULL, SND_ASYNC);
+	}
+	if (!Broodwar->isPaused() && Broodwar->elapsedTime() *  0.6718 < 900 && lastCheckedFrame_minerals2 < FrameCount && Broodwar->self()->minerals() > 750)
+	{
+		lastCheckedFrame_minerals2 = FrameCount + FPS * 1;
+		PlaySound(L".\\bwapi-data\\5- spend_more_minerals.wav", NULL, SND_ASYNC);
+	}
+
+	static int lastCheckedFrame_dontDrift = 0;
 	if (dontDrift != -1)
 	{
 		if (dontDrift < 1 && !gameover)
@@ -502,9 +518,23 @@ void AnyRace_CoachAI::onFrame()	// Called every game frame.
 				;//do nothing
 			else
 			{
-				Broodwar->setTextSize(Text::Size::Large);
-				Broodwar->drawTextScreen(240, 0, "%c%s", Text::Default, getTime(dontDrift / FPS).c_str());
-				Broodwar->setTextSize();
+				if (dontDrift / FPS < 15 && FPS < 25 && !Broodwar->isPaused())// initial notification delay, 2nd bool is only for game start.
+				{
+					if (lastCheckedFrame_dontDrift < FrameCount)
+					{
+						lastCheckedFrame_dontDrift = FrameCount + FPS * 1;
+						PlaySound(L".\\bwapi-data\\4- beep.wav", NULL, SND_ASYNC);
+						Broodwar->setTextSize(Text::Size::Large);
+						Broodwar->drawTextScreen(240, 0, "%c%s", 8, getTime(dontDrift / FPS).c_str());
+						Broodwar->setTextSize();
+					}
+				}
+				else
+				{
+					Broodwar->setTextSize(Text::Size::Large);
+					Broodwar->drawTextScreen(240, 0, "%c%s", Text::Default, getTime(dontDrift / FPS).c_str());
+					Broodwar->setTextSize();
+				}
 			}
 		}
 	}
@@ -581,8 +611,19 @@ void AnyRace_CoachAI::onFrame()	// Called every game frame.
 	F8 = Broodwar->getKeyState(Key::K_F8);
 	F9 = Broodwar->getKeyState(Key::K_F9);
 	F11 = Broodwar->getKeyState(Key::K_F11);
+	F12 = Broodwar->getKeyState(Key::K_F12);
 	shift = Broodwar->getKeyState(Key::K_SHIFT);
 	ctrl = Broodwar->getKeyState(Key::K_CONTROL);
+
+	if (F12_Pressed == 1)
+	{
+		Broodwar->pauseGame();
+	}
+	if (F12_Pressed == 2)
+	{
+		F12_Pressed = 0;
+		Broodwar->resumeGame();
+	}
 
 	static int lastCheckedFrame4 = 0;
 	if (F5 && lastCheckedFrame4 < FrameCount)
@@ -1296,7 +1337,10 @@ void AnyRace_CoachAI::onFrame()	// Called every game frame.
 	}
 	else if (F5_Pressed == 0)
 	{
-		Broodwar->drawTextScreen(143, 25, "%cHotkeys: (%c%d%c)", 8, 17, keysPressed.size(), 8);
+		if (ctrl)
+			Broodwar->drawTextScreen(143, 25, "%cHotkeys: (%c%d%c)", 14, 17, keysPressed.size(), 14);
+		else
+			Broodwar->drawTextScreen(143, 25, "%cHotkeys: (%c%d%c)", 8, 17, keysPressed.size(), 8);
 		int y = 35;
 		for (auto entry : hkAll)
 		{
@@ -1513,6 +1557,13 @@ void AnyRace_CoachAI::onFrame()	// Called every game frame.
 	workersProductionStoppedPrev = workersProductionStopped;
 	prevScreen = currScreen;
 	prevSelectedUnits = selectedUnits;
+
+	static int lastCheckedFrame93 = 0;
+	if (F12 && lastCheckedFrame93 < FrameCount)
+	{
+		lastCheckedFrame93 = FrameCount + FPS / 6;
+		F12_Pressed++;
+	}
 }
 int Dragoons;
 int tankOuterSplashRadius;
