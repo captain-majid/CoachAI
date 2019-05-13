@@ -1,5 +1,5 @@
-_***This BWAPI-AI/UDAI (User defined AI) works as an in-game helper and also as an online replay analyzer.
-It can help the players at-all-levels to improve, also to test and sense and remember things that weren't easy/possible before.***_
+>_**This BWAPI-AI/UDAI (User defined AI) works as an in-game helper and also as an online replay analyzer.
+It can help the players at-all-levels to improve, also to test and sense and remember things that weren't easy/possible before.**_
 # Coach AI has arrived !
 ![Coach AI has arrived !](https://i.ibb.co/VgLmsJC/Carrier-SCR-Art2-resize.jpg)
 > _**Note**_:
