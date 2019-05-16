@@ -75,16 +75,27 @@ This config file allows the player to modify/disable/enable many values:
 
 # Message shortcuts:
 The player can input some text the UDAI can understand:
+
 **_c1_**="show me the money", **_c2_**="black sheep wall", **_c3_**="operation cwal", **_c4_**="power overwhelming", **_c5_**="staying alive", **_c6_**="there is no cow level".
+
 **_/speed #_**=The delay per frame in milliseconds (Fastest: 42ms/frame, Slowest: 167ms/frame). /speed 0 will run EXTREMELY fast, to reset speed, just type: **_/speed_**
+
 **_UDAI_**=only in multiplayer (ICCUP/LAN) to acknowledge superiority from the non-CoachAI player, and that the CoachAI-player is not cheating by having intel about him.
+
 **_?_** (Only in-replay, obviously!)=Who wins?
 
 # Hotkeys:
 **_F5_**=Toggle between the display of the MacroLog (**_Up,Down_**=Scroll through the MacroLog when more than one page exists) & the Hotkeys tracker. When on the Hotkeys tracker screen, the TimedBO & the Multitasking screen can be seen briefly by pressing **_Shift & Control_**. (in-replay F5 switches between different screens)
+
 **_F6 (also in-replay)_**=Toggle the display mode of in-progress units/buildings.
+
 **_F7_**=Switches between the preset game plans.
-**_F8_**=Switches between the current enemies infos, and also drawing the selected enemy army even while moving in the dark/fog, pressing Shift toggles the in-progress mode.
+
+**_F8_**=Switches between the current enemies infos, and also drawing the selected enemy army even while moving in the dark/fog, 
+pressing Shift toggles the in-progress mode.
+
 **_F9_**=Finds the idle workers (like in SC2).
+
 **_F11 (also in-replay)_**=Displays buildings gaps values and ground units sizes, for quick and easy reference to better walling.
+
 **_F12 (also in-replay)_**=Hide/show the CoachAI's drawing/text.
