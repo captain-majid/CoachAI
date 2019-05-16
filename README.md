@@ -29,11 +29,9 @@ It can help the players at-all-levels to improve, also to test and sense and rem
 - Detecting the game speed, by just looking at the FPS value: 24=Fastest, 21=Faster, 18=Fast, 15=Normal, etc..
 - Customizable notification sound and period when WorkersCut happens (5s), idle worker exist (5s) or you've missed multitasking (20s).
 - Multitasking++:
-
-Screen Multitasking:
+- Screen Multitasking:
 A counter for each screen you step into, with total jumps during the game, the average stay @1 screen, the total stay on each screen for above 5s (customizable live, by editing totalTimeOnScreenOrSelectionAbove) and finally, a customizable notification sound when you stay @1 screen for above 20s (customizable live, by editing sameScreenOrSelectionWarningEvery).
-
-Selection Multitasking:
+- Selection Multitasking:
 A counter for each selection you select, with total switches during the game, the average focus @1 selection, the total focus on each selection for above 5s (customizable live, by editing totalTimeOnScreenOrSelectionAbove) and finally, a customizable notification sound when you focus @1 selection for above 20s (customizable live, by editing sameScreenOrSelectionWarningEvery).
 - TimedBO: most of us might forget what was planned before the game, so a written BO and tips on the game screen that dynamically prepares you for "What next?" JIT, will accelerate the familiarity with a specific build remarkably.
 #  Features in-replay:
@@ -42,6 +40,12 @@ A counter for each selection you select, with total switches during the game, th
 - Showing each unit order and drawing a line to the order target if there is a target.
 - Recording each player BO. (only the 6th worker is logged for each player, to see his split skill. only the 1st created supply unit is logged, you don't want every Overlord created to be recorded !, for more info see replayLogUnitsFor/replayLogSupplyFor in the json file)
 - Easily distinguishing which players against which on team replays, (even SC:R doesn't has this !, maybe time to write some code lazy Blizzard ?)
+- During team replays showing if playerX allied with playerY, and if playerY also did the same.
+- Automatic highlighting of idle workers.
+- Recording the max number of idle workers of each player, and when that happened.
+- The screen will automatically move to where a Nuclear launch, Comsat scan or Storm is positioned.
+- An intuitive/easier way to toggle vision of the selected player (and his allies) by pressing F7 (SC:R requires that you blind ALL other players individually to get the vision of 1 player which is not smart, here we just need to select a player/or 1 of his allies to see the required vision).
+- Displaying live score of produced/killed/lost units/buildings, to get the current state of players, this is about unit/building control (more close to micro, same as the score screen you see at the end of game/replay).
 
 # AnyRace_CoachAI.json:
 This config file allows the player to modify/disable/enable many values:
@@ -68,13 +72,6 @@ This config file allows the player to modify/disable/enable many values:
 - mineralsAboveLog (default=750): logs the time when you're above certain amount of minerals, and for how long that was.
 - Bo1Text: an editable static build order that appear on-game screen, you can use "\n" to move to a new line.
 - TimedBO: an editable dynamic build order that appear on-game screen, it highlights what should be done next JIT.
-
-- During team replays showing if playerX allied with playerY, and if playerY also did the same.
-- Automatic highlighting of idle workers.
-- Recording the max number of idle workers of each player, and when that happened.
-- The screen will automatically move to where a Nuclear launch, Comsat scan or Storm is positioned.
-- An intuitive/easier way to toggle vision of the selected player (and his allies) by pressing F7 (SC:R requires that you blind ALL other players individually to get the vision of 1 player which is not smart, here we just need to select a player/or 1 of his allies to see the required vision).
-- Displaying live score of produced/killed/lost units/buildings, to get the current state of players, this is about unit/building control (more close to micro, same as the score screen you see at the end of game/replay).
 
 # Message shortcuts:
 The player can input some text the UDAI can understand:
