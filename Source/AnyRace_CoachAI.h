@@ -10,7 +10,10 @@ public:
   virtual void onStart() override;
   virtual void onEnd(bool isWinner) override;
   virtual void onFrame() override;
+  void DrawHotkeysAndEnemyKilled();
   void custom();
+  int parseTime(std::string str);
+
   void hotKeyHandler();
   std::string convertAsciiToString(BWAPI::Key & k);
   void populatePage();

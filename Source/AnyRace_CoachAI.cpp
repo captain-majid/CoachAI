@@ -22,6 +22,8 @@ int mineralsAbove[32] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
 bool isLeave, isGG;
 Player plSelectedTemp;
 int workerCutLimit;
+int workerCutLimitForOnce;
+int spend_more_minerals_WarningFor;
 bool gameover;
 static int lastChecked16 = 0;
 map<Position, int> baseMineralsWorkersMap;
@@ -36,6 +38,11 @@ int minerals_250;
 int minerals_500;
 int minerals_750;
 int minerals_1000;
+int mineralsAboveLimit;
+int mineralsAboveLimitPrev;
+int mineralsAboveLimit_LastTime;
+int mineralsAboveLimit_LastTimeCounter;
+string mineralsAboveLimitLog;
 
 Position currScreen;
 Position prevScreen;
@@ -76,7 +83,7 @@ string gameTime;
 bool F5;
 int F5_Pressed;
 bool F6;
-int F6_Pressed;
+int F6_Pressed = 1;
 bool F7;
 int F7_Pressed = -1;
 bool F8;
@@ -120,6 +127,7 @@ bool logUnitsProduction;
 int replayLogUnitsFor;
 int replayLogSupplyFor;
 int dontDrift;
+int mineralsAboveValue;
 
 int autoBuildSuppliesBeforeBlocked;
 int maxWorkers;
@@ -134,7 +142,6 @@ int idleProdFrameCounter;
 int idleFightingUnitWarningEvery;
 int idleFightUnits;
 int idleFightFrameCounter;
-int workersProductionStoppedSeconds;
 
 int mineralsWorker;
 int gasWorker;
@@ -147,6 +154,7 @@ int	idleWorkers;
 int	idleWorkersFor;
 int inProgressWorkers;
 int notIdleResourceDepot;
+int workersProductionStoppedSeconds;
 int workersProductionStopped;
 int workersProductionStoppedPrev;
 int workersProductionStopped_LastTime;
@@ -159,7 +167,8 @@ vector<Position> idleWorkerPos;
 // To quickly test things:
 //#include "stdafx.h"
 //#include <iostream> 
-//
+//#include <list>
+
 //using namespace std;
 //
 //int main()
@@ -402,13 +411,23 @@ void AnyRace_CoachAI::onStart()
 		}
 
 	ifstream i("bwapi-data\\AnyRace_CoachAI.json");
-	j = json::parse(i);
+	try
+	{
+		j = json::parse(i);
 
-	workerCutLimit = j["Control Panel"]["workerCutLimit"].get<int>();
-	dontDrift = j["Control Panel"]["dontDrift"].get<int>();
-	if (dontDrift > 0)
+		workerCutLimit = j["Control Panel"]["workerCutLimit"].get<int>();
+		workerCutLimitForOnce = j["Control Panel"]["workerCutLimitForOnce"].get<int>();
+		dontDrift = j["Control Panel"]["dontDrift"].get<int>();
+		spend_more_minerals_WarningFor = j["Control Panel"]["spend_more_minerals_WarningFor"].get<int>();
+		mineralsAboveValue = j["Control Panel"]["mineralsAboveLog"].get<int>();
+	}
+	catch (exception e)
+	{
+		jsonOK = false;
+	}
+
+	if (jsonOK && dontDrift > 0)
 		dontDrift = dontDrift * 24;
-
 }
 
 void AnyRace_CoachAI::onEnd(bool isWinner)
@@ -431,7 +450,7 @@ void AnyRace_CoachAI::onFrame()	// Called every game frame.
 	Broodwar->setTextSize(Text::Size::Huge);
 	Broodwar->drawTextScreen(134, 0, "%cCoachAI", Text::Turquoise);
 	Broodwar->setTextSize();
-	Broodwar->drawTextScreen(213, 4, "%c3.24", Text::Turquoise);
+	Broodwar->drawTextScreen(213, 4, "%c3.30", Text::Turquoise);
 
 	if (FPS < 1) //gamePaused
 		FPS = 24;
@@ -460,7 +479,7 @@ void AnyRace_CoachAI::onFrame()	// Called every game frame.
 			workerCutWarningEvery = j["Control Panel"]["workerCutWarningEvery"].get<int>() * FPS;
 			idleProductionBuildingWarningEvery = j["Control Panel"]["idleProductionBuildingWarningEvery"].get<int>() * FPS;
 			idleFightingUnitWarningEvery = j["Control Panel"]["idleFightingUnitWarningEvery"].get<int>() * FPS;
-			workersProductionStoppedSeconds = j["Control Panel"]["workersProductionStoppedDuring"].get<int>();
+			workersProductionStoppedSeconds = j["Control Panel"]["workersCutCalculationPeriod"].get<int>();
 
 			logWorkersAndSupplyProduction = j["Control Panel"]["logWorkersAndSupplyProduction"].get<bool>();
 			logUnitsProduction = j["Control Panel"]["logUnitsProduction"].get<bool>();
@@ -478,6 +497,25 @@ void AnyRace_CoachAI::onFrame()	// Called every game frame.
 		return;
 	}
 
+	F12 = Broodwar->getKeyState(Key::K_F12);
+	static int lastCheckedFrame93 = 0;
+	if (F12 && lastCheckedFrame93 < FrameCount)
+	{
+		lastCheckedFrame93 = FrameCount + FPS / 6;
+		F12_Pressed++;
+	}
+	if (F12_Pressed == 1)
+	{
+		//Broodwar->pauseGame();
+		Broodwar->setGUI(false);
+	}
+	if (F12_Pressed == 2)
+	{
+		F12_Pressed = 0;
+		//Broodwar->resumeGame();
+		Broodwar->setGUI(true);
+	}
+
 	if (Broodwar->isReplay())
 		return Replay();
 
@@ -489,12 +527,12 @@ void AnyRace_CoachAI::onFrame()	// Called every game frame.
 
 	static int lastCheckedFrame_minerals1 = 0;
 	static int lastCheckedFrame_minerals2 = 0;
-	if (!Broodwar->isPaused() && Broodwar->elapsedTime() *  0.6718 < 900 && lastCheckedFrame_minerals1 < FrameCount && Broodwar->self()->minerals() > 500 && Broodwar->self()->minerals() < 750)
+	if (!Broodwar->isPaused() && Broodwar->elapsedTime() *  0.6718 < spend_more_minerals_WarningFor && lastCheckedFrame_minerals1 < FrameCount && Broodwar->self()->minerals() > 500 && Broodwar->self()->minerals() < 750)
 	{
 		lastCheckedFrame_minerals1 = FrameCount + FPS * 3;
 		PlaySound(L".\\bwapi-data\\5- spend_more_minerals.wav", NULL, SND_ASYNC);
 	}
-	if (!Broodwar->isPaused() && Broodwar->elapsedTime() *  0.6718 < 900 && lastCheckedFrame_minerals2 < FrameCount && Broodwar->self()->minerals() > 750)
+	if (!Broodwar->isPaused() && Broodwar->elapsedTime() *  0.6718 < spend_more_minerals_WarningFor && lastCheckedFrame_minerals2 < FrameCount && Broodwar->self()->minerals() > 750)
 	{
 		lastCheckedFrame_minerals2 = FrameCount + FPS * 1;
 		PlaySound(L".\\bwapi-data\\5- spend_more_minerals.wav", NULL, SND_ASYNC);
@@ -551,7 +589,7 @@ void AnyRace_CoachAI::onFrame()	// Called every game frame.
 			{
 				lastCheckedFrame14 = FrameCount + FPS * 1; // repeat warning every 1s, if same screen
 				PlaySound(L".\\bwapi-data\\2- multitask.wav", NULL, SND_ASYNC);
-				Broodwar << Text::BrightRed << Text::Align_Right << "Switch screens, divide tasks !" << endl;
+				Broodwar << Text::BrightRed << Text::Align_Right << "Switch screens, " << Text::Grey << "you spent much time on 1 screen !" << endl;
 			}
 		}
 		else // screens not the same
@@ -574,7 +612,7 @@ void AnyRace_CoachAI::onFrame()	// Called every game frame.
 			{
 				lastCheckedFrame2 = FrameCount + FPS * 1;
 				PlaySound(L".\\bwapi-data\\2- multitask.wav", NULL, SND_ASYNC);
-				Broodwar << Text::Orange << Text::Align_Right << "Switch units, divide tasks !" << endl;
+				Broodwar << Text::Orange << Text::Align_Right << "Switch units, " << Text::Grey << "you focused too much on 1 selection !" << endl;
 			}
 		}
 		else
@@ -611,24 +649,13 @@ void AnyRace_CoachAI::onFrame()	// Called every game frame.
 	F8 = Broodwar->getKeyState(Key::K_F8);
 	F9 = Broodwar->getKeyState(Key::K_F9);
 	F11 = Broodwar->getKeyState(Key::K_F11);
-	F12 = Broodwar->getKeyState(Key::K_F12);
 	shift = Broodwar->getKeyState(Key::K_SHIFT);
 	ctrl = Broodwar->getKeyState(Key::K_CONTROL);
-
-	if (F12_Pressed == 1)
-	{
-		Broodwar->pauseGame();
-	}
-	if (F12_Pressed == 2)
-	{
-		F12_Pressed = 0;
-		Broodwar->resumeGame();
-	}
 
 	static int lastCheckedFrame4 = 0;
 	if (F5 && lastCheckedFrame4 < FrameCount)
 	{
-		F6_Pressed = 0;
+		F6_Pressed = 1;
 		F7_Pressed = -1;
 		F8_Pressed = -1;
 		lastCheckedFrame4 = FrameCount + FPS / 6;
@@ -708,11 +735,11 @@ void AnyRace_CoachAI::onFrame()	// Called every game frame.
 				Broodwar << Text::Align_Right << "Not allowed to queue units more than " << maxProductionBuildingQueue << endl;
 			}
 
-			if (u->isTraining() && u->getType().isResourceDepot() && Broodwar->elapsedTime() *  0.6718 > workersProductionStoppedSeconds)
-			{
-				u->cancelTrain();
-				Broodwar << Text::Align_Right << "Not allowed to make workers after " << getTime(workersProductionStoppedSeconds) << endl;
-			}
+			//if (u->isTraining() && u->getType().isResourceDepot() && Broodwar->elapsedTime() *  0.6718 > workersProductionStoppedSeconds)
+			//{
+			//	u->cancelTrain();
+			//	Broodwar << Text::Align_Right << "Not allowed to make workers after " << getTime(workersProductionStoppedSeconds) << endl;
+			//}
 
 		}
 		char color = Broodwar->self()->getTextColor();
@@ -879,7 +906,7 @@ void AnyRace_CoachAI::onFrame()	// Called every game frame.
 					if (ut.getName() == "Zerg_Egg")
 						ut = u->getBuildType();
 					if (shift)
-						listOfInCompleteUnits_Enemy.push_back(formated(ut) + " " + to_string(u->getRemainingBuildTime() / FPS));
+						listOfInCompleteUnits_Enemy.push_back(formated(ut) + " " + to_string(u->getRemainingBuildTime() / FPS + 1));
 					else if (!shift)
 						listOfInCompleteUnits_Enemy.push_back(formated(ut));
 				}
@@ -908,7 +935,7 @@ void AnyRace_CoachAI::onFrame()	// Called every game frame.
 				else
 				{
 					if (shift)
-						listOfInCompleteBuildings_Enemy.push_back(formated(ut) + " " + to_string(u->getRemainingBuildTime() / FPS));
+						listOfInCompleteBuildings_Enemy.push_back(formated(ut) + " " + to_string(u->getRemainingBuildTime() / FPS + 1));
 					else if (!shift)
 						listOfInCompleteBuildings_Enemy.push_back(formated(ut));
 				}
@@ -1032,7 +1059,7 @@ void AnyRace_CoachAI::onFrame()	// Called every game frame.
 				if (ut.getName() == "Zerg_Egg")
 					ut = u->getBuildType();
 				if (F6_Pressed == 1)
-					listOfInCompleteUnits.push_back(formated(ut) + " " + to_string(u->getRemainingBuildTime() / FPS));
+					listOfInCompleteUnits.push_back(formated(ut) + " " + to_string(u->getRemainingBuildTime() / FPS + 1));
 				else listOfInCompleteUnits.push_back(formated(ut));
 			}
 		}
@@ -1067,11 +1094,15 @@ void AnyRace_CoachAI::onFrame()	// Called every game frame.
 
 				if (u->isUpgrading())
 					inProgressUpgradeTech += formated(u->getUpgrade().getName()) + " " + to_string(u->getRemainingUpgradeTime() / FPS) + "\n\r";
+				if (ut.getName() == "Protoss_Shield_Battery")
+				{
+					Broodwar->drawTextMap(u->getPosition(), "%d", u->getEnergy());
+				}
 			}
 			else
 			{
 				if (F6_Pressed == 1)
-					listOfInCompleteBuildings.push_back(formated(ut) + " " + to_string(u->getRemainingBuildTime() / FPS));
+					listOfInCompleteBuildings.push_back(formated(ut) + " " + to_string(u->getRemainingBuildTime() / FPS + 1));
 				else listOfInCompleteBuildings.push_back(formated(ut));
 			}
 		}
@@ -1163,7 +1194,6 @@ void AnyRace_CoachAI::onFrame()	// Called every game frame.
 	}
 	else
 	{
-
 		if (workersProductionStopped_LastTimeCounter != 0 && workersProductionStopped_LastTime / FPS > 1 && !Broodwar->isPaused())
 		{
 			workersCutLogSize++;
@@ -1245,7 +1275,14 @@ void AnyRace_CoachAI::onFrame()	// Called every game frame.
 
 	if (!Broodwar->isPaused() && !gameover && workersProductionStopped / 24 > workerCutLimit)
 	{
-		Broodwar << Text::Blue << Text::Align_Center << "WorkerCut too high !" << endl;
+		Broodwar << Text::Blue << Text::Align_Center << "You cut workers intermittently for " << workerCutLimit << "s" << endl;
+		gameover = true;
+		lastChecked16 = FrameCount + 96;
+	}
+
+	if (workerCutLimitForOnce != -1 && !Broodwar->isPaused() && !gameover && workersProductionStopped_LastTimeCounter / 24 > workerCutLimitForOnce)
+	{
+		Broodwar << Text::Orange << Text::Align_Center << "You cut workers continuously for " << workerCutLimitForOnce << "s" << endl;
 		gameover = true;
 		lastChecked16 = FrameCount + 96;
 	}
@@ -1265,6 +1302,22 @@ void AnyRace_CoachAI::onFrame()	// Called every game frame.
 			minerals_750++;
 		if (Broodwar->self()->minerals() > 1000)
 			minerals_1000++;
+
+		if (Broodwar->self()->minerals() > mineralsAboveValue)
+			mineralsAboveLimit++;
+	}
+	static int lastCheckedFrame94 = 0;
+	if (mineralsAboveLimit != mineralsAboveLimitPrev)// minerals increase going
+	{
+		mineralsAboveLimit_LastTimeCounter++;
+		mineralsAboveLimit_LastTime = mineralsAboveLimit_LastTimeCounter;
+	}
+	else//increase stopped, lets log
+	{
+		if (mineralsAboveLimit_LastTimeCounter != 0 && mineralsAboveLimit_LastTime / FPS > 1 && !Broodwar->isPaused())
+			mineralsAboveLimitLog += getTime((Broodwar->elapsedTime() * 0.6718) - mineralsAboveLimit_LastTime / FPS) + " " + to_string(mineralsAboveLimit_LastTime / FPS) + "s\n\r";
+
+		mineralsAboveLimit_LastTimeCounter = 0;
 	}
 
 	Broodwar->drawTextScreen(5, 63, "%cMinerals above:\n\r250: %c%s, %c500: %c%s\n\r%c750: %c%s, %c1000: %c%s",
@@ -1276,8 +1329,14 @@ void AnyRace_CoachAI::onFrame()	// Called every game frame.
 
 	Broodwar->drawTextScreen(5, 15, "%cMinerals spent: %d + %cGas spent: %d = %cMacro: %d", 31, Minerals, 7, Gas, 17, Minerals + Gas);
 	UnitType supplyName = Broodwar->self()->getRace().getSupplyProvider();
-	Broodwar->drawTextScreen(190, 330, "%cSupply blocked in: %c%d, %cmaxed with: %c%d %s", 3, Text::BrightRed, supplyAvailable / 2,
-		3, Text::BrightRed, (200 - Broodwar->self()->supplyTotal() / 2) / 8, formated(supplyName).c_str());
+	if (FPS != 24)
+	{
+		Broodwar->drawBoxScreen(185, 329, 450, 344, Colors::Black, true);
+		Broodwar->drawTextScreen(190, 330, "%cWarning: %cThe game speed isn't Fastest: 24 FPS", Text::BrightRed, Text::White);
+	}
+	//else
+	//	Broodwar->drawTextScreen(190, 330, "%cSupply blocked in: %c%d, %cmaxed with: %c%d %s", 3, Text::BrightRed, supplyAvailable / 2,
+	//		3, Text::BrightRed, (200 - Broodwar->self()->supplyTotal() / 2) / 8, formated(supplyName).c_str());
 
 	if (F5_Pressed == 1)
 	{
@@ -1337,52 +1396,50 @@ void AnyRace_CoachAI::onFrame()	// Called every game frame.
 	}
 	else if (F5_Pressed == 0)
 	{
-		if (ctrl)
-			Broodwar->drawTextScreen(143, 25, "%cHotkeys: (%c%d%c)", 14, 17, keysPressed.size(), 14);
-		else
-			Broodwar->drawTextScreen(143, 25, "%cHotkeys: (%c%d%c)", 8, 17, keysPressed.size(), 8);
-		int y = 35;
-		for (auto entry : hkAll)
+		DrawHotkeysAndEnemyKilled();
+		if (!shift && !ctrl)
 		{
-			Broodwar->drawTextScreen(143, y, "%c%s: %c%s", 8, entry.first.c_str(), 27, entry.second.c_str());
-			y += 10;
+			Broodwar->drawTextScreen(1, 106, "%cWorkCut%c%d%c\n\r%s", Text::White, Text::BrightRed, workersProductionStopped_LastTime / FPS, Text::White, workersCutLog.c_str());
+			Broodwar->drawTextScreen(60, 106, "%cMine>%d%c%d%c\n\r%s", Text::Turquoise, mineralsAboveValue, Text::BrightRed, mineralsAboveLimit_LastTime / FPS, Text::White, mineralsAboveLimitLog.c_str());
+			//Broodwar->drawLineScreen(58, 106, 58, 300, Text::Blue);
 		}
-		//=========================================================
-		int kCount;
-		string K0, K1, K2 = "";
-		int colSize = 0;
-		for (auto u : UnitTypes::allUnitTypes())
+		if (shift)
 		{
-			kCount = Broodwar->self()->killedUnitCount(u);
-			if (kCount > 0)
-			{
-				colSize++;
-				if (colSize < 11)
-					K0 += to_string(kCount) + " " + formated(u) + "\n\r";
-				if (colSize < 22 && colSize > 10)
-				{
-					K1 += to_string(kCount) + " " + formated(u) + "\n\r";
-				}
-				if (colSize > 22)
-				{
-					K2 += to_string(kCount) + " " + formated(u) + "\n\r";
-				}
-			}
-		}
+			Broodwar->drawBox(CoordinateType::Screen, 5, 106, 125, 400, Colors::Black, true);
+			Broodwar->drawTextScreen(5, 106, "%c%s\n", Text::Turquoise, j["Preset Plan"]["TimedBO Title"].get<string>().c_str());
+			string bo = j["Preset Plan"]["TimedBO"].get<string>().c_str();
+			string delimiter = "--->";
+			size_t pos = 0;
 
-		if (!shift)
-		{
-			Broodwar->drawTextScreen(125, 165, "%cEnemies killed:\n\r%c%s", Text::BrightRed, Text::Tan, K0.c_str());
-			if (ctrl)
+			string stepTime, step;
+			vector<string> steps;
+
+			while ((pos = bo.find(delimiter)) != string::npos)
 			{
-				Broodwar->drawTextScreen(215, 165, "%c%s", 27, K1.c_str());
-				Broodwar->drawTextScreen(290, 165, "%c%s", 27, K2.c_str());
+				step = bo.substr(0, pos);
+				steps.push_back(step);
+				bo.erase(0, pos + delimiter.length());
 			}
-			//cuty
-			Broodwar->drawTextScreen(5, 106, "%cWorkersCut log: %ss\n\r%s", Text::White, to_string(workersProductionStopped_LastTime / FPS).c_str(), workersCutLog.c_str());
-			Broodwar->drawTextScreen(65, 106, "\n\r%c%s", Text::White, workersCutLog2.c_str());
+			steps.push_back(bo);
+
+			int yy = 115;
+			int now = Broodwar->elapsedTime() * 0.6718;
+			bool colorDone = false;
+			for (string s : steps)
+			{
+				stepTime = s.substr(0, 5);
+				if (parseTime(stepTime) > now && !colorDone)
+				{
+					Broodwar->drawTextScreen(5, yy, "%c%s\n", Text::Turquoise, s.c_str());
+					colorDone = true;
+				}
+				else
+					Broodwar->drawTextScreen(5, yy, "%c%s\n", Text::Blue, s.c_str());
+				yy += 10;
+			}
+			Broodwar->drawTextScreen(5, yy, "%c%s\n", Text::Red, j["Preset Plan"]["TimedBO Tips"].get<string>().c_str());
 		}
-		else
+		if (ctrl)
 		{
 			Broodwar->drawTextScreen(5, 106, "%cMultitasking:\n\r%c==========\n\r%cScreen counter: %c%.0fs", 14, 4, 14, 4, screenCounter / FPS);
 			Broodwar->drawTextScreen(5, 143, "%cScreen jumps: %c%d", Text::Blue, Text::White, screenJumps.size());
@@ -1398,7 +1455,7 @@ void AnyRace_CoachAI::onFrame()	// Called every game frame.
 				}
 			}
 			Broodwar->drawTextScreen(5, 153, "%cAvg stay: %c%.1fs", Text::Blue, Text::White, totalStay / screenJumps.size());
-			Broodwar->drawTextScreen(5, 163, "%cTotal stay > %c%ds: %c%s", Text::Blue, 7, totalTimeOnScreenOrSelectionAbove, Text::White, getTime(totalStayAbove).c_str());
+			Broodwar->drawTextScreen(5, 163, "%cAll stay > %c%ds: %c%s", Text::Blue, 7, totalTimeOnScreenOrSelectionAbove, Text::White, getTime(totalStayAbove).c_str());
 			//=========================
 			Broodwar->drawTextScreen(5, 183, "%cSelection counter: %c%.0fs", 14, 4, selectedUnitsCounter / FPS);
 			Broodwar->drawTextScreen(5, 193, "%cSelection changed: %c%d", Text::Blue, Text::White, selectedUnitsJumps.size());
@@ -1414,7 +1471,7 @@ void AnyRace_CoachAI::onFrame()	// Called every game frame.
 				}
 			}
 			Broodwar->drawTextScreen(5, 203, "%cAvg selection: %c%.1fs", Text::Blue, Text::White, totalStayUnits / selectedUnitsJumps.size());
-			Broodwar->drawTextScreen(5, 213, "%cTotal selection > %c%ds: %c%s", Text::Blue, 7, totalTimeOnScreenOrSelectionAbove, Text::White, getTime(totalStayAboveUnits).c_str());
+			Broodwar->drawTextScreen(5, 213, "%cAll select > %c%ds: %c%s", Text::Blue, 7, totalTimeOnScreenOrSelectionAbove, Text::White, getTime(totalStayAboveUnits).c_str());
 		}
 	}
 
@@ -1555,18 +1612,59 @@ void AnyRace_CoachAI::onFrame()	// Called every game frame.
 		buildSupply(u, supplyUnit);
 	} // closure: unit iterator
 	workersProductionStoppedPrev = workersProductionStopped;
+	mineralsAboveLimitPrev = mineralsAboveLimit;
 	prevScreen = currScreen;
 	prevSelectedUnits = selectedUnits;
-
-	static int lastCheckedFrame93 = 0;
-	if (F12 && lastCheckedFrame93 < FrameCount)
+}
+void AnyRace_CoachAI::DrawHotkeysAndEnemyKilled()
+{
+	Broodwar->drawTextScreen(143, 25, "%cHotkeys: (%c%d%c)", 8, 17, keysPressed.size(), 8);
+	int y = 35;
+	for (auto entry : hkAll)
 	{
-		lastCheckedFrame93 = FrameCount + FPS / 6;
-		F12_Pressed++;
+		Broodwar->drawTextScreen(143, y, "%c%s: %c%s", 8, entry.first.c_str(), 27, entry.second.c_str());
+		y += 10;
 	}
+	//=========================================================
+	int kCount;
+	string K0, K1, K2 = "";
+	int colSize = 0;
+	for (auto u : UnitTypes::allUnitTypes())
+	{
+		kCount = Broodwar->self()->killedUnitCount(u);
+		if (kCount > 0)
+		{
+			colSize++;
+			if (colSize < 11)
+				K0 += to_string(kCount) + " " + formated(u) + "\n\r";
+			if (colSize < 22 && colSize > 10)
+			{
+				K1 += to_string(kCount) + " " + formated(u) + "\n\r";
+			}
+			if (colSize > 22)
+			{
+				K2 += to_string(kCount) + " " + formated(u) + "\n\r";
+			}
+		}
+	}
+
+	Broodwar->drawTextScreen(125, 165, "%cEnemies killed:\n\r%c%s", Text::BrightRed, Text::Tan, K0.c_str());
+	Broodwar->drawTextScreen(215, 165, "%c%s", 27, K1.c_str());
+	Broodwar->drawTextScreen(315, 165, "%c%s", 27, K2.c_str());
 }
 int Dragoons;
 int tankOuterSplashRadius;
+int mm, ss;
+int allSeconds;
+
+int AnyRace_CoachAI::parseTime(string str)
+{
+	mm = std::stoi(str.substr(0, 2), nullptr, 10);
+	ss = std::stoi(str.substr(3, 2), nullptr, 10);
+
+	allSeconds = mm * 60 + ss;
+	return allSeconds;
+}
 
 void AnyRace_CoachAI::custom()
 {
@@ -1689,7 +1787,7 @@ void AnyRace_CoachAI::hotKeyHandler()
 		int y = 35;
 		for (auto entry : keysPressedMap)
 		{
-			Broodwar->drawTextScreen(125, y, "%c%d", 17, entry.second);
+			Broodwar->drawTextScreen(125, y, "%c%d", Text::Orange, entry.second);
 			y += 10;
 		}
 	}
@@ -1942,7 +2040,7 @@ void AnyRace_CoachAI::Replay()
 			}
 		}
 
-		if (idleWorkers > idleWorkersMaxAll[pid])
+		if (idleWorkers >= idleWorkersMaxAll[pid] && Broodwar->elapsedTime() * 0.6718 > 2)
 		{
 			idleWorkersMaxAll[pid] = idleWorkers;
 			idleWorkersMaxTimeAll[pid] = gameTime;
@@ -2253,7 +2351,7 @@ void AnyRace_CoachAI::Replay()
 						ut = u->getBuildType();
 
 					if (F6_Pressed == 1)
-						listOfInCompleteUnits.push_back(formated(ut) + " " + to_string(u->getRemainingBuildTime() / FPS));
+						listOfInCompleteUnits.push_back(formated(ut) + " " + to_string(u->getRemainingBuildTime() / FPS + 1));
 					else listOfInCompleteUnits.push_back(formated(ut));
 				}
 			}
@@ -2271,7 +2369,7 @@ void AnyRace_CoachAI::Replay()
 				else
 				{
 					if (F6_Pressed == 1)
-						listOfInCompleteBuildings.push_back(formated(ut) + " " + to_string(u->getRemainingBuildTime() / FPS));
+						listOfInCompleteBuildings.push_back(formated(ut) + " " + to_string(u->getRemainingBuildTime() / FPS + 1));
 					else listOfInCompleteBuildings.push_back(formated(ut));
 				}
 			}
@@ -2316,7 +2414,8 @@ void AnyRace_CoachAI::Replay()
 			Broodwar->drawTextScreen(440, 25, "%cUnits:\n\r%c%s%cUnits in progress:\n\r%c%s", Text::DarkGreen, Text::GreyGreen, UnitsFinal.c_str(), 24, Text::GreyGreen, inCompleteUnitsFinal.c_str());
 			Broodwar->drawTextScreen(530, 25, "%cBuildings:\n\r%c%s%cBuildings in progress:\n\r%c%s", Text::DarkGreen, Text::GreyGreen, BuildingsFinal.c_str(), 24, Text::GreyGreen, inCompleteBuildingsFinal.c_str());
 		}
-		Broodwar->drawTextScreen(270, 25, "%cTech:\n\r%c%s%cUpgrade:\n\r%c%s", Text::Blue, Text::Teal, technoFinal.c_str(), Text::Blue, Text::Teal, upgradesFinal.c_str());
+		if (F5_Pressed != 2)
+			Broodwar->drawTextScreen(270, 25, "%cTech:\n\r%c%s%cUpgrade:\n\r%c%s", Text::Blue, Text::Teal, technoFinal.c_str(), Text::Blue, Text::Teal, upgradesFinal.c_str());
 
 		//replay BO log:
 		if (F5_Pressed == 3)
