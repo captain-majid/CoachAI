@@ -6,7 +6,7 @@
 class AnyRace_CoachAI : public BWAPI::AIModule
 {
 public:
-  // Virtual functions for callbacks, leave these as they are.
+  // Virtual functions for callbacks, leave these as they are. 
   virtual void onStart() override;
   virtual void onEnd(bool isWinner) override;
   virtual void onFrame() override;

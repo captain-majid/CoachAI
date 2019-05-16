@@ -450,7 +450,7 @@ void AnyRace_CoachAI::onFrame()	// Called every game frame.
 	Broodwar->setTextSize(Text::Size::Huge);
 	Broodwar->drawTextScreen(134, 0, "%cCoachAI", Text::Turquoise);
 	Broodwar->setTextSize();
-	Broodwar->drawTextScreen(213, 4, "%c3.30", Text::Turquoise);
+	Broodwar->drawTextScreen(213, 4, "%c3.30 ", Text::Turquoise);
 
 	if (FPS < 1) //gamePaused
 		FPS = 24;
