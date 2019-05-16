@@ -50,41 +50,41 @@ A counter for each selection you select, with total switches during the game, th
 # AnyRace_CoachAI.json:
 This config file allows the player to modify/disable/enable many values:
 - _**autoTrainWorkers (default=false)**_: trains 1 worker @time from each base until "maxWorkers" number reached (for Zerg only 1 Hatchery is used for producing).
-- _**maxWorkers (default=50)**_: only works if autoTrainWorkers = true
+- **_maxWorkers (default=50)_**: only works if autoTrainWorkers = true
 - _**autoMine (default=false)**_: makes workers gather Minerals/Gas automatically like in SC2, so there is no idle worker.
-- _**autoBuildSuppliesBeforeBlocked (default=-200)_**: if you set it to 6, the AI will try to build supply units when its 24/30 (for Zerg only 1 Hatchery is used for building)
-- _**maxProductionBuildingQueue (default=2)_**: prevent the player from queuing more workers/units from the same production building.
-- _**workerCutWarningEvery (default=5)_**: in seconds
-- _**idleWorkerWarningEvery (default=5)_**: ^
-- _**idleProductionBuildingWarningEvery (default=10)_**: ^
-- _**idleFightingUnitWarningEvery (default=20)_**: ^
-- _**totalTimeOnScreenOrSelectionAbove (default=5)_**: see Multitasking++
-- _**sameScreenOrSelectionWarningEvery (default=20)_**: see Multitasking++
-- _**logWorkersAndSupplyProduction (default=true)_**: include Probes/Pylons, etc.. in the MacroLog.
-- _**logUnitsProduction (default=true)_**: include Dragoons/Zealots, etc.. in the MacroLog.
-- _**workersCutCalculationPeriod (default=540)_**: affects both game/replay, calculates WorkersCut for the specified 1st minutes in the game/replay.
-- _**replayLogUnitsFor (default=420)_**: in-replay BO recorder, for how long to log units production. (until 7:00)
-- _**replayLogSupplyFor (default=40)_**: in-replay BO recorder, for how long to log the supply indicator. (like 12,Nexus --> until 40/?)
-- _**dontDrift (default=-1)_**: initiates a custom CountDownTimer, just like seen in some missions, but you can use it in any map to practice/polish specific task/timing, when the timer ends the game will too, you can set it in seconds, it works whether its a game start or a saved game, when it reaches 00:15, visual/sound warning will start (this helped me remembering to save the game-state @lets say 6:00), in order to master the game-phases/tasks partially 1st, then as a whole.
-- _**workerCutLimit (default=3600)_**: you can set this to 120 (as a goal/target), this will end the game immediately if you intermittently cut workers for 2 minutes in the default 1st 9 minutes.
-- _**workerCutLimitForOnce (default=-1)_**: same as above but a 1 time continuous cut with this value (lets say 20s) will end the game. 
-- _**spend_more_minerals_WarningFor (default=900)_**: minerals sound warning "Spend more minerals", if minerals 500-750 its every 3s, if > 750 its every 1s, until the default 15 minutes.
-- _**mineralsAboveLog (default=750)_**: logs the time when you're above certain amount of minerals, and for how long that was.
-- _**Bo1Text_**: an editable static build order that appear on-game screen, you can use "\n" to move to a new line.
-- _**TimedBO_**: an editable dynamic build order that appear on-game screen, it highlights what should be done next JIT.
+- **_autoBuildSuppliesBeforeBlocked (default=-200)_**: if you set it to 6, the AI will try to build supply units when its 24/30 (for Zerg only 1 Hatchery is used for building)
+- **_maxProductionBuildingQueue (default=2)_**: prevent the player from queuing more workers/units from the same production building.
+- **_workerCutWarningEvery (default=5)_**: in seconds
+- **_idleWorkerWarningEvery (default=5)_**: ^
+- **_idleProductionBuildingWarningEvery (default=10)_**: ^
+- **_idleFightingUnitWarningEvery (default=20)_**: ^
+- **_totalTimeOnScreenOrSelectionAbove (default=5)_**: see Multitasking++
+- **_sameScreenOrSelectionWarningEvery (default=20)_**: see Multitasking++
+- **_logWorkersAndSupplyProduction (default=true)_**: include Probes/Pylons, etc.. in the MacroLog.
+- **_logUnitsProduction (default=true)_**: include Dragoons/Zealots, etc.. in the MacroLog.
+- **_workersCutCalculationPeriod (default=540)_**: affects both game/replay, calculates WorkersCut for the specified 1st minutes in the game/replay.
+- **_replayLogUnitsFor (default=420)_**: in-replay BO recorder, for how long to log units production. (until 7:00)
+- **_replayLogSupplyFor (default=40)_**: in-replay BO recorder, for how long to log the supply indicator. (like 12,Nexus --> until 40/?)
+- **_dontDrift (default=-1)_**: initiates a custom CountDownTimer, just like seen in some missions, but you can use it in any map to practice/polish specific task/timing, when the timer ends the game will too, you can set it in seconds, it works whether its a game start or a saved game, when it reaches 00:15, visual/sound warning will start (this helped me remembering to save the game-state @lets say 6:00), in order to master the game-phases/tasks partially 1st, then as a whole.
+- **_workerCutLimit (default=3600)_**: you can set this to 120 (as a goal/target), this will end the game immediately if you intermittently cut workers for 2 minutes in the default 1st 9 minutes.
+- **_workerCutLimitForOnce (default=-1)_**: same as above but a 1 time continuous cut with this value (lets say 20s) will end the game. 
+- **_spend_more_minerals_WarningFor (default=900)_**: minerals sound warning "Spend more minerals", if minerals 500-750 its every 3s, if > 750 its every 1s, until the default 15 minutes.
+- **_mineralsAboveLog (default=750)_**: logs the time when you're above certain amount of minerals, and for how long that was.
+- **_Bo1Text_**: an editable static build order that appear on-game screen, you can use "\n" to move to a new line.
+- **_TimedBO_**: an editable dynamic build order that appear on-game screen, it highlights what should be done next JIT.
 
 # Message shortcuts:
 The player can input some text the UDAI can understand:
-_**c1_**="show me the money", _**c2_**="black sheep wall", _**c3_**="operation cwal", _**c4_**="power overwhelming", _**c5_**="staying alive", _**c6_**="there is no cow level".
-_**/speed #_**=The delay per frame in milliseconds (Fastest: 42ms/frame, Slowest: 167ms/frame). /speed 0 will run EXTREMELY fast, to reset speed, just type: _**/speed_**
-_**UDAI_**=only in multiplayer (ICCUP/LAN) to acknowledge superiority from the non-CoachAI player, and that the CoachAI-player is not cheating by having intel about him.
-_**?_** (Only in-replay, obviously!)=Who wins?
+**_c1_**="show me the money", **_c2_**="black sheep wall", **_c3_**="operation cwal", **_c4_**="power overwhelming", **_c5_**="staying alive", **_c6_**="there is no cow level".
+**_/speed #_**=The delay per frame in milliseconds (Fastest: 42ms/frame, Slowest: 167ms/frame). /speed 0 will run EXTREMELY fast, to reset speed, just type: **_/speed_**
+**_UDAI_**=only in multiplayer (ICCUP/LAN) to acknowledge superiority from the non-CoachAI player, and that the CoachAI-player is not cheating by having intel about him.
+**_?_** (Only in-replay, obviously!)=Who wins?
 
 # Hotkeys:
-_**F5_**=Toggle between the display of the MacroLog (_**Up,Down_**=Scroll through the MacroLog when more than one page exists) & the Hotkeys tracker. When on the Hotkeys tracker screen, the TimedBO & the Multitasking screen can be seen briefly by pressing _**Shift & Control_**. (in-replay F5 switches between different screens)
-_**F6 (also in-replay)_**=Toggle the display mode of in-progress units/buildings.
-_**F7_**=Switches between the preset game plans.
-_**F8_**=Switches between the current enemies infos, and also drawing the selected enemy army even while moving in the dark/fog, pressing Shift toggles the in-progress mode.
-_**F9_**=Finds the idle workers (like in SC2).
-_**F11 (also in-replay)_**=Displays buildings gaps values and ground units sizes, for quick and easy reference to better walling.
-_**F12 (also in-replay)_**=Hide/show the CoachAI's drawing/text.
+**_F5_**=Toggle between the display of the MacroLog (**_Up,Down_**=Scroll through the MacroLog when more than one page exists) & the Hotkeys tracker. When on the Hotkeys tracker screen, the TimedBO & the Multitasking screen can be seen briefly by pressing **_Shift & Control_**. (in-replay F5 switches between different screens)
+**_F6 (also in-replay)_**=Toggle the display mode of in-progress units/buildings.
+**_F7_**=Switches between the preset game plans.
+**_F8_**=Switches between the current enemies infos, and also drawing the selected enemy army even while moving in the dark/fog, pressing Shift toggles the in-progress mode.
+**_F9_**=Finds the idle workers (like in SC2).
+**_F11 (also in-replay)_**=Displays buildings gaps values and ground units sizes, for quick and easy reference to better walling.
+**_F12 (also in-replay)_**=Hide/show the CoachAI's drawing/text.
