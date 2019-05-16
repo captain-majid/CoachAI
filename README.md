@@ -85,11 +85,11 @@ The player can input some text the UDAI can understand:
 **_?_** (Only in-replay, obviously!)=Who wins?
 
 # Hotkeys:
-**_F5_**=Toggle between the display of the MacroLog (**_Up,Down_**=Scroll through the MacroLog when more than one page exists) & the Hotkeys tracker. When on the Hotkeys tracker screen, the TimedBO & the Multitasking screen can be seen briefly by pressing **_Shift & Control_**. (in-replay F5 switches between different screens)
+**_F5_**=Toggle between the display of the MacroLog (**_Up,Down_**=Scroll through the MacroLog when more than one page exists) & the Hotkeys tracker. When on the Hotkeys tracker screen, the TimedBO & the Multitasking screen can be seen briefly by pressing **_Shift & Control_**. (in-replay **_F5_** switches between different screens)
 
 **_F6 (also in-replay)_**=Toggle the display mode of in-progress units/buildings.
 
-**_F7_**=Switches between the preset game plans.
+**_F7_**=Switches between the preset game plans.(in-replay **_F7_** toggles the vision of the selected player)
 
 **_F8_**=Switches between the current enemies infos, and also drawing the selected enemy army even while moving in the dark/fog, 
 pressing Shift toggles the in-progress mode.
@@ -99,3 +99,10 @@ pressing Shift toggles the in-progress mode.
 **_F11 (also in-replay)_**=Displays buildings gaps values and ground units sizes, for quick and easy reference to better walling.
 
 **_F12 (also in-replay)_**=Hide/show the CoachAI's drawing/text.
+
+# Installation:
+- Extract the .7z file contents from this [topic](http://www.teamliquid.net/forum/brood-war/531310-human-like-broodwar-ais-revamped) to SC v1.16.1 folder.
+- Extract CoachAI.zip contents to StarCraft\bwapi-data folder.
+- Watch 1m from this [video](https://www.youtube.com/watch?v=vmKHsCGFMa0), but change the AI from Protoss_McRave.dll to AnyRace_CoachAI.dll.
+
+[Download](http://drives.news/CoachAI)
