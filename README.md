@@ -106,3 +106,12 @@ pressing Shift toggles the in-progress mode.
 - Watch 1m from this [video](https://www.youtube.com/watch?v=vmKHsCGFMa0), but change the AI from Protoss_McRave.dll to AnyRace_CoachAI.dll.
 
 [Download](http://drives.news/CoachAI)
+
+# To compile this project:
+* I use Visual Studio 2017.
+* Requires Windows 10 SDK (not the OS itself).
+* Extract [lib.7z](https://drive.google.com/open?id=1UyIE_go2FRpS1OaRAl0JE_jcbV8ZfVqf) contents into the same folder that contains AnyRace_CoachAI.sln, so that a "lib" folder with these contents gets created.
+![requirements](https://github.com/captain-majid/CoachAI/blob/master/c%2B%2B%20BWAPI%20requirements.png)
+
+**_Contact_**: captain.majid@gmail.com
+
