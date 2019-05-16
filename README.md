@@ -29,9 +29,65 @@ It can help the players at-all-levels to improve, also to test and sense and rem
 - Detecting the game speed, by just looking at the FPS value: 24=Fastest, 21=Faster, 18=Fast, 15=Normal, etc..
 - Customizable notification sound and period when WorkersCut happens (5s), idle worker exist (5s) or you've missed multitasking (20s).
 - Multitasking++:
+
 Screen Multitasking:
 A counter for each screen you step into, with total jumps during the game, the average stay @1 screen, the total stay on each screen for above 5s (customizable live, by editing totalTimeOnScreenOrSelectionAbove) and finally, a customizable notification sound when you stay @1 screen for above 20s (customizable live, by editing sameScreenOrSelectionWarningEvery).
+
 Selection Multitasking:
 A counter for each selection you select, with total switches during the game, the average focus @1 selection, the total focus on each selection for above 5s (customizable live, by editing totalTimeOnScreenOrSelectionAbove) and finally, a customizable notification sound when you focus @1 selection for above 20s (customizable live, by editing sameScreenOrSelectionWarningEvery).
 - TimedBO: most of us might forget what was planned before the game, so a written BO and tips on the game screen that dynamically prepares you for "What next?" JIT, will accelerate the familiarity with a specific build remarkably.
+#  Features in-replay:
+- Showing the # of units/buildings & the types of tech/upgrade for each player (just select any player's unit to display the infos).
+- Showing the replay duration beforehand, and also the replay name, date, game title, game type and the map used.
+- Showing each unit order and drawing a line to the order target if there is a target.
+- Recording each player BO. (only the 6th worker is logged for each player, to see his split skill. only the 1st created supply unit is logged, you don't want every Overlord created to be recorded !, for more info see replayLogUnitsFor/replayLogSupplyFor in the json file)
+- Easily distinguishing which players against which on team replays, (even SC:R doesn't has this !, maybe time to write some code lazy Blizzard ?)
 
+# AnyRace_CoachAI.json:
+This config file allows the player to modify/disable/enable many values:
+- autoTrainWorkers (default=false): trains 1 worker @time from each base until "maxWorkers" number reached (for Zerg only 1 Hatchery is used for producing).
+- maxWorkers (default=50): only works if autoTrainWorkers = true
+- autoMine (default=false): makes workers gather Minerals/Gas automatically like in SC2, so there is no idle worker.
+- autoBuildSuppliesBeforeBlocked (default=-200): if you set it to 6, the AI will try to build supply units when its 24/30 (for Zerg only 1 Hatchery is used for building)
+- maxProductionBuildingQueue (default=2): prevent the player from queuing more workers/units from the same production building.
+- workerCutWarningEvery (default=5): in seconds
+- idleWorkerWarningEvery (default=5): ^
+- idleProductionBuildingWarningEvery (default=10): ^
+- idleFightingUnitWarningEvery (default=20): ^
+- totalTimeOnScreenOrSelectionAbove (default=5): see Multitasking++
+- sameScreenOrSelectionWarningEvery (default=20): see Multitasking++
+- logWorkersAndSupplyProduction (default=true): include Probes/Pylons, etc.. in the MacroLog.
+- logUnitsProduction (default=true): include Dragoons/Zealots, etc.. in the MacroLog.
+- workersCutCalculationPeriod (default=540): affects both game/replay, calculates WorkersCut for the specified 1st minutes in the game/replay.
+- replayLogUnitsFor (default=420): in-replay BO recorder, for how long to log units production. (until 7:00)
+- replayLogSupplyFor (default=40): in-replay BO recorder, for how long to log the supply indicator. (like 12,Nexus --> until 40/?)
+- dontDrift (default=-1): initiates a custom CountDownTimer, just like seen in some missions, but you can use it in any map to practice/polish specific task/timing, when the timer ends the game will too, you can set it in seconds, it works whether its a game start or a saved game, when it reaches 00:15, visual/sound warning will start (this helped me remembering to save the game-state @lets say 6:00), in order to master the game-phases/tasks partially 1st, then as a whole.
+- workerCutLimit (default=3600): you can set this to 120 (as a goal/target), this will end the game immediately if you intermittently cut workers for 2 minutes in the default 1st 9 minutes.
+- workerCutLimitForOnce (default=-1): same as above but a 1 time continuous cut with this value (lets say 20s) will end the game. 
+- spend_more_minerals_WarningFor (default=900): minerals sound warning "Spend more minerals", if minerals 500-750 its every 3s, if > 750 its every 1s, until the default 15 minutes.
+- mineralsAboveLog (default=750): logs the time when you're above certain amount of minerals, and for how long that was.
+- Bo1Text: an editable static build order that appear on-game screen, you can use "\n" to move to a new line.
+- TimedBO: an editable dynamic build order that appear on-game screen, it highlights what should be done next JIT.
+
+- During team replays showing if playerX allied with playerY, and if playerY also did the same.
+- Automatic highlighting of idle workers.
+- Recording the max number of idle workers of each player, and when that happened.
+- The screen will automatically move to where a Nuclear launch, Comsat scan or Storm is positioned.
+- An intuitive/easier way to toggle vision of the selected player (and his allies) by pressing F7 (SC:R requires that you blind ALL other players individually to get the vision of 1 player which is not smart, here we just need to select a player/or 1 of his allies to see the required vision).
+- Displaying live score of produced/killed/lost units/buildings, to get the current state of players, this is about unit/building control (more close to micro, same as the score screen you see at the end of game/replay).
+
+# Message shortcuts:
+The player can input some text the UDAI can understand:
+c1="show me the money", c2="black sheep wall", c3="operation cwal", c4="power overwhelming", c5="staying alive", c6="there is no cow level".
+/speed #=The delay per frame in milliseconds (Fastest: 42ms/frame, Slowest: 167ms/frame). /speed 0 will run EXTREMELY fast, to reset speed, just type: /speed
+UDAI=only in multiplayer (ICCUP/LAN) to acknowledge superiority from the non-CoachAI player, and that the CoachAI-player is not cheating by having intel about him.
+? (Only in-replay, obviously!)=Who wins?
+
+# Hotkeys:
+F5=Toggle between the display of the MacroLog (Up,Down=Scroll through the MacroLog when more than one page exists) & the Hotkeys tracker. When on the Hotkeys tracker screen, the TimedBO & the Multitasking screen can be seen briefly by pressing Shift & Control. (in-replay F5 switches between different screens)
+F6 (also in-replay)=Toggle the display mode of in-progress units/buildings.
+F7=Switches between the preset game plans.
+F8=Switches between the current enemies infos, and also drawing the selected enemy army even while moving in the dark/fog, pressing Shift toggles the in-progress mode.
+F9=Finds the idle workers (like in SC2).
+F11 (also in-replay)=Displays buildings gaps values and ground units sizes, for quick and easy reference to better walling.
+F12 (also in-replay)=Hide/show the CoachAI's drawing/text.
