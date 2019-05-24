@@ -101,11 +101,10 @@ pressing Shift toggles the in-progress mode.
 
 **_F12 (also in-replay)_**=Hide/show the CoachAI's drawing/text.
 
-# To compile this project:
-* I use Visual Studio 2017.
-* Requires Windows 10 SDK (not the OS itself).
-* Extract [lib.7z](https://drive.google.com/open?id=1UyIE_go2FRpS1OaRAl0JE_jcbV8ZfVqf) contents into the same folder that contains AnyRace_CoachAI.sln, so that a "lib" folder with these contents gets created.
+# To Re-build this project:
+* Setup Visual Studio 2017 choosing the following components:
 ![requirements](https://github.com/captain-majid/CoachAI/blob/master/c%2B%2B%20BWAPI%20requirements.png)
+* Extract [lib.7z](https://drive.google.com/open?id=1UyIE_go2FRpS1OaRAl0JE_jcbV8ZfVqf) contents into the same folder that contains AnyRace_CoachAI.sln, so that a "lib" folder with these contents gets created.
 
 # Installation:
 - Extract the .7z file contents from this [topic](http://www.teamliquid.net/forum/brood-war/531310-human-like-broodwar-ais-revamped) to SC v1.16.1 folder.
