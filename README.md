@@ -86,7 +86,7 @@ The player can input some text the UDAI can understand:
 **_?_** (Only in-replay, obviously!)=Who wins?
 
 # Hotkeys:
-**_F5_**=Toggle between the display of the MacroLog (**_Up,Down_**=Scroll through the MacroLog when more than one page exists) & the Hotkeys tracker. When on the Hotkeys tracker screen, the TimedBO & the Multitasking screen can be seen briefly by pressing **_Shift & Control_**. (in-replay **_F5_** switches between different screens)
+**_F5_**=Toggle between the display of the MacroLog (**_Up,Down_**=Scroll through the MacroLog when more than one page exists) & the Hotkeys tracker. When on the Hotkeys tracker screen, the TimedBO & the Multitasking screen can be seen briefly by pressing _**Control & Shift**_. (in-replay **_F5_** switches between different screens)
 
 **_F6 (also in-replay)_**=Toggle the display mode of in-progress units/buildings.
 
@@ -101,7 +101,7 @@ pressing Shift toggles the in-progress mode.
 
 **_F12 (also in-replay)_**=Hide/show the CoachAI's drawing/text.
 
-# To Re-build this project:
+# To re-build this project:
 * Setup Visual Studio 2017 choosing the following components:
 ![requirements](https://github.com/captain-majid/CoachAI/blob/master/c%2B%2B%20BWAPI%20requirements.png)
 * Extract [lib.7z](https://drive.google.com/open?id=1UyIE_go2FRpS1OaRAl0JE_jcbV8ZfVqf) contents into the same folder that contains AnyRace_CoachAI.sln, so that a "lib" folder with these contents gets created.
