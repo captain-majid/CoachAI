@@ -19,7 +19,7 @@ It can help the players at-all-levels to improve, also to test and sense and rem
 #  Features in-game:
 - The # of Minerals/Gas workers from all bases.
 - The # of idle production buildings (for Zerg, only the number of Larvae displayed).
-- The # of idle of idle fighting units (only non-worker units that canAttackMove: HT, Siege-Mode Tank, Lurker cannot, Medics can !, also note that Hold position units aren't idle).
+- The # of idle of idle fighting units (only non-worker units that canAttackMove: HT, Siege-Mode Tank, Lurker cannot, Medics can !).
 - The # of all killed enemies during the game.
 - The # of all current enemies, their supplies, Minerals/Gas, upgrades, in-progress things and you can even see the enemies while they move in the dark/fog. (this works in multiplayer, beware !)
 - MacroLog: Logs all build/train/upgrade actions and its time during the game.
