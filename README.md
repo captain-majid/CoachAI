@@ -15,7 +15,7 @@ It can help the players at-all-levels to improve, also to test and sense and rem
 - Displaying the number of the assigned mineral workers on each Nexus/CC/Hatchery.
 - WorkersCut measure, counts the time that Nexus/CC has been idle, if you have 2 bases the counter will be doubled, 3 -> tripled, etc.., it works for P & T, not Z.
 - Idle Workers measure displays the number of idle workers, and the total lost time (as with Workers Cut, this increase when there is more Idle Workers).
-- Minerals Above measure that counts the time of being above 250/500/750/1000 minerals.
+- Minerals Above measure that counts the time of being above 750/1000 minerals.
 #  Features in-game:
 - The # of Minerals/Gas workers from all bases.
 - The # of idle production buildings (for Zerg, only the number of Larvae displayed).
@@ -72,7 +72,7 @@ This config file allows the player to modify/disable/enable many values:
 - **_spend_more_minerals_WarningFor (default=900)_**: minerals sound warning "Spend more minerals", if minerals 500-750 its every 3s, if > 750 its every 1s, until the default 15 minutes.
 - **_mineralsAboveLog (default=750)_**: logs the time when you're above certain amount of minerals, and for how long that was.
 - **_Bo1Text_**: an editable static build order that appear on-game screen, you can use "\n" to move to a new line.
-- **_TimedBO_**: an editable dynamic build order that appear on-game screen, it highlights what should be done next JIT.
+- **_TimedBO1_**: an editable dynamic build order that appear on-game screen, it highlights what should be done next JIT.
 
 # Message shortcuts:
 The player can input some text the UDAI can understand:
@@ -100,6 +100,8 @@ pressing Shift toggles the in-progress mode.
 **_F11 (also in-replay)_**=Displays buildings gaps values and ground units sizes, for quick and easy reference to better walling.
 
 **_F12 (also in-replay)_**=Hide/show the CoachAI's drawing/text.
+
+**_Control+F1,F2,F3_**=Switches between the TimedBOs.
 
 # To re-build this project:
 * Setup Visual Studio 2017 choosing the following components:
