@@ -71,7 +71,7 @@ This config file allows the player to modify/disable/enable many values:
 - **_workerCutLimitForOnce (default=-1)_**: same as above but a 1 time continuous cut with this value (lets say 20s) will end the game. 
 - **_spend_more_minerals_WarningFor (default=900)_**: minerals sound warning "Spend more minerals", if minerals 500-750 its every 3s, if > 750 its every 1s, until the default 15 minutes.
 - **_mineralsAboveLog (default=750)_**: logs the time when you're above certain amount of minerals, and for how long that was, to see when exactly you forgot to Macro.
-- **_stickyTimedBO (default=true)_**: which screen to display by default, TimedBO or WorkerCut log.
+- **_stickyTimedBO (default=true)_**: which screen to display by default ?, TimedBO or WorkersCut log.
 - **_Bo1Text_**: an editable static build order that appear on-game screen, you can use "\n" to move to a new line.
 - **_TimedBO1_**: an editable dynamic build order that appear on-game screen, it highlights what should be done next JIT.
 
