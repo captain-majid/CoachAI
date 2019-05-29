@@ -70,7 +70,8 @@ This config file allows the player to modify/disable/enable many values:
 - **_workerCutLimit (default=3600)_**: you can set this to 120 (as a goal/target), this will end the game immediately if you intermittently cut workers for 2 minutes in the default 1st 9 minutes.
 - **_workerCutLimitForOnce (default=-1)_**: same as above but a 1 time continuous cut with this value (lets say 20s) will end the game. 
 - **_spend_more_minerals_WarningFor (default=900)_**: minerals sound warning "Spend more minerals", if minerals 500-750 its every 3s, if > 750 its every 1s, until the default 15 minutes.
-- **_mineralsAboveLog (default=750)_**: logs the time when you're above certain amount of minerals, and for how long that was.
+- **_mineralsAboveLog (default=750)_**: logs the time when you're above certain amount of minerals, and for how long that was, to see when exactly you forgot to Macro.
+- **_stickyTimedBO (default=true)_**: which screen to display by default, TimedBO or WorkerCut log.
 - **_Bo1Text_**: an editable static build order that appear on-game screen, you can use "\n" to move to a new line.
 - **_TimedBO1_**: an editable dynamic build order that appear on-game screen, it highlights what should be done next JIT.
 
@@ -86,7 +87,7 @@ The player can input some text the UDAI can understand:
 **_?_** (Only in-replay, obviously!)=Who wins?
 
 # Hotkeys:
-**_F5_**=Toggle between the display of the MacroLog (**_Up,Down_**=Scroll through the MacroLog when more than one page exists) & the Hotkeys tracker. When on the Hotkeys tracker screen, the TimedBO & the Multitasking screen can be seen briefly by pressing _**Control & Shift**_. (in-replay **_F5_** switches between different screens)
+**_F5_**=Toggle between the display of the MacroLog (**_Up,Down_**=Scroll through the MacroLog when more than one page exists) & the Hotkeys tracker. When on the Hotkeys tracker screen, you can briefly see other screens by pressing _**Control or Shift**_. (in-replay **_F5_** switches between different screens)
 
 **_F6 (also in-replay)_**=Toggle the display mode of in-progress units/buildings.
 
