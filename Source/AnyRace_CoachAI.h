@@ -10,6 +10,7 @@ public:
   virtual void onStart() override;
   virtual void onEnd(bool isWinner) override;
   virtual void onFrame() override;
+  void TimedBO();
   void DrawHotkeysAndEnemyKilled();
   void custom();
   int parseTime(std::string str);

@@ -130,6 +130,7 @@ bool logWorkersAndSupplyProduction;
 bool logUnitsProduction;
 int replayLogUnitsFor;
 int replayLogSupplyFor;
+bool stickyTimedBO;
 int dontDrift;
 int mineralsAboveValue;
 
@@ -489,6 +490,7 @@ void AnyRace_CoachAI::onFrame()	// Called every game frame.
 			logUnitsProduction = j["Control Panel"]["logUnitsProduction"].get<bool>();
 			replayLogUnitsFor = j["Control Panel"]["replayLogUnitsFor"].get<int>();
 			replayLogSupplyFor = j["Control Panel"]["replayLogSupplyFor"].get<int>();
+			stickyTimedBO = j["Control Panel"]["stickyTimedBO"].get<bool>();
 		}
 	}
 	catch (exception e)
@@ -1395,12 +1397,6 @@ void AnyRace_CoachAI::onFrame()	// Called every game frame.
 	else if (F5_Pressed == 0)
 	{
 		DrawHotkeysAndEnemyKilled();
-		if (!shift && !ctrl)
-		{
-			Broodwar->drawTextScreen(5, 55, "%cWorkcut%c%d%c\n\r%s", Text::White, Text::BrightRed, workersProductionStopped_LastTime / FPS, Text::White, workersCutLog.c_str());
-			Broodwar->drawTextScreen(60, 55, "%cMine>%d%c%d%c\n\r%s", Text::Turquoise, mineralsAboveValue, Text::BrightRed, mineralsAboveLimit_LastTime / FPS, Text::White, mineralsAboveLimitLog.c_str());
-			//Broodwar->drawLineScreen(58, 106, 58, 300, Text::Blue);
-		}
 		if (ctrl && F3)
 		{
 			ctrlF3 = true;
@@ -1419,67 +1415,31 @@ void AnyRace_CoachAI::onFrame()	// Called every game frame.
 			ctrlF2 = false;
 			ctrlF3 = false;
 		}
+		if (!shift && !ctrl)
+		{
+			if (!stickyTimedBO)
+			{
+				Broodwar->drawTextScreen(5, 55, "%cWorkcut%c%d%c\n\r%s", Text::White, Text::BrightRed, workersProductionStopped_LastTime / FPS, Text::White, workersCutLog.c_str());
+				Broodwar->drawTextScreen(60, 55, "%cMine>%d%c%d%c\n\r%s", Text::Turquoise, mineralsAboveValue, Text::BrightRed, mineralsAboveLimit_LastTime / FPS, Text::White, mineralsAboveLimitLog.c_str());
+				//Broodwar->drawLineScreen(58, 106, 58, 300, Text::Blue);
+			}
+			else
+			{
+				TimedBO();
+				//Broodwar->drawBox(CoordinateType::Screen, 5, 56, 125, 400, Colors::Black, true);
+			}
+		}
 		if (ctrl)
 		{
-			Broodwar->drawBox(CoordinateType::Screen, 5, 56, 125, 400, Colors::Black, true);
-			string bo;
+			if (!stickyTimedBO)
+			{
+				TimedBO();
 
-			if (ctrlF1)
-			{
-				Broodwar->drawTextScreen(5, 55, "%c%s\n", Text::Turquoise, j["Preset Plan"]["TimedBO Title1"].get<string>().c_str());
-				bo = j["Preset Plan"]["TimedBO1"].get<string>().c_str();
 			}
-			if (ctrlF2)
+			else
 			{
-				Broodwar->drawTextScreen(5, 55, "%c%s\n", Text::Turquoise, j["Preset Plan"]["TimedBO Title2"].get<string>().c_str());
-				bo = j["Preset Plan"]["TimedBO2"].get<string>().c_str();
-			}
-			if (ctrlF3)
-			{
-				Broodwar->drawTextScreen(5, 55, "%c%s\n", Text::Turquoise, j["Preset Plan"]["TimedBO Title3"].get<string>().c_str());
-				bo = j["Preset Plan"]["TimedBO3"].get<string>().c_str();
-			}
-
-			string delimiter = "--->";
-			size_t pos = 0;
-
-			string stepTime, step;
-			vector<string> steps;
-
-			while ((pos = bo.find(delimiter)) != string::npos)
-			{
-				step = bo.substr(0, pos);
-				steps.push_back(step);
-				bo.erase(0, pos + delimiter.length());
-			}
-			steps.push_back(bo);
-
-			int yy = 65;
-			int now = Broodwar->elapsedTime() * 0.6718;
-			bool colorDone = false;
-			for (string s : steps)
-			{
-				stepTime = s.substr(0, 5);
-				if (parseTime(stepTime) > now && !colorDone)
-				{
-					Broodwar->drawTextScreen(5, yy, "%c%s\n", Text::Turquoise, s.c_str());
-					colorDone = true;
-				}
-				else
-					Broodwar->drawTextScreen(5, yy, "%c%s\n", Text::Blue, s.c_str());
-				yy += 10;
-			}
-			if (ctrlF1)
-			{
-				Broodwar->drawTextScreen(5, yy, "%c%s\n", Text::Red, j["Preset Plan"]["TimedBO Tips1"].get<string>().c_str());
-			}
-			else if (ctrlF2)
-			{
-				Broodwar->drawTextScreen(5, yy, "%c%s\n", Text::Red, j["Preset Plan"]["TimedBO Tips2"].get<string>().c_str());
-			}
-			else if (ctrlF3)
-			{
-				Broodwar->drawTextScreen(5, yy, "%c%s\n", Text::Red, j["Preset Plan"]["TimedBO Tips3"].get<string>().c_str());
+				Broodwar->drawTextScreen(5, 55, "%cWorkcut%c%d%c\n\r%s", Text::White, Text::BrightRed, workersProductionStopped_LastTime / FPS, Text::White, workersCutLog.c_str());
+				Broodwar->drawTextScreen(60, 55, "%cMine>%d%c%d%c\n\r%s", Text::Turquoise, mineralsAboveValue, Text::BrightRed, mineralsAboveLimit_LastTime / FPS, Text::White, mineralsAboveLimitLog.c_str());
 			}
 		}
 		if (shift)
@@ -1667,6 +1627,67 @@ void AnyRace_CoachAI::onFrame()	// Called every game frame.
 	mineralsAboveLimitPrev = mineralsAboveLimit;
 	prevScreen = currScreen;
 	prevSelectedUnits = selectedUnits;
+}
+void AnyRace_CoachAI::TimedBO()
+{
+	string bo;
+	if (ctrlF1)
+	{
+		Broodwar->drawTextScreen(5, 55, "%c%s\n", Text::Turquoise, j["Preset Plan"]["TimedBO Title1"].get<string>().c_str());
+		bo = j["Preset Plan"]["TimedBO1"].get<string>().c_str();
+	}
+	if (ctrlF2)
+	{
+		Broodwar->drawTextScreen(5, 55, "%c%s\n", Text::Turquoise, j["Preset Plan"]["TimedBO Title2"].get<string>().c_str());
+		bo = j["Preset Plan"]["TimedBO2"].get<string>().c_str();
+	}
+	if (ctrlF3)
+	{
+		Broodwar->drawTextScreen(5, 55, "%c%s\n", Text::Turquoise, j["Preset Plan"]["TimedBO Title3"].get<string>().c_str());
+		bo = j["Preset Plan"]["TimedBO3"].get<string>().c_str();
+	}
+
+	string delimiter = "--->";
+	size_t pos = 0;
+
+	string stepTime, step;
+	vector<string> steps;
+
+	while ((pos = bo.find(delimiter)) != string::npos)
+	{
+		step = bo.substr(0, pos);
+		steps.push_back(step);
+		bo.erase(0, pos + delimiter.length());
+	}
+	steps.push_back(bo);
+
+	int yy = 65;
+	int now = Broodwar->elapsedTime() * 0.6718;
+	bool colorDone = false;
+	for (string s : steps)
+	{
+		stepTime = s.substr(0, 5);
+		if (parseTime(stepTime) > now && !colorDone)
+		{
+			Broodwar->drawTextScreen(5, yy, "%c%s\n", Text::Turquoise, s.c_str());
+			colorDone = true;
+		}
+		else
+			Broodwar->drawTextScreen(5, yy, "%c%s\n", Text::Blue, s.c_str());
+		yy += 10;
+	}
+	if (ctrlF1)
+	{
+		Broodwar->drawTextScreen(5, yy, "%c%s\n", Text::Red, j["Preset Plan"]["TimedBO Tips1"].get<string>().c_str());
+	}
+	else if (ctrlF2)
+	{
+		Broodwar->drawTextScreen(5, yy, "%c%s\n", Text::Red, j["Preset Plan"]["TimedBO Tips2"].get<string>().c_str());
+	}
+	else if (ctrlF3)
+	{
+		Broodwar->drawTextScreen(5, yy, "%c%s\n", Text::Red, j["Preset Plan"]["TimedBO Tips3"].get<string>().c_str());
+	}
 }
 void AnyRace_CoachAI::DrawHotkeysAndEnemyKilled()
 {
