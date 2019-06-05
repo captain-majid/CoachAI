@@ -69,9 +69,9 @@ This config file allows the player to modify/disable/enable many values:
 - **_dontDrift (default=-1)_**: initiates a custom CountDownTimer, just like seen in some missions, but you can use it in any map to practice/polish specific task/timing, when the timer ends the game will too, you can set it in seconds, it works whether its a game start or a saved game, when it reaches 00:15, visual/sound warning will start (this helped me remembering to save the game-state @lets say 6:00), in order to master the game-phases/tasks partially 1st, then as a whole.
 - **_workerCutLimit (default=3600)_**: you can set this to 120 (as a goal/target), this will end the game immediately if you intermittently cut workers for 2 minutes in the default 1st 9 minutes.
 - **_workerCutLimitForOnce (default=-1)_**: same as above but a 1 time continuous cut with this value (lets say 20s) will end the game. 
-- **_spend_more_minerals_WarningFor (default=900)_**: minerals sound warning "Spend more minerals", if minerals 500-750 its every 3s, if > 750 its every 1s, until the default 15 minutes.
+- **_spend_more_minerals_WarningFor (default=900)_**: minerals sound warning "Spend more minerals", if minerals 500-750 its every 3s, if > 750 its every 1s, until the default 15 minutes, that doesn't happen in the [multitask/macro maps](https://liquipedia.net/starcraft/Micro_Training_Maps#Multitask/Macro_training), because it has it already.
 - **_mineralsAboveLog (default=750)_**: logs the time when you're above certain amount of minerals, and for how long that was, to see when exactly you forgot to Macro.
-- **_stickyTimedBO (default=true)_**: which screen to display by default ?, TimedBO or WorkersCut log.
+- **_stickyScreen (default=1)_**: which screen to display by default ?, 1 = TimedBO, 2 = WorkersCut log & MineralsAbove log, 3 = Idle Production & Fighting units & Multitasking.
 - **_Bo1Text_**: an editable static build order that appear on-game screen, you can use "\n" to move to a new line.
 - **_TimedBO1_**: an editable dynamic build order that appear on-game screen, it highlights what should be done next JIT.
 
