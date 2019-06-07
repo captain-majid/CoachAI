@@ -10,6 +10,8 @@ public:
   virtual void onStart() override;
   virtual void onEnd(bool isWinner) override;
   virtual void onFrame() override;
+  void Multitasking(std::string &idleFightUnitsFinal, std::string &idleBuildingsFinal);
+  void drawWorkersCutLog();
   void TimedBO();
   void DrawHotkeysAndEnemyKilled();
   void custom();

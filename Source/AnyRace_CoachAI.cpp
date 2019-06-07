@@ -130,7 +130,7 @@ bool logWorkersAndSupplyProduction;
 bool logUnitsProduction;
 int replayLogUnitsFor;
 int replayLogSupplyFor;
-bool stickyTimedBO;
+int stickyScreen;
 int dontDrift;
 int mineralsAboveValue;
 
@@ -490,7 +490,7 @@ void AnyRace_CoachAI::onFrame()	// Called every game frame.
 			logUnitsProduction = j["Control Panel"]["logUnitsProduction"].get<bool>();
 			replayLogUnitsFor = j["Control Panel"]["replayLogUnitsFor"].get<int>();
 			replayLogSupplyFor = j["Control Panel"]["replayLogSupplyFor"].get<int>();
-			stickyTimedBO = j["Control Panel"]["stickyTimedBO"].get<bool>();
+			stickyScreen = j["Control Panel"]["stickyScreen"].get<int>();
 		}
 	}
 	catch (exception e)
@@ -533,12 +533,12 @@ void AnyRace_CoachAI::onFrame()	// Called every game frame.
 
 	static int lastCheckedFrame_minerals1 = 0;
 	static int lastCheckedFrame_minerals2 = 0;
-	if (!Broodwar->isPaused() && Broodwar->elapsedTime() *  0.6718 < spend_more_minerals_WarningFor && lastCheckedFrame_minerals1 < FrameCount && Broodwar->self()->minerals() > 500 && Broodwar->self()->minerals() < 750)
+	if ((!strstr(mapName.c_str(), "Multitask") && !strstr(mapName.c_str(), "Macro")) && !Broodwar->isPaused() && Broodwar->elapsedTime() *  0.6718 < spend_more_minerals_WarningFor && lastCheckedFrame_minerals1 < FrameCount && Broodwar->self()->minerals() > 500 && Broodwar->self()->minerals() < 750)
 	{
 		lastCheckedFrame_minerals1 = FrameCount + FPS * 3;
 		PlaySound(L".\\bwapi-data\\5- spend_more_minerals.wav", NULL, SND_ASYNC);
 	}
-	if (!Broodwar->isPaused() && Broodwar->elapsedTime() *  0.6718 < spend_more_minerals_WarningFor && lastCheckedFrame_minerals2 < FrameCount && Broodwar->self()->minerals() > 750)
+	if ((!strstr(mapName.c_str(), "Multitask") && !strstr(mapName.c_str(), "Macro")) && !Broodwar->isPaused() && Broodwar->elapsedTime() *  0.6718 < spend_more_minerals_WarningFor && lastCheckedFrame_minerals2 < FrameCount && Broodwar->self()->minerals() > 750)
 	{
 		lastCheckedFrame_minerals2 = FrameCount + FPS * 1;
 		PlaySound(L".\\bwapi-data\\5- spend_more_minerals.wav", NULL, SND_ASYNC);
@@ -1296,10 +1296,13 @@ void AnyRace_CoachAI::onFrame()	// Called every game frame.
 		lastChecked16 = FrameCount + 96;
 	}
 
-	Broodwar->drawTextScreen(245, 25, "%c%s %c%s", Text::Purple, match.c_str(), Text::White, mapName.c_str());
+	Broodwar->drawTextScreen(225, 25, "%c%s %c%s", Text::Purple, match.c_str(), Text::White, mapName.c_str());
 	Broodwar->drawTextScreen(310, 15, "%cWorkers prod., stopped for: %c%s,%c%.1fw", Text::Grey, Text::BrightRed, getTime(workersProductionStopped / FPS).c_str(),
 		Text::Turquoise, (workersProductionStopped / FPS) / 12.5);
-	Broodwar->drawTextScreen(530, 15, "%cFPS:%c%d, %cTime:%c%s", 14, 4, FPS, 14, 4, gameTime.c_str());
+	if (FPS != 24)
+		Broodwar->drawTextScreen(530, 15, "%cFPS:%c%d, %cTime:%c%s", 8, 4, FPS, 8, 4, gameTime.c_str());
+	else
+		Broodwar->drawTextScreen(530, 15, "%cFPS:%c%d, %cTime:%c%s", 14, 4, FPS, 14, 4, gameTime.c_str());
 
 	if (!Broodwar->isPaused())
 	{
@@ -1329,12 +1332,6 @@ void AnyRace_CoachAI::onFrame()	// Called every game frame.
 
 	Broodwar->drawTextScreen(5, 15, "%cMinerals spent: %d + %cGas spent: %d = %cMacro: %d", 31, Minerals, 7, Gas, 17, Minerals + Gas);
 	UnitType supplyName = Broodwar->self()->getRace().getSupplyProvider();
-	if (FPS != 24)
-	{
-		Broodwar->drawBoxScreen(185, 329, 450, 344, Colors::Black, true);
-		Broodwar->drawTextScreen(190, 330, "%cWarning: %cThe game speed isn't Fastest: 24 FPS", Text::BrightRed, Text::White);
-	}
-	//else
 	//	Broodwar->drawTextScreen(190, 330, "%cSupply blocked in: %c%d, %cmaxed with: %c%d %s", 3, Text::BrightRed, supplyAvailable / 2,
 	//		3, Text::BrightRed, (200 - Broodwar->self()->supplyTotal() / 2) / 8, formated(supplyName).c_str());
 
@@ -1387,8 +1384,8 @@ void AnyRace_CoachAI::onFrame()	// Called every game frame.
 				populatePage();
 			}
 		}
-		Broodwar->drawTextScreen(190, 25, "%cMacroLog: \n\r%s", Text::Blue, str1.c_str());
-		Broodwar->drawTextScreen(225, 25, "\n\r%c%s", Text::Default, str2.c_str());
+		Broodwar->drawTextScreen(170, 25, "%cMacroLog: \n\r%s", Text::Blue, str1.c_str());
+		Broodwar->drawTextScreen(205, 25, "\n\r%c%s", Text::Default, str2.c_str());
 
 		if (Broodwar->self()->getRace() == Races::Zerg)
 			Broodwar->drawTextScreen(5, 55, "%cIdle fighting units: \n\r%c%s", 5, 25, idleFightUnitsFinal.c_str());
@@ -1417,73 +1414,26 @@ void AnyRace_CoachAI::onFrame()	// Called every game frame.
 		}
 		if (!shift && !ctrl)
 		{
-			if (!stickyTimedBO)
-			{
-				Broodwar->drawTextScreen(5, 55, "%cWorkcut%c%d%c\n\r%s", Text::White, Text::BrightRed, workersProductionStopped_LastTime / FPS, Text::White, workersCutLog.c_str());
-				Broodwar->drawTextScreen(60, 55, "%cMine>%d%c%d%c\n\r%s", Text::Turquoise, mineralsAboveValue, Text::BrightRed, mineralsAboveLimit_LastTime / FPS, Text::White, mineralsAboveLimitLog.c_str());
-				//Broodwar->drawLineScreen(58, 106, 58, 300, Text::Blue);
-			}
+			if (stickyScreen == 3)
+				Multitasking(idleFightUnitsFinal, idleBuildingsFinal);
+			else if (stickyScreen == 2)
+				drawWorkersCutLog();
 			else
-			{
 				TimedBO();
-				//Broodwar->drawBox(CoordinateType::Screen, 5, 56, 125, 400, Colors::Black, true);
-			}
 		}
 		if (ctrl)
 		{
-			if (!stickyTimedBO)
-			{
+			if (stickyScreen != 1)
 				TimedBO();
-
-			}
 			else
-			{
-				Broodwar->drawTextScreen(5, 55, "%cWorkcut%c%d%c\n\r%s", Text::White, Text::BrightRed, workersProductionStopped_LastTime / FPS, Text::White, workersCutLog.c_str());
-				Broodwar->drawTextScreen(60, 55, "%cMine>%d%c%d%c\n\r%s", Text::Turquoise, mineralsAboveValue, Text::BrightRed, mineralsAboveLimit_LastTime / FPS, Text::White, mineralsAboveLimitLog.c_str());
-			}
+				drawWorkersCutLog();
 		}
 		if (shift)
 		{
-			Broodwar->drawTextScreen(5, 55, "%cMinerals above:\n\r750: %c%s, %c1000: %c%s",
-				31, 25, getTime(minerals_750 / FPS).c_str(), 31, 25, getTime(minerals_1000 / FPS).c_str());
-
-			Broodwar->drawTextScreen(5, 80, "%cMultitasking:", Text::White);
-
-			Broodwar->drawTextScreen(5, 90, "%cScreen counter: %c%.0fs", Text::Purple, 4, screenCounter / FPS);
-			Broodwar->drawTextScreen(5, 100, "%cScreen jumps: %c%d", 16, Text::White, screenJumps.size());
-			double totalStay = 0;
-			double totalStayAbove = 0;
-
-			for (auto j : screenJumps)
-			{
-				totalStay += j;
-				if (j > totalTimeOnScreenOrSelectionAbove)
-				{
-					totalStayAbove += j - totalTimeOnScreenOrSelectionAbove;
-				}
-			}
-			Broodwar->drawTextScreen(5, 110, "%cAvg stay: %c%.1fs", 16, Text::White, totalStay / screenJumps.size());
-			Broodwar->drawTextScreen(5, 120, "%cAll stay > %c%ds: %c%s", 16, 7, totalTimeOnScreenOrSelectionAbove, Text::White, getTime(totalStayAbove).c_str());
-			//=========================
-			Broodwar->drawTextScreen(5, 140, "%cSelection counter: %c%.0fs", 16, 4, selectedUnitsCounter / FPS);
-			Broodwar->drawTextScreen(5, 150, "%cSelection changed: %c%d", 16, Text::White, selectedUnitsJumps.size());
-			double totalStayUnits = 0;
-			double totalStayAboveUnits = 0;
-
-			for (auto j : selectedUnitsJumps)
-			{
-				totalStayUnits += j;
-				if (j > totalTimeOnScreenOrSelectionAbove)
-				{
-					totalStayAboveUnits += j - totalTimeOnScreenOrSelectionAbove;
-				}
-			}
-			Broodwar->drawTextScreen(5, 160, "%cAvg selection: %c%.1fs", 16, Text::White, totalStayUnits / selectedUnitsJumps.size());
-			Broodwar->drawTextScreen(5, 170, "%cAll select > %c%ds: %c%s", 16, 7, totalTimeOnScreenOrSelectionAbove, Text::White, getTime(totalStayAboveUnits).c_str());
-
-			if (Broodwar->self()->getRace() == Races::Zerg)
-				Broodwar->drawTextScreen(5, 180, "%cIdle fighting units: \n\r%c%s", 5, 25, idleFightUnitsFinal.c_str());
-			else Broodwar->drawTextScreen(5, 180, "%cIdle production: \n\r%c%s%cIdle fighting units: \n\r%c%s", 5, 25, idleBuildingsFinal.c_str(), 5, 25, idleFightUnitsFinal.c_str());
+			if (stickyScreen != 3)
+				Multitasking(idleFightUnitsFinal, idleBuildingsFinal);
+			else
+				drawWorkersCutLog();
 		}
 	}
 
@@ -1628,23 +1578,75 @@ void AnyRace_CoachAI::onFrame()	// Called every game frame.
 	prevScreen = currScreen;
 	prevSelectedUnits = selectedUnits;
 }
+void AnyRace_CoachAI::Multitasking(std::string &idleFightUnitsFinal, std::string &idleBuildingsFinal)
+{
+	if (Broodwar->self()->getRace() == Races::Zerg)
+		Broodwar->drawTextScreen(5, 55, "%cIdle fighting units: \n\r%c%s", 5, 25, idleFightUnitsFinal.c_str());
+	else Broodwar->drawTextScreen(5, 55, "%cIdle production: \n\r%c%s%cIdle fighting units: \n\r%c%s", 5, 25, idleBuildingsFinal.c_str(), 5, 25, idleFightUnitsFinal.c_str());
+
+	Broodwar->drawTextScreen(5, 175, "%cScreen Multitasking:", Text::White);
+
+	Broodwar->drawTextScreen(5, 185, "%cScreen counter: %c%.0fs", Text::Purple, 4, screenCounter / FPS);
+	Broodwar->drawTextScreen(5, 195, "%cScreen jumps: %c%d", 16, Text::White, screenJumps.size());
+	double totalStay = 0;
+	double totalStayAbove = 0;
+
+	for (auto j : screenJumps)
+	{
+		totalStay += j;
+		if (j > totalTimeOnScreenOrSelectionAbove)
+		{
+			totalStayAbove += j - totalTimeOnScreenOrSelectionAbove;
+		}
+	}
+	Broodwar->drawTextScreen(5, 205, "%cAvg stay: %c%.1fs", 16, Text::White, totalStay / screenJumps.size());
+	Broodwar->drawTextScreen(5, 215, "%cAll stay > %c%ds: %c%s", 16, 7, totalTimeOnScreenOrSelectionAbove, Text::White, getTime(totalStayAbove).c_str());
+	//=========================
+	Broodwar->drawTextScreen(5, 235, "%cSelection Multitasking:", Text::White);
+	Broodwar->drawTextScreen(5, 245, "%cSelection counter: %c%.0fs", 16, 4, selectedUnitsCounter / FPS);
+	Broodwar->drawTextScreen(5, 255, "%cSelection changed: %c%d", 16, Text::White, selectedUnitsJumps.size());
+	double totalStayUnits = 0;
+	double totalStayAboveUnits = 0;
+
+	for (auto j : selectedUnitsJumps)
+	{
+		totalStayUnits += j;
+		if (j > totalTimeOnScreenOrSelectionAbove)
+		{
+			totalStayAboveUnits += j - totalTimeOnScreenOrSelectionAbove;
+		}
+	}
+	Broodwar->drawTextScreen(5, 265, "%cAvg selection: %c%.1fs", 16, Text::White, totalStayUnits / selectedUnitsJumps.size());
+	Broodwar->drawTextScreen(5, 275, "%cAll select > %c%ds: %c%s", 16, 7, totalTimeOnScreenOrSelectionAbove, Text::White, getTime(totalStayAboveUnits).c_str());
+}
+void AnyRace_CoachAI::drawWorkersCutLog()
+{
+	Broodwar->drawTextScreen(5, 55, "%cWorkcut%c%d%c\n\r%s", Text::White, Text::BrightRed, workersProductionStopped_LastTime / FPS, Text::White, workersCutLog.c_str());
+	Broodwar->drawTextScreen(60, 55, "%cMine>%d%c%d\n%c%s%c>750 %c%s\n%c>1000 %c%s", Text::Turquoise, mineralsAboveValue, Text::BrightRed,
+		mineralsAboveLimit_LastTime / FPS, Text::White, mineralsAboveLimitLog.c_str(), Text::Turquoise, Text::LightYellow, getTime(minerals_750 / FPS).c_str(),
+		Text::Turquoise, Text::LightYellow, getTime(minerals_1000 / FPS).c_str());
+}
 void AnyRace_CoachAI::TimedBO()
 {
 	string bo;
+	string boExtra;
 	if (ctrlF1)
 	{
 		Broodwar->drawTextScreen(5, 55, "%c%s\n", Text::Turquoise, j["Preset Plan"]["TimedBO Title1"].get<string>().c_str());
 		bo = j["Preset Plan"]["TimedBO1"].get<string>().c_str();
+		boExtra = j["Preset Plan"]["TimedBO Extra1"].get<string>().c_str();
 	}
 	if (ctrlF2)
 	{
 		Broodwar->drawTextScreen(5, 55, "%c%s\n", Text::Turquoise, j["Preset Plan"]["TimedBO Title2"].get<string>().c_str());
 		bo = j["Preset Plan"]["TimedBO2"].get<string>().c_str();
+		boExtra = j["Preset Plan"]["TimedBO Extra2"].get<string>().c_str();
 	}
 	if (ctrlF3)
 	{
 		Broodwar->drawTextScreen(5, 55, "%c%s\n", Text::Turquoise, j["Preset Plan"]["TimedBO Title3"].get<string>().c_str());
 		bo = j["Preset Plan"]["TimedBO3"].get<string>().c_str();
+		boExtra = j["Preset Plan"]["TimedBO Extra3"].get<string>().c_str();
 	}
 
 	string delimiter = "--->";
@@ -1652,6 +1654,15 @@ void AnyRace_CoachAI::TimedBO()
 
 	string stepTime, step;
 	vector<string> steps;
+	vector<string> stepsExtra;
+
+	while ((pos = boExtra.find(delimiter)) != string::npos)
+	{
+		step = boExtra.substr(0, pos);
+		stepsExtra.push_back(step);
+		boExtra.erase(0, pos + delimiter.length());
+	}
+	stepsExtra.push_back(boExtra);
 
 	while ((pos = bo.find(delimiter)) != string::npos)
 	{
@@ -1664,6 +1675,7 @@ void AnyRace_CoachAI::TimedBO()
 	int yy = 65;
 	int now = Broodwar->elapsedTime() * 0.6718;
 	bool colorDone = false;
+	int i = 0;
 	for (string s : steps)
 	{
 		stepTime = s.substr(0, 5);
@@ -1671,10 +1683,16 @@ void AnyRace_CoachAI::TimedBO()
 		{
 			Broodwar->drawTextScreen(5, yy, "%c%s\n", Text::Turquoise, s.c_str());
 			colorDone = true;
+			if (stepsExtra[i].size() > 5)
+			{
+				Broodwar->drawBoxScreen(175, 329, 485, 344, Colors::Black, true);
+				Broodwar->drawTextScreen(180, 330, "%cExtra: %c%s", Text::BrightRed, Text::White, stepsExtra[i].c_str());
+			}
 		}
 		else
 			Broodwar->drawTextScreen(5, yy, "%c%s\n", Text::Blue, s.c_str());
 		yy += 10;
+		i++;
 	}
 	if (ctrlF1)
 	{
