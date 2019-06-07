@@ -74,6 +74,7 @@ This config file allows the player to modify/disable/enable many values:
 - **_stickyScreen (default=1)_**: which screen to display by default ?, 1 = TimedBO, 2 = WorkersCut log & MineralsAbove log, 3 = Idle Production & Fighting units & Multitasking.
 - **_Bo1Text_**: an editable static build order that appear on-game screen, you can use "\n" to move to a new line.
 - **_TimedBO1_**: an editable dynamic build order that appear on-game screen, it highlights what should be done next JIT.
+- **_TimedBO Extra1_**: this acts as a reference for more details (if any) to the current step in the TimedBO, for example you can
 
 # Message shortcuts:
 The player can input some text the UDAI can understand:
