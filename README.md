@@ -110,6 +110,9 @@ pressing Shift toggles the in-progress mode.
 ![requirements](https://github.com/captain-majid/CoachAI/blob/master/c%2B%2B%20BWAPI%20requirements.png)
 * Extract [lib.7z](https://drive.google.com/open?id=1UyIE_go2FRpS1OaRAl0JE_jcbV8ZfVqf) contents into the same folder that contains AnyRace_CoachAI.sln, so that a "lib" folder with these contents gets created.
 
+# Screenshots:
+![Replay](https://i.ibb.co/zf6Gkgd/replay.png)
+
 # Installation:
 - Extract the .7z file contents from this [topic](http://www.teamliquid.net/forum/brood-war/531310-human-like-broodwar-ais-revamped) to SC v1.16.1 folder.
 - Extract CoachAI.zip contents to StarCraft\bwapi-data folder.
