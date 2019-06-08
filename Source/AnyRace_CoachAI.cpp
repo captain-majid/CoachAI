@@ -1426,14 +1426,14 @@ void AnyRace_CoachAI::onFrame()	// Called every game frame.
 			if (stickyScreen != 1)
 				TimedBO();
 			else
-				drawWorkersCutLog();
+				Multitasking(idleFightUnitsFinal, idleBuildingsFinal);
 		}
 		if (shift)
 		{
-			if (stickyScreen != 3)
-				Multitasking(idleFightUnitsFinal, idleBuildingsFinal);
-			else
+			if (stickyScreen != 2)
 				drawWorkersCutLog();
+			else
+				Multitasking(idleFightUnitsFinal, idleBuildingsFinal);
 		}
 	}
 
@@ -1686,7 +1686,7 @@ void AnyRace_CoachAI::TimedBO()
 			if (stepsExtra[i].size() > 5)
 			{
 				Broodwar->drawBoxScreen(175, 329, 485, 344, Colors::Black, true);
-				Broodwar->drawTextScreen(180, 330, "%cExtra: %c%s", Text::BrightRed, Text::White, stepsExtra[i].c_str());
+				Broodwar->drawTextScreen(180, 330, "%c%s", Text::Turquoise, stepsExtra[i].c_str());
 			}
 		}
 		else
@@ -2777,7 +2777,7 @@ void AnyRace_CoachAI::onUnitMorph(BWAPI::Unit unit)
 		bool UnitLog = true;
 		if (ut.isWorker() && (Broodwar->elapsedTime() * 0.6718 > 25 || Broodwar->elapsedTime() * 0.6718 < 10))
 			return;
-		if (ut == p->getRace().getSupplyProvider() && p->supplyUsed() / 2 > 10)
+		if (ut == p->getRace().getSupplyProvider() && p->supplyUsed() / 2 > replayLogSupplyFor)
 			return;
 
 		if (Broodwar->elapsedTime() * 0.6718 > replayLogUnitsFor) //log units until 1st 00:00, then only buildings
@@ -2841,7 +2841,7 @@ void AnyRace_CoachAI::onUnitCreate(BWAPI::Unit unit)//Note: Protoss_Assimilator 
 		bool UnitLog = true;
 		if (ut.isWorker() && (Broodwar->elapsedTime() * 0.6718 > 25 || Broodwar->elapsedTime() * 0.6718 < 10))
 			return;
-		if (ut == p->getRace().getSupplyProvider() && p->supplyUsed() / 2 > 10)
+		if (ut == p->getRace().getSupplyProvider() && p->supplyUsed() / 2 > replayLogSupplyFor)
 			return;
 
 		if (Broodwar->elapsedTime() * 0.6718 > replayLogUnitsFor) //log units until 1st 00:00, then only buildings
