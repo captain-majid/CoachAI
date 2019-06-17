@@ -112,7 +112,7 @@ pressing Shift toggles the in-progress mode.
 
 # Known issues:
 - The hotkey tracker is buggy when adding units using shift, also when a unit is lost it still shows as an existing one.
-- Cancelled unit/building/upgrade/tech appears in ReplayBo/MacroLog, for a cancelled upgrade/tech you'll additionally get a 'None' item below it.,
+- Cancelled unit/building/upgrade/tech appears in ReplayBo/MacroLog, for a cancelled upgrade/tech you'll additionally get a 'None' item below it.
 
 # Screenshots:
 ![Replay](https://i.ibb.co/zf6Gkgd/replay.png)
