@@ -465,7 +465,7 @@ void AnyRace_CoachAI::onFrame()	// Called every game frame.
 	Broodwar->setTextSize(Text::Size::Huge);
 	Broodwar->drawTextScreen(134, 0, "%cCoachAI ", Text::Turquoise);
 	Broodwar->setTextSize();
-	Broodwar->drawTextScreen(213, 4, "%c3.32", Text::Turquoise);
+	Broodwar->drawTextScreen(213, 4, "%c4.0", Text::Turquoise);
 
 	if (FPS < 1) //gamePaused
 		FPS = 24;
@@ -2028,8 +2028,6 @@ void AnyRace_CoachAI::populatePage()
 
 void AnyRace_CoachAI::Replay()
 {
-	Broodwar->drawTextScreen(530, 15, "%cFPS:%c%d", 14, 4, FPS);
-
 	ctrl = Broodwar->getKeyState(Key::K_CONTROL);
 	F5 = Broodwar->getKeyState(Key::K_F5);
 	F6 = Broodwar->getKeyState(Key::K_F6);
@@ -2473,7 +2471,8 @@ void AnyRace_CoachAI::Replay()
 				Broodwar->setVision(p, true);
 		}
 
-		Broodwar->drawTextScreen(270, 15, "%cMinerals above: 750: %c%s, %c1000: %c%s", color,
+		Broodwar->drawTextScreen(590, 15, "%cFPS:%c%d", 14, 4, FPS);
+		Broodwar->drawTextScreen(270, 15, "%c%s: Minerals above: 750: %c%s, %c1000: %c%s", color, plSelected->getName().c_str(),
 			25, getTime(mineralsAbove[pid + 16] / FPS).c_str(), color, 25, getTime(mineralsAbove[pid + 24] / FPS).c_str());
 
 		list<string> upgrades;
