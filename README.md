@@ -8,7 +8,7 @@ It can help the players at-all-levels to improve, also to test and sense and rem
 * When playing in ICCUP, the game is logged and you'll get the win/lose points, this won't happen if one of the players is Computer.
 
 #  Features in-game & in-replay:
-- The RealTime measure of Macro (train/build/upgrade) is here, Terran repairs not accounted, many players still measure it just by the used supplies at specific time or by inaccurate replay analysis tools, in-replay you can know @any second who is the best Macro player (same as the score screen you see at the end of game/replay).
+- The RealTime measure of Macro (train/build/upgrade) is here (Terran repairs not accounted), many players still measure it just by the used supplies at specific time or by inaccurate replay analysis tools, in-replay you can know @any second who is the best Macro player (same as the score screen you see at the end of game/replay).
 - Want to know how many unit/building has been lost in-game/in-replay ?, just select one of the same type.
 - The # of units/buildings and also the ones in-progress, and the remaining build time for each one in progress, also the remaining time for each Tech/Upgrade in progress.
 - Buildings that has Rally Point will draw a line to the RP.
@@ -23,7 +23,7 @@ It can help the players at-all-levels to improve, also to test and sense and rem
 - The # of idle of idle fighting units (only non-worker units that canAttackMove: HT, Siege-Mode Tank, Lurker cannot, Medics can !).
 - The # of all killed enemies during the game.
 - The # of all current enemies, their supplies, Minerals/Gas, upgrades, in-progress things and you can even see the enemies while they move in the dark/fog. (this works in multiplayer, beware !)
-- MacroLog: Logs all build/train/upgrade actions and its time during the game.
+- MacroLog: Logs all build/train/upgrade actions and its time during the game (Tech/Upgrade logged only when its finished, unlike the reply Bo recorder).
 - Hotkeys tracker/counter: Tracks how much you press a specific hotkey.
 - The total time of WorkersCut and the number of lost workers due to that.
 - WorkersCut log (only 2+ seconds cut is calculated): to see when exactly in the game you've stopped making workers and for how long (I personally record my screen to see what I was doing, because replay is not always an option).
@@ -41,7 +41,7 @@ A counter for each selection you select, with total switches during the game, th
 - Showing each unit order and drawing a line to the order target if there is a target.
 - Recording each player Bo. Only the 6th worker is logged for each player to see his split skill, for more info see replayLogUnitsFor/replayLogSupplyFor in the json file.
 - Easily distinguishing which players against which on team replays, (even SC:R doesn't has this !, maybe time to write some code lazy Blizzard ?)
-- During team replays showing if playerX allied with playerY, and if playerY also did the same.
+- During team replays showing JIT if playerX allied with playerY, and if playerY also did the same.
 - Automatic highlighting of idle workers.
 - Recording the max number of idle workers of each player, and when that happened.
 - The screen will automatically move to where a Nuclear launch, Comsat scan or Storm is positioned.
@@ -78,6 +78,7 @@ This config file allows the player to modify/disable/enable many values:
 
 # Message shortcuts:
 The player can input some text the UDAI can understand:
+
 **_c1_**="show me the money", **_c2_**="black sheep wall", **_c3_**="operation cwal", **_c4_**="power overwhelming", **_c5_**="staying alive", **_c6_**="there is no cow level".
 
 **_UDAI_**=only in multiplayer (ICCUP/LAN) to acknowledge superiority from the non-CoachAI player, and that the CoachAI-player is not cheating by having intel about him.
@@ -109,7 +110,7 @@ pressing Shift toggles the in-progress mode.
 ![requirements](https://github.com/captain-majid/CoachAI/blob/master/c%2B%2B%20BWAPI%20requirements.png)
 * Extract [lib.7z](https://drive.google.com/open?id=1UyIE_go2FRpS1OaRAl0JE_jcbV8ZfVqf) contents into the same folder that contains AnyRace_CoachAI.sln, so that a "lib" folder with these contents gets created.
 
-# KnowIssues:
+# Known issues:
 - The hotkey tracker is buggy when adding units using shift, also when a unit is lost it still shows as an existing one.
 - Cancelled unit/building/upgrade/tech appears in ReplayBo/MacroLog, for a cancelled upgrade/tech you'll additionally get a 'None' item below it.,
 
