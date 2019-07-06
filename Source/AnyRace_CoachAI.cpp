@@ -13,6 +13,8 @@ using namespace BWAPI;
 using namespace Filter;
 using namespace std;
 
+int now;
+string cmd;
 int workersProductionStoppedAll[8] = { 0, 0, 0, 0, 0, 0, 0, 0 };
 int idleWorkersAll[8];
 int idleWorkersForAll[8] = { 0, 0, 0, 0, 0, 0, 0, 0 };
@@ -28,9 +30,12 @@ bool gameover;
 static int lastChecked16 = 0;
 map<Position, int> baseMineralsWorkersMap;
 string lastShift;
-string currentStep;
+int currentStepIndex;
 bool stepDone;
+vector<string> stepsArray;
+
 string upgradeTechReplayUnitIDs;
+int idleGateTime, idleRoboTime, idleStarTime;
 
 int groundRange, airRange;
 int ReplaySeconds;
@@ -56,7 +61,6 @@ Unitset prevSelectedUnits;
 double selectedUnitsCounter = 0;
 list<double> selectedUnitsJumps;
 
-bool okUDAI;
 Unit Probe_SCV_Larva;
 bool OvIsMorphing;
 bool droneIsMorphing;
@@ -82,6 +86,9 @@ int minutes;
 int hours;
 string gameTime;
 
+string tips;
+bool button1;
+bool button2;
 bool ctrlF1 = true;
 bool ctrlF2;
 bool ctrlF3;
@@ -112,6 +119,7 @@ bool pageUp;
 bool pageDown;
 //bool lMouse = Broodwar->getKeyState(Key::K_LBUTTON);
 //bool rMouse = Broodwar->getKeyState(Key::K_RBUTTON);
+
 static int speed = 42;
 
 Playerset players;
@@ -153,7 +161,7 @@ int sameScreenOrSelectionWarningEvery;
 int workerCutWarningEvery;
 int totalTimeOnScreenOrSelectionAbove;
 int idleProductionBuildingWarningEvery;
-int idleProdBuildOrLarva;
+int idleProdBuild;
 int idleProdFrameCounter;
 int idleFightingUnitWarningEvery;
 int idleFightUnits;
@@ -465,14 +473,18 @@ void AnyRace_CoachAI::onFrame()	// Called every game frame.
 	Broodwar->setTextSize(Text::Size::Huge);
 	Broodwar->drawTextScreen(134, 0, "%cCoachAI ", Text::Turquoise);
 	Broodwar->setTextSize();
-	Broodwar->drawTextScreen(213, 4, "%c4.0", Text::Turquoise);
+	Broodwar->drawTextScreen(213, 4, "%c4.1", Text::Turquoise);
 
 	if (FPS < 1) //gamePaused
 		FPS = 24;
 
-	// FrameCount / (1000/42), the in-game (but not with replay) time is accurate with the previous even if speed has changed,
-	// this why sscait doesn't bother themselves finding solution for when a saved game loaded and FrameCount starts from 0. 
-	gameTime = getTime(Broodwar->elapsedTime() * 0.6718);
+
+	// FrameCount / (1000/42),  1000/42 = Broodwar->getAverageFPS(), when a saved game loaded FrameCount starts from 0.
+	// this why sscait/SAIDA doesn't bother themselves finding solution for an accurate time when a saved game loaded.
+
+	//gameTime = getTime(FrameCount / Broodwar->getAverageFPS());//only usefull @ game start
+	now = Broodwar->elapsedTime() * 0.6718;
+	gameTime = getTime(now);
 
 	try
 	{
@@ -675,6 +687,8 @@ void AnyRace_CoachAI::onFrame()	// Called every game frame.
 
 	home = Broodwar->getKeyState(Key::K_HOME);
 	end_ = Broodwar->getKeyState(Key::K_END);
+	button1 = Broodwar->getKeyState(Key::K_OEM_COMMA);
+	button2 = Broodwar->getKeyState(Key::K_OEM_PERIOD);
 
 	//speed = 39/26fps --- 36/28fps --- 33/31fps --- 30/34fps --- 27/37fps --- 24/42fps --- 21/48fps
 	static int lastCheckedFrame95 = 0;
@@ -781,20 +795,24 @@ void AnyRace_CoachAI::onFrame()	// Called every game frame.
 	for (auto &u : selectedUnits)
 	{
 		string unitName = u->getType().getName().c_str();
-		if (u->canTrain() && unitName != "Protoss_Reaver" && unitName != "Protoss_Carrier")
+		if (u->isTraining() && unitName != "Protoss_Reaver" && unitName != "Protoss_Carrier")
 		{
-			if (u->getTrainingQueue().size() > maxProductionBuildingQueue)
+			if (u->getType().isResourceDepot())
 			{
-				u->cancelTrain();
-				Broodwar << Text::Align_Right << "Not allowed to queue units more than " << maxProductionBuildingQueue << endl;
+				if (Broodwar->elapsedTime() *  0.6718 > workersProductionStoppedSeconds)
+				{
+					u->cancelTrain();
+					Broodwar << Text::Align_Right << "Not allowed to make workers after " << getTime(workersProductionStoppedSeconds) << endl;
+				}
 			}
-
-			//if (u->isTraining() && u->getType().isResourceDepot() && Broodwar->elapsedTime() *  0.6718 > workersProductionStoppedSeconds)
-			//{
-			//	u->cancelTrain();
-			//	Broodwar << Text::Align_Right << "Not allowed to make workers after " << getTime(workersProductionStoppedSeconds) << endl;
-			//}
-
+			else //prodBuild
+			{
+				if (u->getTrainingQueue().size() > maxProductionBuildingQueue)
+				{
+					u->cancelTrain();
+					Broodwar << Text::Align_Right << "Not allowed to queue units more than " << maxProductionBuildingQueue << endl;
+				}
+			}
 		}
 		char color = Broodwar->self()->getTextColor();
 		if (color == 2)
@@ -865,7 +883,7 @@ void AnyRace_CoachAI::onFrame()	// Called every game frame.
 			}
 		}
 	}
-	idleProdBuildOrLarva = 0;
+	idleProdBuild = 0;
 	idleFightUnits = 0;
 
 	list<string> listOfIdleFightUnits;
@@ -891,12 +909,12 @@ void AnyRace_CoachAI::onFrame()	// Called every game frame.
 	{
 		for (auto &enemy : Broodwar->enemies())
 		{
-			static int lastCheckedFrame13 = 0;
-			if (!okUDAI && enemy->getType() == PlayerTypes::Player && lastCheckedFrame13 + 240 < FrameCount)
-			{
-				lastCheckedFrame13 = FrameCount;
-				Broodwar->sendText("I have top intel about u \"%s\", accept playing by typing UDAI.", enemy->getName().c_str());
-			}
+			//static int lastCheckedFrame13 = 0;
+			//if (!okUDAI && enemy->getType() == PlayerTypes::Player && lastCheckedFrame13 + 240 < FrameCount)
+			//{
+			//	lastCheckedFrame13 = FrameCount;
+			//	Broodwar->sendText("I have top intel about u \"%s\", accept playing by typing UDAI.", enemy->getName().c_str());
+			//}
 			enemies.push_back(enemy);
 		}
 	}
@@ -1161,12 +1179,18 @@ void AnyRace_CoachAI::onFrame()	// Called every game frame.
 			}
 		}
 
-		if (Broodwar->self()->getRace() == Races::Zerg && ut.isResourceDepot())
-			idleProdBuildOrLarva += u->getLarva().size();
-
 		if (u->isIdle() && ut.isBuilding() && u->canTrain() && !ut.isResourceDepot())
 		{
-			idleProdBuildOrLarva++;
+			if (!Broodwar->isPaused())
+			{
+				if (ut == UnitTypes::Protoss_Gateway)
+					idleGateTime++;
+				if (ut == UnitTypes::Protoss_Robotics_Facility)
+					idleRoboTime++;
+				if (ut == UnitTypes::Protoss_Stargate)
+					idleStarTime++;
+			}
+			idleProdBuild++;
 			listOfIdleBuildings.push_back(formated(ut));
 		}
 		if (u->canAttackMove() && !ut.isWorker() && !ut.isBuilding() && (u->isIdle() || u->isHoldingPosition()))
@@ -1268,7 +1292,16 @@ void AnyRace_CoachAI::onFrame()	// Called every game frame.
 	for (string item : listOfBuildings)
 		BuildingsMap[item]++;
 	for (auto entry : BuildingsMap)
-		BuildingsFinal += to_string(entry.second) + " " + entry.first + "\n\r";
+	{
+		if (entry.first == "Gateway")
+			BuildingsFinal += to_string(entry.second) + " " + entry.first + " " + getTime(idleGateTime / FPS) + "\n\r";
+		else if (entry.first == "Robotics_Facility")
+			BuildingsFinal += to_string(entry.second) + " " + entry.first + " " + getTime(idleRoboTime / FPS) + "\n\r";
+		else if (entry.first == "Stargate")
+			BuildingsFinal += to_string(entry.second) + " " + entry.first + " " + getTime(idleStarTime / FPS) + "\n\r";
+		else
+			BuildingsFinal += to_string(entry.second) + " " + entry.first + "\n\r";
+	}
 	for (auto entry : UnitsMap)
 		UnitsFinal += to_string(entry.second) + " " + entry.first + "\n\r";
 
@@ -1288,7 +1321,7 @@ void AnyRace_CoachAI::onFrame()	// Called every game frame.
 	for (auto entry : idleBuildingsMap)
 		idleBuildingsFinal += to_string(entry.second) + " " + entry.first + "\n\r";
 
-	if (idleProdBuildOrLarva > 0)
+	if (idleProdBuild > 0)
 		idleProdFrameCounter++;
 	else idleProdFrameCounter = 0;
 
@@ -1344,10 +1377,22 @@ void AnyRace_CoachAI::onFrame()	// Called every game frame.
 	Broodwar->drawTextScreen(225, 25, "%c%s %c%s", Text::Purple, match.c_str(), Text::White, mapName.c_str());
 	Broodwar->drawTextScreen(310, 15, "%cWorkers prod., stopped for: %c%s,%c%.1fw", Text::Grey, Text::BrightRed, getTime(workersProductionStopped / FPS).c_str(),
 		Text::Turquoise, (workersProductionStopped / FPS) / 12.5);
-	if (FPS != 24)
+	static int lastCheckedFrame45 = 0;
+	if (FPS != 24 && !Broodwar->isPaused())
+	{
 		Broodwar->drawTextScreen(530, 15, "%cFPS:%c%d, %cTime:%c%s", 8, 4, FPS, 8, 4, gameTime.c_str());
+
+		if (lastCheckedFrame45 < FrameCount - FPS * 2 && j["Control Panel"]["autoGameSpeed"].get<bool>())
+		{
+			Broodwar << Text::Blue << Text::Align_Right << "autoGameSpeed=true in the config file, game speed now Fastest." << endl;
+			Broodwar->setLocalSpeed(42);
+		}
+	}
 	else
+	{
 		Broodwar->drawTextScreen(530, 15, "%cFPS:%c%d, %cTime:%c%s", 14, 4, FPS, 14, 4, gameTime.c_str());
+		lastCheckedFrame45 = FrameCount;
+	}
 
 	if (!Broodwar->isPaused())
 	{
@@ -1482,6 +1527,23 @@ void AnyRace_CoachAI::onFrame()	// Called every game frame.
 				Multitasking(idleFightUnitsFinal, idleBuildingsFinal);
 		}
 		Broodwar->drawTextScreen(50, 8, "%cshift:%s", Text::Brown, lastShift.c_str());
+
+		for (int i = 0; i < stepsArray.size(); i++)
+		{
+			static int lastCheckedFrame40 = 0;
+			if (lastCheckedFrame40 < FrameCount && parseTime(stepsArray[i].substr(0, 5)) == now + 2)
+			{
+				lastCheckedFrame40 = FrameCount + FPS * 4;
+				PlaySound(L".\\bwapi-data\\4- beep.wav", NULL, SND_ASYNC);
+				cmd = "bwapi-data\\balcon\\balcon.exe -t \"" + stepsArray[i] + "\"";
+				WinExec(cmd.c_str(), SW_HIDE);
+			}
+
+			if (parseTime(stepsArray[i].substr(0, 5)) < now + 3)//currentStep
+				currentStepIndex = i;
+			else
+				break;
+		}
 	}
 
 	if (F6_Pressed == 1)
@@ -1508,20 +1570,16 @@ void AnyRace_CoachAI::onFrame()	// Called every game frame.
 		Broodwar->drawTextScreen(500, 25, "%cBuildings:\n\r%c%s%cBuildings in progress:\n\r%c%s%cTech/Upgrade in progress:\n\r%c%s", Text::DarkGreen, Text::GreyGreen, BuildingsFinal.c_str(), 28, Text::GreyGreen, inCompleteBuildingsFinal.c_str(), 24, 29, inProgressUpgradeTech.c_str());
 	}
 
-	if (F7_Pressed == 0)
-		Broodwar->drawTextScreen(400, 25, "%c%s%c%s \n\r\n\r%cTips:\n\r====\n\r%c%s", 7, j["Preset Plan"]["Bo1Name"].get<string>().c_str(), 4, j["Preset Plan"]["Bo1Text"].get<string>().c_str(),
-			28, 31, j["Preset Plan"]["Bo1Tips"].get<string>().c_str());
-	else if (F7_Pressed == 1)
-	{
-		Broodwar->drawTextScreen(400, 25, "%c%s%c%s \n\r\n\r%cTips:\n\r====\n\r%c%s", 7, j["Preset Plan"]["Bo2Name"].get<string>().c_str(), 4, j["Preset Plan"]["Bo2Text"].get<string>().c_str(),
-			28, 31, j["Preset Plan"]["Bo2Tips"].get<string>().c_str());
-	}
-	else if (F7_Pressed == 2)
-	{
-		Broodwar->drawTextScreen(400, 25, "%c%s%c%s \n\r\n\r%cTips:\n\r====\n\r%c%s", 7, j["Preset Plan"]["Bo3Name"].get<string>().c_str(), 4, j["Preset Plan"]["Bo3Text"].get<string>().c_str(),
-			28, 31, j["Preset Plan"]["Bo3Tips"].get<string>().c_str());
-	}
+	string t1 = j["Preset Plan"]["Tips1"].get<string>().c_str();
+	string t2 = j["Preset Plan"]["Tips2"].get<string>().c_str();
+	string t3 = j["Preset Plan"]["Tips3"].get<string>().c_str();
 
+	if (F7_Pressed == 0)
+		Broodwar->drawTextScreen(400, 25, "%c= %s =:\n%c%s", 28, t1.substr(0, t1.find(":")).c_str(), 31, t1.substr(t1.find(":") + 1, t1.size()).c_str());
+	else if (F7_Pressed == 1)
+		Broodwar->drawTextScreen(400, 25, "%c= %s =:\n%c%s", 28, t2.substr(0, t2.find(":")).c_str(), 31, t2.substr(t2.find(":") + 1, t2.size()).c_str());
+	else if (F7_Pressed == 2)
+		Broodwar->drawTextScreen(400, 25, "%c= %s =:\n%c%s", 28, t3.substr(0, t3.find(":")).c_str(), 31, t3.substr(t3.find(":") + 1, t3.size()).c_str());
 
 	//custom();
 
@@ -1675,27 +1733,35 @@ void AnyRace_CoachAI::drawWorkersCutLog()
 }
 void AnyRace_CoachAI::TimedBo()
 {
-	// "colors": "Default = 2, Yellow = 3, White = 4, Grey = 5, Red = 6, Green = 7, BrightRed = 8, Blue = 14, Teal = 15, Purple = 16,
-	// Orange = 17, Brown = 21, DarkGreen = 24, LightYellow = 25, Cyan = 26, Tan = 27, GreyBlue = 28, GreyGreen = 29, GreyCyan = 30, Turquoise = 31",
+	Broodwar->drawBoxScreen(5, 57, 124, 67, 0, true);
+	Broodwar->drawBoxScreen(5, 57, 124, 301, 0, false);
 
-	vector<string> stepsArray;
-	Broodwar->drawBoxScreen(3, 57, 124, 67, 0, true);
-	Broodwar->drawBoxScreen(3, 57, 124, 301, 0, false);
 	if (ctrlF1)
 	{
 		Broodwar->drawTextScreen(5, 55, "%c%s\n", j["Preset Plan"]["TimedBo Color1"].get<int>(), j["Preset Plan"]["TimedBo1 Title"].get<string>().c_str());
 		stepsArray = j["Preset Plan"]["TimedBo1"].get<vector<string>>();
+		tips = j["Preset Plan"]["TimedBo1 Tips"].get<string>();
 	}
 	if (ctrlF2)
 	{
 		Broodwar->drawTextScreen(5, 55, "%c%s\n", j["Preset Plan"]["TimedBo Color1"].get<int>(), j["Preset Plan"]["TimedBo2 Title"].get<string>().c_str());
 		stepsArray = j["Preset Plan"]["TimedBo2"].get<vector<string>>();
+		tips = j["Preset Plan"]["TimedBo2 Tips"].get<string>();
 	}
 	if (ctrlF3)
 	{
 		Broodwar->drawTextScreen(5, 55, "%c%s\n", j["Preset Plan"]["TimedBo Color1"].get<int>(), j["Preset Plan"]["TimedBo3 Title"].get<string>().c_str());
 		stepsArray = j["Preset Plan"]["TimedBo3"].get<vector<string>>();
+		tips = j["Preset Plan"]["TimedBo3 Tips"].get<string>();
 	}
+
+	//for (int i = 0; i < stepsArray.size(); i++)
+	//{
+	//	if (parseTime(stepsArray[i].substr(0, 5)) < now)
+	//		qIndex = i;
+	//}
+	//stepsArray.erase(stepsArray.begin() + qIndex);
+
 
 	//string delimiter = "--->";//split string
 	//size_t pos = 0;
@@ -1708,63 +1774,93 @@ void AnyRace_CoachAI::TimedBo()
 	//steps.push_back(bo);
 
 	int yy = 65;
-	int now = Broodwar->elapsedTime() * 0.6718;
-	string cmd;
 	size_t pos;
 	string main, extra;
 	stepDone = false;
-	for (string s : stepsArray)
+
+	for (int i = 0; i < stepsArray.size(); i++)
 	{
-		if (strstr(s.c_str(), ";"))
+		if (i > 8)
+			Broodwar->drawTextScreen(0, yy, "%c%d", j["Preset Plan"]["TimedBo Color1"].get<int>(), i - 9);
+		else
+			Broodwar->drawTextScreen(0, yy, "%c%d", j["Preset Plan"]["TimedBo Color1"].get<int>(), i + 1);
+
+		if (strstr(stepsArray[i].c_str(), ";"))
 		{
-			pos = s.find(";");
-			main = s.substr(0, pos + 1);
-			extra = s.substr(pos + 1, s.size());
+			pos = stepsArray[i].find(";");
+			main = stepsArray[i].substr(0, pos + 1);
+			extra = stepsArray[i].substr(pos + 1, stepsArray[i].size());
 		}
 		else
 		{
-			main = s;
+			main = stepsArray[i];
 			extra = "";
 		}
-		if (parseTime(s.substr(0, 5)) < now + 2 && currentStep == s)//currentStep
+
+		if (i == currentStepIndex)//currentStep
 		{
-			Broodwar->drawTextScreen(5, yy, "%c%s\n", j["Preset Plan"]["TimedBo Color1"].get<int>(), main.c_str());
-			if (strstr(currentStep.c_str(), ";"))
+			Broodwar->drawTextScreen(7, yy, "%c%s\n", j["Preset Plan"]["TimedBo Color1"].get<int>(), main.c_str());
+			if (strstr(stepsArray[i].c_str(), ";"))
 			{
 				Broodwar->drawBoxScreen(175, 329, 485, 344, 0, true);
 				Broodwar->drawTextScreen(180, 330, "%c%s", j["Preset Plan"]["TimedBo Color1"].get<int>(), extra.c_str());
 			}
 		}
 		else
-			Broodwar->drawTextScreen(5, yy, "%c%s\n", j["Preset Plan"]["TimedBo Color2"].get<int>(), main.c_str());
+			Broodwar->drawTextScreen(7, yy, "%c%s\n", j["Preset Plan"]["TimedBo Color2"].get<int>(), main.c_str());
 		yy += 10;
+	}
 
-		static int lastCheckedFrame40 = 0;
-		if (parseTime(s.substr(0, 5)) == now && lastCheckedFrame40 < FrameCount)
+	if (strstr(tips.c_str(), ";"))
+		Broodwar->drawTextScreen(7, yy, "%c%s\n", Text::LightYellow, tips.substr(0, tips.find(";") + 1).c_str());
+	else
+		Broodwar->drawTextScreen(7, yy, "%c%s\n", Text::LightYellow, tips.c_str());
+
+	static int lastCheckedFrame41 = 0;
+	if ((button1 || button2 || Broodwar->getKeyState(Key::K_SPACE)) && lastCheckedFrame41 < FrameCount)
+	{
+		lastCheckedFrame41 = FrameCount + FPS / 4;
+		if (button1)
 		{
-			currentStep = s;
-			lastCheckedFrame40 = FrameCount + FPS * 4;
-			PlaySound(L".\\bwapi-data\\4- beep.wav", NULL, SND_ASYNC);
-			cmd = "bwapi-data\\balcon\\balcon.exe -t \"" + s + "\"";
-			WinExec(cmd.c_str(), SW_HIDE);
+			for (int i = 49; i < 58 && i - 49 < stepsArray.size(); i++)
+			{
+				if (Broodwar->getKeyState((Key)i))
+				{
+					cmd = "bwapi-data\\balcon\\balcon.exe -t \"" + stepsArray[i - 49] + "\"";
+					WinExec(cmd.c_str(), SW_HIDE);
+					break;
+				}
+			}
+			if (Broodwar->getKeyState(Key::K_0) && stepsArray.size() > 9)
+			{
+				cmd = "bwapi-data\\balcon\\balcon.exe -t \"" + stepsArray[9] + "\"";
+				WinExec(cmd.c_str(), SW_HIDE);
+			}
 		}
-
-		//currentStep = s;
-		//stepDone = true;
-		//stepsArray[0];
-	}
-
-	if (ctrlF1)
-	{
-		Broodwar->drawTextScreen(5, yy, "%c%s\n", Text::LightYellow, j["Preset Plan"]["TimedBo1 Tips"].get<string>().c_str());
-	}
-	else if (ctrlF2)
-	{
-		Broodwar->drawTextScreen(5, yy, "%c%s\n", Text::LightYellow, j["Preset Plan"]["TimedBo2 Tips"].get<string>().c_str());
-	}
-	else if (ctrlF3)
-	{
-		Broodwar->drawTextScreen(5, yy, "%c%s\n", Text::LightYellow, j["Preset Plan"]["TimedBo3 Tips"].get<string>().c_str());
+		else if (button2)
+		{
+			for (int i = 49; i < 58 && i - 39 < stepsArray.size(); i++)
+			{
+				if (Broodwar->getKeyState((Key)i))
+				{
+					cmd = "bwapi-data\\balcon\\balcon.exe -t \"" + stepsArray[i - 39] + "\"";
+					WinExec(cmd.c_str(), SW_HIDE);
+					break;
+				}
+			}
+		}
+		else if (Broodwar->getKeyState(Key::K_SPACE))
+		{
+			for (int i = 0; i < stepsArray.size(); i++)
+			{
+				if (parseTime(stepsArray[i].substr(0, 5)) > now)
+				{
+					cmd = "bwapi-data\\balcon\\balcon.exe -t \"" + stepsArray[i] + "\"";
+					WinExec(cmd.c_str(), SW_HIDE);
+					break;
+				}
+			}
+		}
 	}
 }
 void AnyRace_CoachAI::DrawHotkeysAndEnemyKilled()
@@ -2082,7 +2178,7 @@ void AnyRace_CoachAI::Replay()
 	Bulletset bulls = Broodwar->getBullets();
 	for (auto b : bulls)
 	{
-		if (b->getType() == BulletTypes::Psionic_Storm)
+		if (b->getType() == BulletTypes::Psionic_Storm && j["Control Panel"]["replayAutoMoveToScanOrStorm"].get<bool>())
 		{
 			Broodwar->setScreenPosition(b->getPosition());
 			int x = b->getPosition().x - 280;
@@ -2168,11 +2264,12 @@ void AnyRace_CoachAI::Replay()
 				// goon range happend before, if this building has been idle for whatever time after the pattern has been logged, do it.
 				if (!strstr(upgradeTechReplayUnitIDs.c_str(), pattern.c_str()))
 				{
+
 					upgradeTechReplayUnitIDs += pattern;
 					if (p->supplyUsed() / 2 < replayLogSupplyFor)
-						freq = gameTime + " " + to_string(p->supplyUsed() / 2) + "," + upTech;
+						freq = gameTime + " " + to_string(p->supplyUsed() / 2) + "," + upTech + ".isTechOrUpgrade";
 					else
-						freq = gameTime + " " + upTech;
+						freq = gameTime + " " + upTech + ".isTechOrUpgrade";
 					switch (pid)
 					{
 					case 0: macroLogP0.push_back(freq); break;
@@ -2640,36 +2737,116 @@ void AnyRace_CoachAI::Replay()
 			default:
 				break;
 			}
-			string BO, BO2 = "";
-			if (macroLogP.size() > 37 && ctrl)
+			int y1 = 105, y2 = 15;
+			string step, type;
+
+			if (ctrl)
 			{
-				for (int i = 37; i < macroLogP.size(); i++)
+				if (macroLogP.size() > 48)
 				{
-					if (i < 51)
-						BO += macroLogP[i] + "\n\r";
-					else
-						BO2 += macroLogP[i] + "\n\r";
+					for (int i = 48; i < macroLogP.size(); i++)
+					{
+						int color1 = j["Preset Plan"]["ReplayBo Color1"].get<int>();
+						int color2 = j["Preset Plan"]["ReplayBo Color2"].get<int>();
+						if (i < 66)
+						{
+							if (strstr(macroLogP[i].c_str(), "."))
+							{
+								step = macroLogP[i].substr(0, macroLogP[i].find("."));
+								type = macroLogP[i].substr(macroLogP[i].find(".") + 1, macroLogP[i].size());
+
+								if (type == "isResourceDepot")
+									color1 = 31;
+								if (type == "isBuilding")
+									color1 = color2;
+								if (type == "isTechOrUpgrade")
+									color1 = 3;
+
+								Broodwar->drawTextScreen(5, y1, "%c%s\n", color1, step.c_str());
+							}
+							else
+								Broodwar->drawTextScreen(5, y1, "%c%s\n", color1, macroLogP[i].c_str());
+							y1 += 10;
+						}
+						else // > 66
+						{
+							if (strstr(macroLogP[i].c_str(), "."))
+							{
+								step = macroLogP[i].substr(0, macroLogP[i].find("."));
+								type = macroLogP[i].substr(macroLogP[i].find(".") + 1, macroLogP[i].size());
+
+								if (type == "isResourceDepot")
+									color1 = 31;
+								if (type == "isBuilding")
+									color1 = color2;
+								if (type == "isTechOrUpgrade")
+									color1 = 3;
+
+								Broodwar->drawTextScreen(140, y2, "%c%s\n", color1, step.c_str());
+							}
+							else
+								Broodwar->drawTextScreen(140, y2, "%c%s\n", color1, macroLogP[i].c_str());
+							y2 += 10;
+						}
+					}
 				}
 			}
-			else
+			else // < 48
 			{
 				for (int i = 0; i < macroLogP.size(); i++)
 				{
-					if (i < 14)
-						BO += macroLogP[i] + "\n\r";
-					else if (i >= 14 && i < 37)
+					int color1 = j["Preset Plan"]["ReplayBo Color1"].get<int>();
+					int color2 = j["Preset Plan"]["ReplayBo Color2"].get<int>();
+
+					if (i < 18)
 					{
-						BO2 += macroLogP[i] + "\n\r";
+						if (strstr(macroLogP[i].c_str(), "."))
+						{
+							step = macroLogP[i].substr(0, macroLogP[i].find("."));
+							type = macroLogP[i].substr(macroLogP[i].find(".") + 1, macroLogP[i].size());
+
+							if (type == "isResourceDepot")
+								color1 = 31;
+							if (type == "isBuilding")
+								color1 = color2;
+							if (type == "isTechOrUpgrade")
+								color1 = 3;
+
+							Broodwar->drawTextScreen(5, y1, "%c%s\n", color1, step.c_str());
+						}
+						else
+							Broodwar->drawTextScreen(5, y1, "%c%s\n", color1, macroLogP[i].c_str());
+						y1 += 10;
 					}
-					if (i == 36)
+					if (i >= 18 && i < 48)
 					{
-						BO2 += "--> Press CTRL to continue...";
-						break;
+						if (strstr(macroLogP[i].c_str(), "."))
+						{
+							step = macroLogP[i].substr(0, macroLogP[i].find("."));
+							type = macroLogP[i].substr(macroLogP[i].find(".") + 1, macroLogP[i].size());
+
+							if (type == "isResourceDepot")
+								color1 = 31;
+							if (type == "isBuilding")
+								color1 = color2;
+							if (type == "isTechOrUpgrade")
+								color1 = 3;
+
+							Broodwar->drawTextScreen(140, y2, "%c%s\n", color1, step.c_str());
+						}
+						else
+							Broodwar->drawTextScreen(140, y2, "%c%s\n", color1, macroLogP[i].c_str());
+						y2 += 10;
+
+						if (i == 47)
+						{
+							Broodwar->drawTextScreen(140, y2, "--> Press CTRL to continue...");
+							break;
+						}
 					}
 				}
 			}
-			Broodwar->drawTextScreen(5, 95, "Build order:\n\r%c%s", 7, BO.c_str());
-			Broodwar->drawTextScreen(140, 15, "%c%s", 7, BO2.c_str());
+			Broodwar->drawTextScreen(5, 95, "Build order:");
 		}
 		plSelectedTemp = plSelected;
 		break;
@@ -2827,8 +3004,8 @@ void AnyRace_CoachAI::onReceiveText(BWAPI::Player player, std::string text)
 {
 	// Parse the received text
 	//Broodwar << player->getName() << " said \"" << text << "\"" << endl;
-	if (strstr(text.c_str(), "UDAI"))
-		okUDAI = true;
+	//if (strstr(text.c_str(), "UDAI"))
+	//	okUDAI = true;
 }
 
 void AnyRace_CoachAI::onPlayerLeft(BWAPI::Player player)
@@ -2918,6 +3095,14 @@ void AnyRace_CoachAI::onUnitMorph(BWAPI::Unit unit)
 
 		if (p->spentMinerals() != 0 && UnitLog)
 		{
+			if (ut.isResourceDepot() && un != "Lair" && un != "Hive")
+				un += ".isResourceDepot";
+			else
+			{
+				if (ut.isBuilding() && ut != p->getRace().getSupplyProvider())
+					un += ".isBuilding";
+			}
+
 			string freq = gameTime + " " + un;
 			if (p->supplyUsed() / 2 < replayLogSupplyFor)
 				freq = gameTime + " " + to_string(p->supplyUsed() / 2) + "," + un;
@@ -2962,7 +3147,7 @@ void AnyRace_CoachAI::onUnitCreate(BWAPI::Unit unit)//Note: Protoss_Assimilator 
 
 	if (Broodwar->isReplay())
 	{
-		if (ut.getName() == "Spell_Scanner_Sweep")
+		if (ut.getName() == "Spell_Scanner_Sweep" && j["Control Panel"]["replayAutoMoveToScanOrStorm"].get<bool>())
 		{
 			int x = unit->getPosition().x - 280;
 			int y = unit->getPosition().y - 180;
@@ -2982,6 +3167,13 @@ void AnyRace_CoachAI::onUnitCreate(BWAPI::Unit unit)//Note: Protoss_Assimilator 
 
 		if (p->spentMinerals() != 0 && UnitLog && un != "Larva"  && un != "Scarab" && un != "Zergling" && un != "Scourge")
 		{
+			if (ut.isResourceDepot())
+				un += ".isResourceDepot";
+			else
+			{
+				if (ut.isBuilding() && ut != p->getRace().getSupplyProvider())
+					un += ".isBuilding";
+			}
 			string freq = gameTime + " " + un;
 			if (p->supplyUsed() / 2 < replayLogSupplyFor)
 				freq = gameTime + " " + to_string(p->supplyUsed() / 2) + "," + un;
