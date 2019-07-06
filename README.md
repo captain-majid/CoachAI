@@ -19,7 +19,7 @@ It can help the players at-all-levels to improve, also to test and sense and rem
 - Detecting the game speed, by just looking at the FPS value: 24=Fastest, 21=Faster, 18=Fast, 15=Normal, etc..
 #  Features in-game:
 - The # of Minerals/Gas workers from all bases.
-- The # of idle production buildings (for Zerg, only the number of Larvae displayed).
+- The # of idle production buildings (for Zerg, only the number of Larvae displayed), also the buildings IdleTime for Protoss.
 - The # of idle of idle fighting units (only non-worker units that canAttackMove: HT, Siege-Mode Tank, Lurker cannot, Medics can !).
 - The # of all killed enemies during the game.
 - The # of all current enemies, their supplies, Minerals/Gas, upgrades, in-progress things and you can even see the enemies while they move in the dark/fog. (this works in multiplayer, beware !)
@@ -72,16 +72,15 @@ This config file allows the player to modify/disable/enable many values:
 - **_spend_more_minerals_WarningFor (default=900)_**: minerals sound warning "Spend more minerals", if minerals 500-750 its every 3s, if > 750 its every 1s, until the default 15 minutes, that doesn't happen in the [multitask/macro maps](https://liquipedia.net/starcraft/Micro_Training_Maps#Multitask/Macro_training), because it has it already.
 - **_mineralsAboveLog (default=750)_**: logs the time when you're above certain amount of minerals, and for how long that was, to see when exactly you forgot to Macro.
 - **_stickyScreen (default=1)_**: which screen to display by default ?, 1 = TimedBo, 2 = WorkersCut log & MineralsAbove log, 3 = Idle Production & Fighting units & Multitasking.
-- **_Bo1Text_**: an editable static build order that appear on-game screen, you can use "\n" to move to a new line.
+- **_autoGameSpeed (default=true)_**: some values could go wrong if game speed isn't Fastest=24 FPS, like mine > 750 time, you can set it to false to allow game speed changes using **_PgUp_**/**_PgDown_**/**_End_**/**_Home_**.
 - **_TimedBo1_**: an editable dynamic build order that appear on-game screen, it highlights/pronounces what should be done now JIT. Use ';' to move any extra step-details out of the succinct Bo form.
 - **_TimedBo1 Tips_**: a block of text that appear below a specific TimedBo, you can use "\n" to move to a new line.
+- **_Tips1_**: an editable custom tips that appear on-game screen, you can use "\n" to move to a new line, you can also use ';' here.
 
 # Message shortcuts:
 The player can input some text the UDAI can understand:
 
 **_c1_**="show me the money", **_c2_**="black sheep wall", **_c3_**="operation cwal", **_c4_**="power overwhelming", **_c5_**="staying alive", **_c6_**="there is no cow level".
-
-**_UDAI_**=only in multiplayer (ICCUP/LAN) to acknowledge superiority from the non-CoachAI player, and that the CoachAI-player is not cheating by having intel about him.
 
 **_?_** (Only in-replay, obviously!)=Who wins?
 
@@ -90,7 +89,7 @@ The player can input some text the UDAI can understand:
 
 **_F6 (also in-replay)_**=Toggle the display mode of in-progress units/buildings.
 
-**_F7_**=Switches between the preset game plans.(in-replay **_F7_** toggles the vision of the selected player)
+**_F7_**=Switches between the preset custom tips.(in-replay **_F7_** toggles the vision of the selected player)
 
 **_F8_**=Switches between the current enemies infos, and also drawing the selected enemy army even while moving in the dark/fog, 
 pressing Shift toggles the in-progress mode.
@@ -103,7 +102,11 @@ pressing Shift toggles the in-progress mode.
 
 **_Control+F1,F2,F3_**=Switches between the TimedBos.
 
-**_PgUp_**=increase game speed, **_PgDown_**=decrease game speed, **_End_**=/speed 0 will run EXTREMELY fast, **_Home_**=reset speed to Fastest (24 FPS).
+**_PgUp_**=increase game speed, **_PgDown_**=decrease game speed, **_End_**=/speed 0 will run EXTREMELY fast, **_Home_**=reset speed to Fastest (24 FPS) **_Note_**: speed won't change if **_"autoGameSpeed: true"_**.
+
+**_Space_**=while busy you can press Space to pronounce the next step in the TimedBo.
+
+**_Comma|Period + #_**=pronounce a specific step in the TimedBo up to 19 (ie: for step3 press ", + 3", step13= ". + 3").
 
 # To re-build this project:
 * Setup Visual Studio 2017 choosing the following components:
@@ -116,10 +119,11 @@ pressing Shift toggles the in-progress mode.
 
 # Screenshots:
 ![Replay](https://i.ibb.co/zf6Gkgd/replay.png)
+![ReplayBo](https://i.ibb.co/zNbZg67/replay-bo.png)
 
 # Installation:
 - Extract the .7z file contents from this [topic](http://www.teamliquid.net/forum/brood-war/531310-human-like-broodwar-ais-revamped) to SC v1.16.1 folder.
 - Extract CoachAI.zip contents to StarCraft\bwapi-data folder.
 - Watch 1m from this [video](https://www.youtube.com/watch?v=vmKHsCGFMa0), but change the AI from Protoss_McRave.dll to AnyRace_CoachAI.dll.
 
-[Download](http://drives.news/CoachAI)
+[Download](http://bit.ly/Coach_AI)
