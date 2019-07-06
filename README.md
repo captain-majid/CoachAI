@@ -6,6 +6,7 @@ It can help the players at-all-levels to improve, also to test and sense and rem
 > _**Note**_:
 * CoachAI works only with StarCraft v1.16.1 using ChaosLauncher.
 * When playing in ICCUP, the game is logged and you'll get the win/lose points, this won't happen if one of the players is Computer.
+* The CoachAI can run on Windows XP starting from BWAPI v4.4.
 
 #  Features in-game & in-replay:
 - The RealTime measure of Macro (train/build/upgrade) is here (Terran repairs not accounted), many players still measure it just by the used supplies at specific time or by inaccurate replay analysis tools, in-replay you can know @any second who is the best Macro player (same as the score screen you see at the end of game/replay).
@@ -44,7 +45,7 @@ A counter for each selection you select, with total switches during the game, th
 - During team replays showing JIT if playerX allied with playerY, and if playerY also did the same.
 - Automatic highlighting of idle workers.
 - Recording the max number of idle workers of each player, and when that happened.
-- The screen will automatically move to where a Nuclear launch, Comsat scan or Storm is positioned.
+- The screen will automatically move to where a Nuclear launch is positioned (Comsat scan or Storm autoMove is disabled by default).
 - An intuitive/easier way to toggle vision of the selected player (and his allies) by pressing F7 (SC:R requires that you blind ALL other players individually to get the vision of 1 player which is not smart, here we just need to select a player/or 1 of his allies to see the required vision).
 - Displaying live score of produced/killed/lost units/buildings, to get the current state of players, this is about unit/building control (more close to micro, same as the score screen you see at the end of game/replay).
 
@@ -72,10 +73,11 @@ This config file allows the player to modify/disable/enable many values:
 - **_spend_more_minerals_WarningFor (default=900)_**: minerals sound warning "Spend more minerals", if minerals 500-750 its every 3s, if > 750 its every 1s, until the default 15 minutes, that doesn't happen in the [multitask/macro maps](https://liquipedia.net/starcraft/Micro_Training_Maps#Multitask/Macro_training), because it has it already.
 - **_mineralsAboveLog (default=750)_**: logs the time when you're above certain amount of minerals, and for how long that was, to see when exactly you forgot to Macro.
 - **_stickyScreen (default=1)_**: which screen to display by default ?, 1 = TimedBo, 2 = WorkersCut log & MineralsAbove log, 3 = Idle Production & Fighting units & Multitasking.
-- **_autoGameSpeed (default=true)_**: some values could go wrong if game speed isn't Fastest=24 FPS, like mine > 750 time, you can set it to false to allow game speed changes using **_PgUp_**/**_PgDown_**/**_End_**/**_Home_**.
+- **_autoGameSpeed (default=true)_**: some values could go wrong if game speed isn't Fastest=24 FPS, like mine > 750 time, you can set it to false to allow game speed changes.
+- **_replayAutoMoveToScanOrStorm (default=false)_**: set it to true if you don't want to miss any action !
 - **_TimedBo1_**: an editable dynamic build order that appear on-game screen, it highlights/pronounces what should be done now JIT. Use ';' to move any extra step-details out of the succinct Bo form.
-- **_TimedBo1 Tips_**: a block of text that appear below a specific TimedBo, you can use "\n" to move to a new line.
-- **_Tips1_**: an editable custom tips that appear on-game screen, you can use "\n" to move to a new line, you can also use ';' here.
+- **_TimedBo1 Tips_**: a block of text that appear below a specific TimedBo, you can use "\n" to move to a new line, you can also use ';' here.
+- **_Tips1_**: an editable custom tips that appear on-game screen when pressing **_F7_**, you can use "\n" to move to a new line.
 
 # Message shortcuts:
 The player can input some text the UDAI can understand:
@@ -102,7 +104,7 @@ pressing Shift toggles the in-progress mode.
 
 **_Control+F1,F2,F3_**=Switches between the TimedBos.
 
-**_PgUp_**=increase game speed, **_PgDown_**=decrease game speed, **_End_**=/speed 0 will run EXTREMELY fast, **_Home_**=reset speed to Fastest (24 FPS) **_Note_**: speed won't change if **_"autoGameSpeed: true"_**.
+**_PgUp_**=increase game speed, **_PgDown_**=decrease game speed, **_End_**=/speed 0 will run EXTREMELY fast, **_Home_**=reset speed to Fastest (24 FPS) **_Note_**: speed will revert to 24 FPS if **_"autoGameSpeed: true"_**.
 
 **_Space_**=while busy you can press Space to pronounce the next step in the TimedBo.
 
