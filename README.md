@@ -128,4 +128,4 @@ pressing Shift toggles the in-progress mode.
 - Extract CoachAI.zip contents to StarCraft\bwapi-data folder.
 - Watch 1m from this [video](https://www.youtube.com/watch?v=vmKHsCGFMa0), but change the AI from Protoss_McRave.dll to AnyRace_CoachAI.dll.
 
-[Download](https://cutt.ly/CoachAI)
+[Download](cutt.ly/CoachAI)
