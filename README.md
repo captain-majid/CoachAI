@@ -63,7 +63,7 @@ This config file allows the player to modify/disable/enable many values:
 - **_totalTimeOnScreenOrSelectionAbove (default=5)_**: see Multitasking above
 - **_sameScreenWarningEvery (default=30)_**: see Multitasking above
 - **_sameSelectionWarningEvery (default=20)_**: see Multitasking above
-- **_logWorkersAndSupplyProduction (default=true)_**: include Probes/Pylons, etc.. in the MacroLog.
+- **_logWorkersAndSupplyProduction (default=false)_**: include Probes/Pylons, etc.. in the MacroLog.
 - **_logUnitsProduction (default=true)_**: include Dragoons/Zealots, etc.. in the MacroLog.
 - **_workersCutCalculationPeriod (default=540)_**: affects both game/replay, calculates WorkersCut for the specified 1st minutes in the game/replay.
 - **_replayLogUnitsFor (default=420)_**: in-replay Bo recorder, for how long to log units production. (until 7:00)
