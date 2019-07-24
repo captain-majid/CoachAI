@@ -6,7 +6,7 @@ It can help the players at-all-levels to improve, also to test and sense and rem
 > _**Note**_:
 * CoachAI works only with StarCraft v1.16.1 using ChaosLauncher.
 * When playing in ICCUP, the game is logged and you'll get the win/lose points, this won't happen if one of the players is Computer.
-* _**In ICCUP/Lan games, CoachAI will auto send message every 10s (for the 1st 2m) to each human enemy until they all acknowledge/accept that CoachAI-player has multiple advantages (cheats), so nobody can use it as a deceiving/hack tool.**_
+* In ICCUP/Lan games, CoachAI will auto send message every 10s (for the 1st 2m) to each human enemy until they all acknowledge/accept that CoachAI-player has multiple advantages (cheats), so nobody can use it as a deceiving/hack tool.
 * The CoachAI can run on Windows XP starting from BWAPI v4.4.
 
 #  Features in-game & in-replay:
@@ -28,8 +28,8 @@ It can help the players at-all-levels to improve, also to test and sense and rem
 - MacroLog: Logs all build/train/upgrade actions and its time during the game (Tech/Upgrade logged only when its finished, unlike the reply Bo recorder).
 - Hotkeys tracker/counter: Tracks how much you press a specific hotkey.
 - The total time of WorkersCut and the number of lost workers due to that.
-- WorkersCut log (only 2+ seconds cut is calculated): to see when exactly in the game you've stopped making workers and for how long (I personally record my screen to see what I was doing, because replay is not always an option).
-- MineralsAbove log: logs the time when you're above certain amount of minerals, and for how long that was, to see when exactly you forgot to Macro.
+- **_WorkersCut log_** (only 2+ seconds cut is calculated): to see when exactly in the game you've stopped making workers and for how long (I personally record my screen to see what I was doing, because replay is not always an option).
+- **_MineralsAbove log_**: logs the time when you're above certain amount of minerals, and for how long that was, to see when exactly you forgot to Macro.
 - Customizable notification sound and period when WorkersCut happens (5s), idle worker exist (5s) or you've missed multitasking (30s/20s).
 - **_Screen-Multitasking_**:
 A counter for each screen you step into, with total jumps during the game, the average stay @1 screen, the total stay on each screen for above 5s (customizable live, by editing totalTimeOnScreenOrSelectionAbove) and finally, a customizable notification sound when you stay @1 screen for above 30s (customizable live, by editing sameScreenWarningEvery).
@@ -111,7 +111,8 @@ The player can input some text the UDAI can understand:
 **_Comma|Period + #_**=pronounce a specific step in the TimedBo up to 19 (ie: for step3 press ", + 3", step13= ". + 3").
 
 
-**_Shift|Ctrl + F12_**= Pause|resume the game, when paused you can only move the screen during a multiplayer match, with some trick this allows pausing a multiplayer game for more than 3 times, which gives the player enough time to comprehend a complex situation and analyse the game-state quickly.
+**_Shift|Ctrl + F12_**= Pause|resume the game, when paused you can only move the screen during a multiplayer match.
+With some trick this allows pausing a multiplayer game for more than 3 times, which gives the player enough time to comprehend a complex situation and analyse the game-state quickly.
 
 # To re-build this project:
 * Setup Visual Studio 2017 choosing the following components:
