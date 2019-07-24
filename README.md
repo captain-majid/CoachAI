@@ -26,7 +26,7 @@ It can help the players at-all-levels to improve, also to test and sense and rem
 - The # of all killed enemies during the game.
 - The # of all current enemies, their supplies, Minerals/Gas, upgrades, in-progress things and you can even see the enemies while they move in the dark/fog. (this works in multiplayer, beware !)
 - MacroLog: Logs all build/train/upgrade actions and its time during the game (Tech/Upgrade logged only when its finished, unlike the reply Bo recorder).
-- Hotkeys tracker/counter: Tracks how much you press a specific hotkey.
+- **_Hotkeys tracker/counter_**: Tracks how much you press a specific hotkey.
 - The total time of WorkersCut and the number of lost workers due to that.
 - **_WorkersCut log_** (only 2+ seconds cut is calculated): to see when exactly in the game you've stopped making workers and for how long (I personally record my screen to see what I was doing, because replay is not always an option).
 - **_MineralsAbove log_**: logs the time when you're above certain amount of minerals, and for how long that was, to see when exactly you forgot to Macro.
@@ -88,7 +88,7 @@ The player can input some text the UDAI can understand:
 **_?_** (Only in-replay, obviously!)=Who wins?
 
 # Hotkeys:
-**_F5_**=Toggle between the display of the MacroLog (**_Up,Down_**=Scroll through the MacroLog when more than one page exists) & the Hotkeys tracker. When on the Hotkeys tracker screen, you can briefly see other screens by pressing _**Ctrl or Shift**_ pressing _**Shift**_ will also show the game type. (in-replay **_F5_** switches between different screens).
+**_F5_**=Toggle between the display of the MacroLog (**_Up,Down_**=Scroll through the MacroLog when more than one page exists) & the Hotkeys tracker. When on the Hotkeys tracker screen, you can briefly see other screens by pressing _**Ctrl or Shift**_, pressing _**Shift**_ will also show the game type. (in-replay **_F5_** switches between different screens).
 
 **_F6 (also in-replay)_**=Toggle the display mode of in-progress units/buildings.
 
