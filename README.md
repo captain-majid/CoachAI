@@ -6,10 +6,11 @@ It can help the players at-all-levels to improve, also to test and sense and rem
 > _**Note**_:
 * CoachAI works only with StarCraft v1.16.1 using ChaosLauncher.
 * When playing in ICCUP, the game is logged and you'll get the win/lose points, this won't happen if one of the players is Computer.
+* _**In ICCUP/Lan games, CoachAI will auto send message every 10s (for the 1st 2m) to each human enemy until they all acknowledge/accept that CoachAI-player has multiple advantages (cheats), so nobody can use it as a deceiving/hack tool.**_
 * The CoachAI can run on Windows XP starting from BWAPI v4.4.
 
 #  Features in-game & in-replay:
-- The RealTime measure of Macro (train/build/upgrade) is here (Terran repairs not accounted), many players still measure it just by the used supplies at specific time or by inaccurate replay analysis tools, in-replay you can know @any second who is the best Macro player (same as the score screen you see at the end of game/replay).
+- A RealTime measure for _**Macro = spent minerals + spent gas**_ (Terran repairs not accounted), many players still measure it just by the used supplies at specific time or by inaccurate replay analysis tools, in-replay you can know @any second who is the best Macro player (same as the score screen you see at the end of game/replay).
 - Want to know how many unit/building has been lost in-game/in-replay ?, just select one of the same type.
 - The # of units/buildings and also the ones in-progress, and the remaining build time for each one in progress, also the remaining time for each Tech/Upgrade in progress.
 - Buildings that has Rally Point will draw a line to the RP.
@@ -29,13 +30,12 @@ It can help the players at-all-levels to improve, also to test and sense and rem
 - The total time of WorkersCut and the number of lost workers due to that.
 - WorkersCut log (only 2+ seconds cut is calculated): to see when exactly in the game you've stopped making workers and for how long (I personally record my screen to see what I was doing, because replay is not always an option).
 - MineralsAbove log: logs the time when you're above certain amount of minerals, and for how long that was, to see when exactly you forgot to Macro.
-- Customizable notification sound and period when WorkersCut happens (5s), idle worker exist (5s) or you've missed multitasking (20s).
-- Multitasking++:
-- Screen Multitasking:
-A counter for each screen you step into, with total jumps during the game, the average stay @1 screen, the total stay on each screen for above 5s (customizable live, by editing totalTimeOnScreenOrSelectionAbove) and finally, a customizable notification sound when you stay @1 screen for above 20s (customizable live, by editing sameScreenOrSelectionWarningEvery).
-- Selection Multitasking:
-A counter for each selection you select, with total switches during the game, the average focus @1 selection, the total focus on each selection for above 5s (customizable live, by editing totalTimeOnScreenOrSelectionAbove) and finally, a customizable notification sound when you focus @1 selection for above 20s (customizable live, by editing sameScreenOrSelectionWarningEvery).
-- TimedBo: all of us forget 1 or more things that was planned before the game, so a written Bo and tips on the game screen that dynamically highlights "What now/next?" while alerting with sound and pronouncing the current step in English JIT and allowing for more step-details to be shown/pronounced out of the succinct Bo form, will accelerate the familiarity with a specific build remarkably, 
+- Customizable notification sound and period when WorkersCut happens (5s), idle worker exist (5s) or you've missed multitasking (30s/20s).
+- **_Screen-Multitasking_**:
+A counter for each screen you step into, with total jumps during the game, the average stay @1 screen, the total stay on each screen for above 5s (customizable live, by editing totalTimeOnScreenOrSelectionAbove) and finally, a customizable notification sound when you stay @1 screen for above 30s (customizable live, by editing sameScreenWarningEvery).
+- **_Selection-Multitasking_**:
+A counter for each selection you select, with total switches during the game, the average focus @1 selection, the total focus on each selection for above 5s (customizable live, by editing totalTimeOnScreenOrSelectionAbove) and finally, a customizable notification sound when you focus @1 selection for above 20s (customizable live, by editing sameSelectionWarningEvery).
+- **_The TimedBo_**: all of us forget 1 or more things that was planned before the game, so a written Bo and tips on the game screen that dynamically highlights "What now/next?" while alerting with sound and pronouncing the current step in English JIT and allowing for more step-details to be shown/pronounced out of the succinct Bo form, will accelerate the familiarity with a specific build remarkably, 
 #  Features in-replay:
 - Showing the # of units/buildings & the types of tech/upgrade for each player (just select any player's unit to display the infos).
 - Showing the replay duration beforehand, and also the replay name, date, game title, game type and the map used.
@@ -60,8 +60,9 @@ This config file allows the player to modify/disable/enable many values:
 - **_idleWorkerWarningEvery (default=5)_**: ^
 - **_idleProductionBuildingWarningEvery (default=10)_**: ^
 - **_idleFightingUnitWarningEvery (default=20)_**: ^
-- **_totalTimeOnScreenOrSelectionAbove (default=5)_**: see Multitasking++
-- **_sameScreenOrSelectionWarningEvery (default=20)_**: see Multitasking++
+- **_totalTimeOnScreenOrSelectionAbove (default=5)_**: see Multitasking above
+- **_sameScreenWarningEvery (default=30)_**: see Multitasking above
+- **_sameSelectionWarningEvery (default=20)_**: see Multitasking above
 - **_logWorkersAndSupplyProduction (default=true)_**: include Probes/Pylons, etc.. in the MacroLog.
 - **_logUnitsProduction (default=true)_**: include Dragoons/Zealots, etc.. in the MacroLog.
 - **_workersCutCalculationPeriod (default=540)_**: affects both game/replay, calculates WorkersCut for the specified 1st minutes in the game/replay.
@@ -87,14 +88,13 @@ The player can input some text the UDAI can understand:
 **_?_** (Only in-replay, obviously!)=Who wins?
 
 # Hotkeys:
-**_F5_**=Toggle between the display of the MacroLog (**_Up,Down_**=Scroll through the MacroLog when more than one page exists) & the Hotkeys tracker. When on the Hotkeys tracker screen, you can briefly see other screens by pressing _**Control or Shift**_. (in-replay **_F5_** switches between different screens)
+**_F5_**=Toggle between the display of the MacroLog (**_Up,Down_**=Scroll through the MacroLog when more than one page exists) & the Hotkeys tracker. When on the Hotkeys tracker screen, you can briefly see other screens by pressing _**Ctrl or Shift**_ pressing _**Shift**_ will also show the game type. (in-replay **_F5_** switches between different screens).
 
 **_F6 (also in-replay)_**=Toggle the display mode of in-progress units/buildings.
 
 **_F7_**=Switches between the preset custom tips.(in-replay **_F7_** toggles the vision of the selected player)
 
-**_F8_**=Switches between the current enemies infos, and also drawing the selected enemy army even while moving in the dark/fog, 
-pressing Shift toggles the in-progress mode.
+**_F8_**=Switches between all players infos (press Ctrl for more), this is useful while observing games and will draw the selected player's army/orders/destinations even while moving in the dark/fog, pressing Ctrl+Shift toggles the in-progress mode.
 
 **_F9_**=Finds the idle workers (like in SC2).
 
@@ -102,13 +102,16 @@ pressing Shift toggles the in-progress mode.
 
 **_F12 (also in-replay)_**=Hide/show the CoachAI's drawing/text.
 
-**_Control+F1,F2,F3_**=Switches between the TimedBos.
+**_Ctrl+F1,F2,F3_**=Switches between the TimedBos.
 
 **_PgUp_**=increase game speed, **_PgDown_**=decrease game speed, **_End_**=/speed 0 will run EXTREMELY fast, **_Home_**=reset speed to Fastest (24 FPS) **_Note_**: speed will revert to 24 FPS if **_"autoGameSpeed: true"_**.
 
 **_Space_**=while busy you can press Space to pronounce the next step in the TimedBo.
 
 **_Comma|Period + #_**=pronounce a specific step in the TimedBo up to 19 (ie: for step3 press ", + 3", step13= ". + 3").
+
+
+**_Shift|Ctrl + F12_**= Pause|resume the game, when paused you can only move the screen during a multiplayer match, with some trick this allows pausing a multiplayer game for more than 3 times, which gives the player enough time to comprehend a complex situation and analyse the game-state quickly.
 
 # To re-build this project:
 * Setup Visual Studio 2017 choosing the following components:

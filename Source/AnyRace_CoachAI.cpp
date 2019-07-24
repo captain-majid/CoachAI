@@ -521,6 +521,16 @@ void AnyRace_CoachAI::onFrame()	// Called every game frame.
 		return;
 	}
 
+	if (F12_Pressed == 0)
+	{
+		Broodwar->setGUI(true);
+	}
+	if (F12_Pressed == 1)
+	{
+		Broodwar->setGUI(false);
+	}
+
+
 	if (Broodwar->isReplay())
 	{
 		F12_method();
@@ -948,10 +958,17 @@ void AnyRace_CoachAI::onFrame()	// Called every game frame.
 					{
 						if (orderPos.isValid() && orderPos.y != 0)
 						{
-							Broodwar->drawLineMap(unitPos, orderPos, 8);
-							Broodwar->drawCircleMap(orderPos.x, orderPos.y, 5, 8, true);
-							if (orderName != "MiningMinerals" && orderName != "MoveToMinerals" && orderName != "MoveToGas" && orderName != "HarvestGas")
-								Broodwar->drawTextMap(unitPos.x, unitPos.y + 10, orderName.c_str());
+							if (orderName != "MiningMinerals" && orderName != "HarvestGas")
+							{
+								if (P_F8 == Broodwar->self() && (orderName == "MoveToMinerals" || orderName == "MoveToGas"))
+									;
+								else
+								{
+									Broodwar->drawTextMap(unitPos.x, unitPos.y + 10, "%s", orderName.c_str());
+									Broodwar->drawLineMap(unitPos, orderPos, 8);
+									Broodwar->drawCircleMap(orderPos.x, orderPos.y, 5, 8, true);
+								}
+							}
 						}
 						else
 						{
@@ -1692,14 +1709,6 @@ void AnyRace_CoachAI::onFrame()	// Called every game frame.
 	mineralsAboveLimitPrev = mineralsAboveLimit;
 	prevScreen = currScreen;
 	prevSelectedUnits = selectedUnits;
-	if (F12_Pressed == 0)
-	{
-		Broodwar->setGUI(true);
-	}
-	if (F12_Pressed == 1)
-	{
-		Broodwar->setGUI(false);
-	}
 }
 void AnyRace_CoachAI::F12_method()
 {
@@ -2550,10 +2559,12 @@ void AnyRace_CoachAI::Replay()
 				{
 					if (orderPos.isValid() && orderPos.y != 0)
 					{
-						Broodwar->drawLineMap(unitPos, orderPos, 8);
-						Broodwar->drawCircleMap(orderPos.x, orderPos.y, 5, 8, true);
-						if (orderName != "MiningMinerals" && orderName != "MoveToMinerals" && orderName != "MoveToGas" && orderName != "HarvestGas")
-							Broodwar->drawTextMap(unitPos.x, unitPos.y + 10, orderName.c_str());
+						if (orderName != "MiningMinerals" && orderName != "HarvestGas")
+						{
+							Broodwar->drawLineMap(unitPos, orderPos, 8);
+							Broodwar->drawCircleMap(orderPos.x, orderPos.y, 5, 8, true);
+							Broodwar->drawTextMap(unitPos.x, unitPos.y + 10, "%s", orderName.c_str());
+						}
 					}
 					else
 					{
