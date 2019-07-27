@@ -129,6 +129,6 @@ With some trick this allows pausing a multiplayer game for more than 3 times, wh
 # Installation:
 - Extract the .7z file contents from this [topic](http://www.teamliquid.net/forum/brood-war/531310-human-like-broodwar-ais-revamped) to SC v1.16.1 folder.
 - Extract CoachAI.zip contents to StarCraft\bwapi-data folder.
-- Watch 1m from this [video](https://www.youtube.com/watch?v=vmKHsCGFMa0), but change the AI from Protoss_McRave.dll to AnyRace_CoachAI.dll.
+- Watch 1m from this [video](https://www.youtube.com/watch?v=vmKHsCGFMa0), but change the AI from Protoss_McRave.dll to AnyRace_CoachAI_usesBWAPI_v4.4.dll.
 
 [Download](https://cutt.ly/CoachAI)
