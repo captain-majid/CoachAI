@@ -6,7 +6,7 @@ It can help the players at-all-levels to improve, also to test and sense and rem
 > _**Note**_:
 * CoachAI works only with StarCraft v1.16.1 using ChaosLauncher.
 * When playing in ICCUP, the game is logged and you'll get the win/lose points, this won't happen if one of the players is Computer.
-* In ICCUP/Lan games, CoachAI will auto send message every 10s (for the 1st 2m) to each human enemy until they all acknowledge/accept that CoachAI-player has multiple advantages (cheats), so nobody can use it as a deceiving/hack tool.
+* In multiplayer matches (ICCUP/Lan), CoachAI will auto send message every 10s (for the 1st 2m) to each human enemy until they all acknowledge/accept that CoachAI-player has multiple advantages (cheats), so nobody can use it as a deceiving/hack tool. Also the non-CoachAI-player can send a messsage “noCoachAI” during the 1st 2m, to force the CoachAI-player to leave. (in team matches, messages sent automatically to allies, press Shift+Enter to send to all, or the CoachAI-player won't get it)
 * The CoachAI can run on Windows XP starting from BWAPI v4.4.
 
 #  Features in-game & in-replay:
@@ -24,7 +24,7 @@ It can help the players at-all-levels to improve, also to test and sense and rem
 - The # of idle production buildings (for Zerg, only the number of Larvae displayed), also the buildings IdleTime for Protoss.
 - The # of idle of idle fighting units (only non-worker units that canAttackMove: HT, Siege-Mode Tank, Lurker cannot, Medics can !).
 - The # of all killed enemies during the game.
-- The # of all current enemies, their supplies, Minerals/Gas, upgrades, in-progress things and you can even see the enemies while they move in the dark/fog. (this works in multiplayer, beware !)
+- The # of all current enemies, their supplies, Minerals/Gas, upgrades, in-progress things and you can even see the enemies while they move in the dark/fog.
 - MacroLog: Logs all build/train/upgrade actions and its time during the game (Tech/Upgrade logged only when its finished, unlike the reply Bo recorder).
 - **_Hotkeys tracker/counter_**: Tracks how much you press a specific hotkey.
 - The total time of WorkersCut and the number of lost workers due to that.
@@ -76,7 +76,7 @@ This config file allows the player to modify/disable/enable many values:
 - **_stickyScreen (default=1)_**: which screen to display by default ?, 1 = TimedBo, 2 = WorkersCut log & MineralsAbove log, 3 = Idle Production & Fighting units & Multitasking.
 - **_autoGameSpeed (default=true)_**: some values could go wrong if game speed isn't Fastest=24 FPS, like mine > 750 time, you can set it to false to allow game speed changes.
 - **_replayAutoMoveToScanOrStorm (default=false)_**: set it to true if you don't want to miss any action !
-- **_TimedBo1_**: an editable dynamic build order that appear on-game screen, it highlights/pronounces what should be done now JIT. Use ';' to move any extra step-details out of the succinct Bo form.
+- **_TimedBo1_**: an editable dynamic build order that appear on-game screen, it highlights/pronounces what should be done now JIT. Use ';' to move any extra step-details out of the succinct Bo form, to highlight an important TimedBo step (that you keep forgetting), add “!” as the 1st character, like: “04:00 !gascut end”.
 - **_TimedBo1 Tips_**: a block of text that appear below a specific TimedBo, you can use "\n" to move to a new line, you can also use ';' here.
 - **_Tips1_**: an editable custom tips that appear on-game screen when pressing **_F7_**, you can use "\n" to move to a new line.
 
@@ -109,7 +109,6 @@ The player can input some text the UDAI can understand:
 **_Space_**=while busy you can press Space to pronounce the next step in the TimedBo.
 
 **_Comma|Period + #_**=pronounce a specific step in the TimedBo up to 19 (ie: for step3 press ", + 3", step13= ". + 3").
-
 
 **_Shift|Ctrl + F12_**= Pause|resume the game, when paused you can only move the screen during a multiplayer match.
 With some trick this allows pausing a multiplayer game for more than 3 times, which gives the player enough time to comprehend a complex situation and analyse the game-state quickly.
