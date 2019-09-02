@@ -123,11 +123,13 @@ With some trick this allows pausing a multiplayer game for more than 3 times, wh
 
 # Screenshots:
 in-game:
-https://im3.ezgif.com/tmp/ezgif-3-00772993d6ab.gif
+
+![CoachAI](https://im3.ezgif.com/tmp/ezgif-3-00772993d6ab.gif)
 
 in-replay:
-https://i.ibb.co/zf6Gkgd/replay.png
-https://i.ibb.co/zNbZg67/replay-bo.png
+
+![replay1](https://i.ibb.co/zf6Gkgd/replay.png)
+![replay2](https://i.ibb.co/zNbZg67/replay-bo.png)
 
 # Installation:
 - Extract the .7z file contents from this [topic](http://www.teamliquid.net/forum/brood-war/531310-human-like-broodwar-ais-revamped) to SC v1.16.1 folder.
