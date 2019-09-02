@@ -122,7 +122,10 @@ With some trick this allows pausing a multiplayer game for more than 3 times, wh
 - Cancelled unit/building/upgrade/tech appears in ReplayBo/MacroLog, for a cancelled upgrade/tech you'll additionally get a 'None' item below it.
 
 # Screenshots:
+in-game:
 ![CoachAI](https://im3.ezgif.com/tmp/ezgif-3-00772993d6ab.gif)
+
+in-replay:
 ![Replay](https://i.ibb.co/zf6Gkgd/replay.png)
 ![ReplayBo](https://i.ibb.co/zNbZg67/replay-bo.png)
 
