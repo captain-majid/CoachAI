@@ -124,7 +124,7 @@ With some trick this allows pausing a multiplayer game for more than 3 times, wh
 # Screenshots:
 in-game:
 
-![CoachAI](https://im3.ezgif.com/tmp/ezgif-3-00772993d6ab.gif)
+![CoachAI](https://i.ibb.co/qxhVVKY/Low-ground-bug.gif)
 
 in-replay:
 
