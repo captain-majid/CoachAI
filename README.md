@@ -1,5 +1,5 @@
 # ![arrived](http://r62.cooltext.com/rendered/cooltext335832594422867.png)
-[![](http://r67.cooltext.com/rendered/cooltext335831886833435.png)](https://www.youtube.com/watch?v=GhJ0zlsOEyo)
+[![](https://i.ibb.co/VgLmsJC/Carrier-SCR-Art2-resize.jpg)](https://www.youtube.com/watch?v=GhJ0zlsOEyo)
 
 _**This BWAPI-AI/UDAI (User defined AI) works as an in-game helper and also as an online replay analyzer.
 It can help the players at-all-levels to improve, also to test and sense and remember things that weren't easy/possible before.**_
