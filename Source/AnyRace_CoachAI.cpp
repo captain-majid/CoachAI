@@ -2620,6 +2620,7 @@ void AnyRace_CoachAI::Replay()
 				int dummy = 0;
 			}
 
+
 			Position building = u->getPosition();
 			Position RP = u->getRallyPosition();
 			if (RP.isValid() && RP.y != 0)
