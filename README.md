@@ -122,6 +122,9 @@ With some trick this allows pausing a multiplayer game for more than 3 times, wh
 - The hotkey tracker is buggy when adding units using shift, also when a unit is lost it still shows as an existing one.
 - Cancelled unit/building/upgrade/tech appears in ReplayBo/MacroLog, for a cancelled upgrade/tech you'll additionally get a 'None' item below it.
 
+# What about:
+* VR tools like VoiceAttack/VoiceBot that make the AI do game actions just by voice.
+
 # Screenshots:
 in-game:
 
