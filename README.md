@@ -1,12 +1,11 @@
+[![](https://i.ibb.co/0rwLYfN/111.png)](https://www.youtube.com/watch?v=GhJ0zlsOEyo)
+
 _**This BWAPI-AI/UDAI (User defined AI) works as an in-game helper and also as an online replay analyzer.
 It can help the players at-all-levels to improve, also to test and sense and remember things that weren't easy/possible before.**_
-# Coach AI has arrived !
-[![](https://i.ibb.co/VgLmsJC/Carrier-SCR-Art2-resize.jpg)](https://www.youtube.com/watch?v=GhJ0zlsOEyo)
-
 > _**Note**_:
 * CoachAI works only with StarCraft v1.16.1 using ChaosLauncher.
 * When playing in ICCUP, the game is logged and you'll get the win/lose points, this won't happen if one of the players is Computer.
-* In multiplayer matches (ICCUP/Lan), CoachAI will auto send message every 10s (for the 1st 2m) to each human enemy until they all acknowledge/accept that CoachAI-player has multiple advantages (cheats), so nobody can use it as a deceiving/hack tool. **Also the non-CoachAI-player can send a messsage “noCoachAI” during the 1st 2m, to force the CoachAI-player to leave.** (in team matches, messages sent automatically to allies, press Shift+Enter to send to all, or the CoachAI-player won't get it)
+* In multiplayer matches (ICCUP/Lan), CoachAI will auto send message every 10s (for the 1st 2m) to each human enemy until they all acknowledge/accept that CoachAI-player has multiple advantages (cheats), so nobody can use it as a deceiving/hack tool. Also the non-CoachAI-player can send a messsage “noCoachAI” during the 1st 2m, to force the CoachAI-player to leave. (in team matches, messages sent automatically to allies, press Shift+Enter to send to all, or the CoachAI-player won't get it)
 * The CoachAI can run on Windows XP starting from BWAPI v4.4.
 
 #  Features in-game & in-replay:
@@ -122,8 +121,14 @@ With some trick this allows pausing a multiplayer game for more than 3 times, wh
 - Cancelled unit/building/upgrade/tech appears in ReplayBo/MacroLog, for a cancelled upgrade/tech you'll additionally get a 'None' item below it.
 
 # Screenshots:
-![Replay](https://i.ibb.co/zf6Gkgd/replay.png)
-![ReplayBo](https://i.ibb.co/zNbZg67/replay-bo.png)
+in-game:
+
+![CoachAI](https://i.ibb.co/qxhVVKY/Low-ground-bug.gif)
+
+in-replay:
+
+![replay1](https://i.ibb.co/zf6Gkgd/replay.png)
+![replay2](https://i.ibb.co/zNbZg67/replay-bo.png)
 
 # Installation:
 - Extract the .7z file contents from this [topic](http://www.teamliquid.net/forum/brood-war/531310-human-like-broodwar-ais-revamped) to SC v1.16.1 folder.
