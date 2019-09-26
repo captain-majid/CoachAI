@@ -97,7 +97,7 @@ The player can input some text the UDAI can understand:
 
 **_F9_**=Finds the idle workers (like in SC2).
 
-**_F11 (also in-replay)_**=Displays buildings gaps values and ground units sizes, for quick and easy reference to better walling.
+**_F11_**=Toggle CoachAI's sounds on/off.
 
 **_F12 (also in-replay)_**=Hide/show the CoachAI's drawing/text.
 
@@ -108,6 +108,8 @@ The player can input some text the UDAI can understand:
 **_Space_**=while busy you can press Space to pronounce the next step in the TimedBo.
 
 **_Comma|Period + #_**=pronounce a specific step in the TimedBo up to 19 (ie: for step3 press ", + 3", step13= ". + 3").
+
+**_Tilde (~) (also in-replay)_**=Displays buildings gaps values and ground units sizes, for quick and easy reference to better walling.
 
 **_Shift|Ctrl + F12_**= Pause|resume the game, when paused you can only move the screen during a multiplayer match.
 With some trick this allows pausing a multiplayer game for more than 3 times, which gives the player enough time to comprehend a complex situation and analyse the game-state quickly.
