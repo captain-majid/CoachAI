@@ -35,6 +35,9 @@ string lastShift;
 int currentStepIndex;
 bool stepDone;
 vector<string> stepsArray;
+vector<string> t1;
+vector<string> t2;
+vector<string> t3;
 
 string upgradeTechReplayUnitIDs;
 int idleGateTime, idleRoboTime, idleStarTime;
@@ -111,6 +114,8 @@ bool F9;
 int F9_Pressed = -1;
 bool F11;
 int F11_Pressed;
+bool tilde;
+int tilde_Pressed;
 bool F12;
 int F12_Pressed;
 bool DOWN;
@@ -121,6 +126,8 @@ bool pageUp;
 bool pageDown;
 //bool lMouse = Broodwar->getKeyState(Key::K_LBUTTON);
 //bool rMouse = Broodwar->getKeyState(Key::K_RBUTTON);
+//c++ hotkeys reference
+//https://docs.microsoft.com/en-us/dotnet/api/system.windows.forms.keys?view=netframework-4.8
 
 static int speed = 42;
 
@@ -466,9 +473,12 @@ void AnyRace_CoachAI::onFrame()	// Called every game frame.
 
 	//Broodwar->hasPath();
 	Broodwar->setTextSize(Text::Size::Huge);
-	Broodwar->drawTextScreen(134, 0, "%cCoachAI ", Text::Turquoise);
+	if (F11_Pressed != 1)
+		Broodwar->drawTextScreen(134, 0, "%cCoachAI ", Text::Turquoise);
+	else
+		Broodwar->drawTextScreen(134, 0, "%cCoachAI ", Text::Grey);
 	Broodwar->setTextSize();
-	Broodwar->drawTextScreen(213, 4, "%c4.21", Text::Turquoise);
+	Broodwar->drawTextScreen(213, 4, "%c4.22", Text::Turquoise);
 
 	if (FPS < 1) //gamePaused
 		FPS = 24;
@@ -545,12 +555,12 @@ void AnyRace_CoachAI::onFrame()	// Called every game frame.
 
 	static int lastCheckedFrame_minerals1 = 0;
 	static int lastCheckedFrame_minerals2 = 0;
-	if ((!strstr(mapName.c_str(), "Multitask") && !strstr(mapName.c_str(), "Macro")) && !Broodwar->isPaused() && Broodwar->elapsedTime() *  0.6718 < spend_more_minerals_WarningFor && lastCheckedFrame_minerals1 < FrameCount && Broodwar->self()->minerals() > 500 && Broodwar->self()->minerals() < 750)
+	if (F11_Pressed != 1 && (!strstr(mapName.c_str(), "Multitask") && !strstr(mapName.c_str(), "Macro")) && !Broodwar->isPaused() && Broodwar->elapsedTime() *  0.6718 < spend_more_minerals_WarningFor && lastCheckedFrame_minerals1 < FrameCount && Broodwar->self()->minerals() > 500 && Broodwar->self()->minerals() < 750)
 	{
 		lastCheckedFrame_minerals1 = FrameCount + FPS * 3;
 		PlaySound(L".\\bwapi-data\\5- spend_more_minerals.wav", NULL, SND_ASYNC);
 	}
-	if ((!strstr(mapName.c_str(), "Multitask") && !strstr(mapName.c_str(), "Macro")) && !Broodwar->isPaused() && Broodwar->elapsedTime() *  0.6718 < spend_more_minerals_WarningFor && lastCheckedFrame_minerals2 < FrameCount && Broodwar->self()->minerals() > 750)
+	if (F11_Pressed != 1 && (!strstr(mapName.c_str(), "Multitask") && !strstr(mapName.c_str(), "Macro")) && !Broodwar->isPaused() && Broodwar->elapsedTime() *  0.6718 < spend_more_minerals_WarningFor && lastCheckedFrame_minerals2 < FrameCount && Broodwar->self()->minerals() > 750)
 	{
 		lastCheckedFrame_minerals2 = FrameCount + FPS * 1;
 		PlaySound(L".\\bwapi-data\\5- spend_more_minerals.wav", NULL, SND_ASYNC);
@@ -571,7 +581,26 @@ void AnyRace_CoachAI::onFrame()	// Called every game frame.
 				dontDrift--;
 
 			if (Broodwar->countdownTimer() > 0)
-				;//do nothing
+			{
+				if (dontDrift / FPS < 15 && FPS < 25 && !Broodwar->isPaused())// initial notification delay, 2nd bool is only for game start.
+				{
+					if (lastCheckedFrame_dontDrift < FrameCount)
+					{
+						lastCheckedFrame_dontDrift = FrameCount + FPS * 1;
+						if (F11_Pressed != 1)
+							PlaySound(L".\\bwapi-data\\4- beep.wav", NULL, SND_ASYNC);
+						Broodwar->setTextSize(Text::Size::Large);
+						Broodwar->drawTextScreen(340, 0, "%c%s", 8, getTime(dontDrift / FPS).c_str());
+						Broodwar->setTextSize();
+					}
+				}
+				else
+				{
+					Broodwar->setTextSize(Text::Size::Large);
+					Broodwar->drawTextScreen(340, 0, "%c%s", Text::Default, getTime(dontDrift / FPS).c_str());
+					Broodwar->setTextSize();
+				}
+			}
 			else
 			{
 				if (dontDrift / FPS < 15 && FPS < 25 && !Broodwar->isPaused())// initial notification delay, 2nd bool is only for game start.
@@ -579,7 +608,8 @@ void AnyRace_CoachAI::onFrame()	// Called every game frame.
 					if (lastCheckedFrame_dontDrift < FrameCount)
 					{
 						lastCheckedFrame_dontDrift = FrameCount + FPS * 1;
-						PlaySound(L".\\bwapi-data\\4- beep.wav", NULL, SND_ASYNC);
+						if (F11_Pressed != 1)
+							PlaySound(L".\\bwapi-data\\4- beep.wav", NULL, SND_ASYNC);
 						Broodwar->setTextSize(Text::Size::Large);
 						Broodwar->drawTextScreen(240, 0, "%c%s", 8, getTime(dontDrift / FPS).c_str());
 						Broodwar->setTextSize();
@@ -606,7 +636,8 @@ void AnyRace_CoachAI::onFrame()	// Called every game frame.
 			if (lastCheckedFrame14 < FrameCount && FrameCount > sameScreenWarningEvery)// initial notification delay, 2nd bool is only for game start.
 			{
 				lastCheckedFrame14 = FrameCount + FPS * 1; // repeat warning every 1s, if same screen
-				PlaySound(L".\\bwapi-data\\2- multitask.wav", NULL, SND_ASYNC);
+				if (F11_Pressed != 1)
+					PlaySound(L".\\bwapi-data\\2- multitask.wav", NULL, SND_ASYNC);
 				Broodwar << Text::BrightRed << Text::Align_Right << "Switch screens, " << Text::Grey << "you spent much time on 1 screen !" << endl;
 			}
 		}
@@ -629,7 +660,8 @@ void AnyRace_CoachAI::onFrame()	// Called every game frame.
 			if (lastCheckedFrame2 < FrameCount && FrameCount > sameSelectionWarningEvery)
 			{
 				lastCheckedFrame2 = FrameCount + FPS * 1;
-				PlaySound(L".\\bwapi-data\\2- multitask.wav", NULL, SND_ASYNC);
+				if (F11_Pressed != 1)
+					PlaySound(L".\\bwapi-data\\2- multitask.wav", NULL, SND_ASYNC);
 				Broodwar << Text::Orange << Text::Align_Right << "Switch units, " << Text::Grey << "you focused too much on 1 selection !" << endl;
 			}
 		}
@@ -652,7 +684,8 @@ void AnyRace_CoachAI::onFrame()	// Called every game frame.
 		if (Broodwar->elapsedTime() > 1 && idleWorkersEvery() && lastCheckedFrame9 < FrameCount)
 		{
 			lastCheckedFrame9 = FrameCount + FPS * 2;
-			PlaySound(L".\\bwapi-data\\1- idleWorker.wav", NULL, SND_ASYNC);
+			if (F11_Pressed != 1)
+				PlaySound(L".\\bwapi-data\\1- idleWorker.wav", NULL, SND_ASYNC);
 			Broodwar << Text::Grey << Text::Align_Right << "Move the idle worker !" << endl;
 		}
 	}
@@ -670,6 +703,7 @@ void AnyRace_CoachAI::onFrame()	// Called every game frame.
 	F8 = Broodwar->getKeyState(Key::K_F8);
 	F9 = Broodwar->getKeyState(Key::K_F9);
 	F11 = Broodwar->getKeyState(Key::K_F11);
+	tilde = Broodwar->getKeyState(Key::K_OEM_3);
 
 	shift = Broodwar->getKeyState(Key::K_SHIFT);
 	ctrl = Broodwar->getKeyState(Key::K_CONTROL);
@@ -764,6 +798,15 @@ void AnyRace_CoachAI::onFrame()	// Called every game frame.
 		F11_Pressed++;
 		if (F11_Pressed == 2)
 			F11_Pressed = 0;
+	}
+
+	static int lastCheckedFrame99 = 0;
+	if (tilde && lastCheckedFrame99 < FrameCount)
+	{
+		lastCheckedFrame99 = FrameCount + FPS / 6;
+		tilde_Pressed++;
+		if (tilde_Pressed == 2)
+			tilde_Pressed = 0;
 	}
 
 	static int lastCheckedFrame8 = 0;
@@ -1149,7 +1192,7 @@ void AnyRace_CoachAI::onFrame()	// Called every game frame.
 			if (u->isCompleted())
 			{
 				//draw ground unit sizes that is not inside Transport:
-				if (F11_Pressed == 1)
+				if (tilde_Pressed == 1)
 					if (!ut.isFlyer() && u->getTransport() == nullptr)
 						Broodwar->drawTextMap(u->getPosition(), "%dx%d", ut.width(), ut.height());
 
@@ -1167,7 +1210,7 @@ void AnyRace_CoachAI::onFrame()	// Called every game frame.
 		else
 		{
 			//draw buildings gaps values:
-			if (F11_Pressed == 1)
+			if (tilde_Pressed == 1)
 			{
 				left = ut.tileWidth() * 16 - ut.dimensionLeft();
 				right = ut.tileWidth() * 16 - ut.dimensionRight() - 1;
@@ -1290,7 +1333,8 @@ void AnyRace_CoachAI::onFrame()	// Called every game frame.
 		if (lastCheckedFrame90 < FrameCount && FrameCount > workerCutWarningEvery)
 		{
 			lastCheckedFrame90 = FrameCount + FPS * 2;
-			PlaySound(L".\\bwapi-data\\3- workerCut.wav", NULL, SND_ASYNC);
+			if (F11_Pressed != 1)
+				PlaySound(L".\\bwapi-data\\3- workerCut.wav", NULL, SND_ASYNC);
 
 			Broodwar << Text::White << Text::Align_Right << "Don't stop making workers !" << endl;
 		}
@@ -1460,7 +1504,7 @@ void AnyRace_CoachAI::onFrame()	// Called every game frame.
 	for (int i = 0; i < stepsArray.size(); i++)
 	{
 		static int lastCheckedFrame40 = 0;
-		if (!Broodwar->isPaused() && lastCheckedFrame40 < FrameCount && parseTime(stepsArray[i].substr(0, 5)) == now + 2)
+		if (F11_Pressed != 1 && !Broodwar->isPaused() && lastCheckedFrame40 < FrameCount && parseTime(stepsArray[i].substr(0, 5)) == now + 2)
 		{
 			lastCheckedFrame40 = FrameCount + FPS * 4;
 			PlaySound(L".\\bwapi-data\\4- beep.wav", NULL, SND_ASYNC);
@@ -1602,16 +1646,44 @@ void AnyRace_CoachAI::onFrame()	// Called every game frame.
 		Broodwar->drawTextScreen(500, 25, "%cBuildings:\n\r%c%s%cBuildings in progress:\n\r%c%s%cTech/Upgrade in progress:\n\r%c%s", Text::DarkGreen, Text::GreyGreen, BuildingsFinal.c_str(), 28, Text::GreyGreen, inCompleteBuildingsFinal.c_str(), 24, 29, inProgressUpgradeTech.c_str());
 	}
 
-	string t1 = j["Preset Plan"]["Tips1"].get<string>().c_str();
-	string t2 = j["Preset Plan"]["Tips2"].get<string>().c_str();
-	string t3 = j["Preset Plan"]["Tips3"].get<string>().c_str();
+	t1 = j["Preset Plan"]["Tips1"].get<vector<string>>();
+	t2 = j["Preset Plan"]["Tips2"].get<vector<string>>();
+	t3 = j["Preset Plan"]["Tips3"].get<vector<string>>();
 
+	int yTips = 25;
 	if (F7_Pressed == 0)
-		Broodwar->drawTextScreen(400, 25, "%c= %s =:\n%c%s", 28, t1.substr(0, t1.find(":")).c_str(), 31, t1.substr(t1.find(":") + 1, t1.size()).c_str());
+	{
+		for (int i = 0; i < t1.size(); i++)
+		{
+			if (i == 0)
+				Broodwar->drawTextScreen(400, yTips, "%c%s", 28, t1[i].c_str());
+			else
+				Broodwar->drawTextScreen(400, yTips, "%c%s", 31, t1[i].c_str());
+			yTips += 10;
+		}
+	}
 	else if (F7_Pressed == 1)
-		Broodwar->drawTextScreen(400, 25, "%c= %s =:\n%c%s", 28, t2.substr(0, t2.find(":")).c_str(), 31, t2.substr(t2.find(":") + 1, t2.size()).c_str());
+	{
+		for (int i = 0; i < t2.size(); i++)
+		{
+			if (i == 0)
+				Broodwar->drawTextScreen(400, yTips, "%c%s", 28, t2[i].c_str());
+			else
+				Broodwar->drawTextScreen(400, yTips, "%c%s", 31, t2[i].c_str());
+			yTips += 10;
+		}
+	}
 	else if (F7_Pressed == 2)
-		Broodwar->drawTextScreen(400, 25, "%c= %s =:\n%c%s", 28, t3.substr(0, t3.find(":")).c_str(), 31, t3.substr(t3.find(":") + 1, t3.size()).c_str());
+	{
+		for (int i = 0; i < t3.size(); i++)
+		{
+			if (i == 0)
+				Broodwar->drawTextScreen(400, yTips, "%c%s", 28, t3[i].c_str());
+			else
+				Broodwar->drawTextScreen(400, yTips, "%c%s", 31, t3[i].c_str());
+			yTips += 10;
+		}
+	}
 
 	//custom();
 
@@ -1870,7 +1942,7 @@ void AnyRace_CoachAI::TimedBo()
 		Broodwar->drawTextScreen(7, yy, "%c%s\n", Text::LightYellow, tips.c_str());
 
 	static int lastCheckedFrame41 = 0;
-	if ((button1 || button2 || Broodwar->getKeyState(Key::K_SPACE)) && lastCheckedFrame41 < FrameCount)
+	if (F11_Pressed != 1 && (button1 || button2 || Broodwar->getKeyState(Key::K_SPACE)) && lastCheckedFrame41 < FrameCount)
 	{
 		lastCheckedFrame41 = FrameCount + FPS / 4;
 		if (button1)
@@ -2181,7 +2253,7 @@ void AnyRace_CoachAI::Replay()
 	F5 = Broodwar->getKeyState(Key::K_F5);
 	F6 = Broodwar->getKeyState(Key::K_F6);
 	F7 = Broodwar->getKeyState(Key::K_F7);
-	F11 = Broodwar->getKeyState(Key::K_F11);
+	tilde = Broodwar->getKeyState(Key::K_OEM_3);
 
 	static int lastCheckedFrame4 = 0;
 	if (F5 && lastCheckedFrame4 < FrameCount)
@@ -2209,13 +2281,13 @@ void AnyRace_CoachAI::Replay()
 			F7_Pressed = 0;
 	}
 
-	static int lastCheckedFrame7 = 0;
-	if (F11 && lastCheckedFrame7 < FrameCount)
+	static int lastCheckedFrame99 = 0;
+	if (tilde && lastCheckedFrame99 < FrameCount)
 	{
-		lastCheckedFrame7 = FrameCount + FPS / 6;
-		F11_Pressed++;
-		if (F11_Pressed == 2)
-			F11_Pressed = 0;
+		lastCheckedFrame99 = FrameCount + FPS / 6;
+		tilde_Pressed++;
+		if (tilde_Pressed == 2)
+			tilde_Pressed = 0;
 	}
 
 	//list<Event> events = Broodwar->getEvents();//a bug when this code below getLatencyFrames(), maybe cause skipping the key frame.
@@ -2521,7 +2593,7 @@ void AnyRace_CoachAI::Replay()
 		Color color = u->getPlayer()->getColor();
 		if (ut.isBuilding())
 		{
-			if (F11_Pressed > 0)
+			if (tilde_Pressed > 0)
 			{
 				left = ut.tileWidth() * 16 - ut.dimensionLeft();
 				right = ut.tileWidth() * 16 - ut.dimensionRight() - 1;
@@ -2558,7 +2630,7 @@ void AnyRace_CoachAI::Replay()
 		}
 		else
 		{
-			if (F11_Pressed > 0)
+			if (tilde_Pressed > 0)
 			{
 				if (!ut.isFlyer() && u->getTransport() == nullptr && (u->isCompleted() || ut.getName() == "Zerg_Egg"))
 					Broodwar->drawTextMap(u->getPosition(), "%dx%d", ut.width(), ut.height());
