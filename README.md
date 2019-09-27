@@ -1,6 +1,6 @@
 [![](https://i.ibb.co/0rwLYfN/111.png)](https://www.youtube.com/watch?v=GhJ0zlsOEyo)
 
-_**This BWAPI-AI/UDAI (User defined AI) works as an in-game helper and also as an online replay analyzer.
+_**This BWAPI-AI/UDAI (User-defined AI) works as an in-game helper and also as an online replay analyzer.
 It can help the players at-all-levels to improve, also to test and sense and remember things that weren't easy/possible before.**_
 
 > Note:
@@ -137,6 +137,6 @@ in-replay:
 ![replay2](https://i.ibb.co/zNbZg67/replay-bo.png)
 
 # Installation::rocket:
-- (Optional) If you don't have Starcraft v1.16, a mini ver can be downloaded from [ICCUP](http://files.theabyss.ru/sc/starcraft.zip).
+- (Optional) If you don't have Starcraft v1.16, a mini ver can be downloaded from [**ICCUP**](http://files.theabyss.ru/sc/starcraft.zip).
 - Extract [**BWAPI Revamped**](http://www.teamliquid.net/forum/brood-war/531310-human-like-broodwar-ais-revamped) pack contents to the game folder, then run "**StarCraft ChaosLauncher.exe**".
 - (Optional) The pack above already include CoachAI v4.22, for latest version extract [**CoachAI.zip**](https://cutt.ly/CoachAI) contents to the same game folder, replace any files.
