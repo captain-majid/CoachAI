@@ -137,8 +137,6 @@ in-replay:
 ![replay2](https://i.ibb.co/zNbZg67/replay-bo.png)
 
 # Installation::rocket:
-- Extract the .7z file contents from this [topic](http://www.teamliquid.net/forum/brood-war/531310-human-like-broodwar-ais-revamped) to SC v1.16.1 folder.
-- Extract CoachAI.zip contents to StarCraft\bwapi-data folder.
-- Watch 1m from this [video](https://www.youtube.com/watch?v=vmKHsCGFMa0), but change the AI from Protoss_McRave.dll to AnyRace_CoachAI_usesBWAPI_v4.4.dll.
-
-[Download](https://cutt.ly/CoachAI)
+- (Optional) If you don't have Starcraft v1.16, a mini ver can be downloaded from [ICCUP](http://files.theabyss.ru/sc/starcraft.zip).
+- Extract [**BWAPI Revamped**](http://www.teamliquid.net/forum/brood-war/531310-human-like-broodwar-ais-revamped) pack contents to the game folder, then run "**StarCraft ChaosLauncher.exe**".
+- (Optional) The pack above already include CoachAI v4.22, for latest version extract [**CoachAI.zip**](https://cutt.ly/CoachAI) contents to the same game folder, replace any files.
