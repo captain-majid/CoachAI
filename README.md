@@ -138,5 +138,5 @@ in-replay:
 
 # Installation::rocket:
 - If you don't have Starcraft v1.16, a mini ver can be downloaded from [**ICCUP**](http://files.theabyss.ru/sc/starcraft.zip).
-- Extract [**BWAPI Revamped**](http://www.teamliquid.net/forum/brood-war/531310-human-like-broodwar-ais-revamped) pack contents to the game folder, then run "**StarCraft ChaosLauncher.exe**".
-- Extract [**CoachAI.zip**](https://cutt.ly/CoachAI) contents to the game folder, replace any files.
+- Extract [**BWAPI Revamped**](http://www.teamliquid.net/forum/brood-war/531310-human-like-broodwar-ais-revamped) pack contents to the game folder.
+- Extract [**CoachAI**](https://cutt.ly/CoachAI) contents to the game folder, replace any files, then run "**StarCraft ChaosLauncher.exe**".
