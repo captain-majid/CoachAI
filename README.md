@@ -1,7 +1,7 @@
 [![](https://i.ibb.co/0rwLYfN/111.png)](https://www.youtube.com/watch?v=GhJ0zlsOEyo)
 
 _**This BWAPI-AI/UDAI (User-defined AI) works as an in-game helper and also as an online replay analyzer.
-It can help the players at-all-levels to improve, also to test and sense and remember things that weren't easy/possible before.**_
+It can help the players at-all-levels to improve, also to test and sense and remember things that weren't easy/possible before.**_![Hits](https://hitcounter.pythonanywhere.com/nocount/tag.svg?url=https%3A%2F%2Fgithub.com%2Fcaptain-majid%2FCoachAI)
 
 > Note:
 > * CoachAI works only with StarCraft v1.16.1 using ChaosLauncher.
