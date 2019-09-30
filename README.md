@@ -1,7 +1,7 @@
 [![](https://i.ibb.co/0rwLYfN/111.png)](https://www.youtube.com/watch?v=GhJ0zlsOEyo)
 
 _**This BWAPI-AI/UDAI (User-defined AI) works as an in-game helper and also as an online replay analyzer.
-It can help the players at-all-levels to improve, also to test and sense and remember things that weren't easy/possible before.**
+It can help the players at-all-levels to improve, also to test and sense and remember things that weren't easy/possible before.**_
 
 > Note:
 > * CoachAI works only with StarCraft v1.16.1 using ChaosLauncher.
@@ -140,4 +140,5 @@ in-replay:
 - If you don't have Starcraft v1.16, a mini ver can be downloaded from [**ICCUP**](http://files.theabyss.ru/sc/starcraft.zip).
 - Extract [**BWAPI Revamped**](http://www.teamliquid.net/forum/brood-war/531310-human-like-broodwar-ais-revamped) pack contents to the game folder.
 - Extract [![GitHub release (latest SemVer)](https://img.shields.io/github/v/release/captain-majid/CoachAI?label=CoachAI&style=plastic)](https://github.com/captain-majid/CoachAI/releases/latest) contents to the game folder, replace any files, then run "**StarCraft ChaosLauncher.exe**".
-_![Hits](https://hitcounter.pythonanywhere.com/nocount/tag.svg?url=https%3A%2F%2Fgithub.com%2Fcaptain-majid%2FCoachAI)
+***
+![Hits](https://hitcounter.pythonanywhere.com/count/tag.svg?url=https%3A%2F%2Fgithub.com%2Fcaptain-majid%2FCoachAI)
