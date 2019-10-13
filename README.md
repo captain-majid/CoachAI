@@ -128,6 +128,6 @@ in-replay:
 - If you don't have Starcraft v1.16, a mini ver can be downloaded from [**ICCUP**](http://files.theabyss.ru/sc/starcraft.zip).
 - Extract [**BWAPI Revamped**](http://www.teamliquid.net/forum/brood-war/531310-human-like-broodwar-ais-revamped) pack contents to the game folder.
 - Extract [![GitHub release (latest SemVer)](https://img.shields.io/github/v/release/captain-majid/CoachAI?label=CoachAI&style=plastic)](https://github.com/captain-majid/CoachAI/releases/latest) contents to the game folder, replace any files, then run "**StarCraft ChaosLauncher.exe**".
-# Chat with someone now ? :speech_balloon:
+# Chat with someone now ? :speech_balloon: ![Hits](https://hitcounter.pythonanywhere.com/count/tag.svg?url=https%3A%2F%2Fgithub.com%2Fcaptain-majid%2FCoachAI)
 - [![Discord](https://img.shields.io/discord/327968006779174913?label=Discord%20BWAPI)](https://discordapp.com/channels/327968006779174913) **@Moataz#3233**
 - Email: captain.majid@gmail.com
