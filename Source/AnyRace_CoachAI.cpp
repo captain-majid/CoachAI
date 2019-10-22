@@ -478,7 +478,7 @@ void AnyRace_CoachAI::onFrame()	// Called every game frame.
 	else
 		Broodwar->drawTextScreen(134, 0, "%cCoachAI ", Text::Grey);
 	Broodwar->setTextSize();
-	Broodwar->drawTextScreen(213, 4, "%c4.22", Text::Turquoise);
+	Broodwar->drawTextScreen(213, 4, "%c4.23", Text::Turquoise);
 
 	if (FPS < 1) //gamePaused
 		FPS = 24;
@@ -637,8 +637,10 @@ void AnyRace_CoachAI::onFrame()	// Called every game frame.
 			{
 				lastCheckedFrame14 = FrameCount + FPS * 1; // repeat warning every 1s, if same screen
 				if (F11_Pressed != 1)
+				{
 					PlaySound(L".\\bwapi-data\\2- multitask.wav", NULL, SND_ASYNC);
-				Broodwar << Text::BrightRed << Text::Align_Right << "Switch screens, " << Text::Grey << "you spent much time on 1 screen !" << endl;
+					Broodwar << Text::BrightRed << Text::Align_Right << "Switch screens, " << Text::Grey << "you spent much time on 1 screen !" << endl;
+				}
 			}
 		}
 		else // screens not the same
@@ -661,8 +663,10 @@ void AnyRace_CoachAI::onFrame()	// Called every game frame.
 			{
 				lastCheckedFrame2 = FrameCount + FPS * 1;
 				if (F11_Pressed != 1)
+				{
 					PlaySound(L".\\bwapi-data\\2- multitask.wav", NULL, SND_ASYNC);
-				Broodwar << Text::Orange << Text::Align_Right << "Switch units, " << Text::Grey << "you focused too much on 1 selection !" << endl;
+					Broodwar << Text::Orange << Text::Align_Right << "Switch units, " << Text::Grey << "you focused too much on 1 selection !" << endl;
+				}
 			}
 		}
 		else
@@ -685,8 +689,10 @@ void AnyRace_CoachAI::onFrame()	// Called every game frame.
 		{
 			lastCheckedFrame9 = FrameCount + FPS * 2;
 			if (F11_Pressed != 1)
+			{
 				PlaySound(L".\\bwapi-data\\1- idleWorker.wav", NULL, SND_ASYNC);
-			Broodwar << Text::Grey << Text::Align_Right << "Move the idle worker !" << endl;
+				Broodwar << Text::Grey << Text::Align_Right << "Move the idle worker !" << endl;
+			}
 		}
 	}
 	hotKeyHandler();
@@ -1334,9 +1340,10 @@ void AnyRace_CoachAI::onFrame()	// Called every game frame.
 		{
 			lastCheckedFrame90 = FrameCount + FPS * 2;
 			if (F11_Pressed != 1)
+			{
 				PlaySound(L".\\bwapi-data\\3- workerCut.wav", NULL, SND_ASYNC);
-
-			Broodwar << Text::White << Text::Align_Right << "Don't stop making workers !" << endl;
+				Broodwar << Text::White << Text::Align_Right << "Don't stop making workers !" << endl;
+			}
 		}
 	}
 	else
@@ -1398,7 +1405,7 @@ void AnyRace_CoachAI::onFrame()	// Called every game frame.
 	if (!Broodwar->isPaused())
 	{
 		static int lastCheckedFrame = 0;
-		if (idleProdFrameCounter > idleProductionBuildingWarningEvery && lastCheckedFrame + idleProductionBuildingWarningEvery < FrameCount)
+		if (F11_Pressed != 1 && idleProdFrameCounter > idleProductionBuildingWarningEvery && lastCheckedFrame + idleProductionBuildingWarningEvery < FrameCount)
 		{
 			lastCheckedFrame = FrameCount;
 			Broodwar << Text::Grey << Text::Align_Right << "Idle production building for " << idleProductionBuildingWarningEvery / FPS << "s !" << endl;
@@ -1412,7 +1419,7 @@ void AnyRace_CoachAI::onFrame()	// Called every game frame.
 	if (!Broodwar->isPaused())
 	{
 		static int lastChecked4 = 0;
-		if (idleFightFrameCounter > idleFightingUnitWarningEvery && lastChecked4 + idleFightingUnitWarningEvery < FrameCount)
+		if (F11_Pressed != 1 && idleFightFrameCounter > idleFightingUnitWarningEvery && lastChecked4 + idleFightingUnitWarningEvery < FrameCount)
 		{
 			lastChecked4 = FrameCount;
 			Broodwar << Text::Grey << Text::Align_Right << "Idle fighting unit for " << idleFightingUnitWarningEvery / FPS << "s !" << endl;
@@ -1451,7 +1458,7 @@ void AnyRace_CoachAI::onFrame()	// Called every game frame.
 		Broodwar->drawTextScreen(225, 25, "%c%s %c%s", Text::Purple, match.c_str(), Text::White, mapName.c_str());
 
 	//
-	Broodwar->drawTextScreen(310, 15, "%cWorkers prod., stopped for: %c%s,%c%.1fw", Text::Grey, Text::BrightRed, getTime(workersProductionStopped / FPS).c_str(),
+	Broodwar->drawTextScreen(360, 15, "%cWorkers prod., halt: %c%s,%c%.1fw", Text::Grey, Text::BrightRed, getTime(workersProductionStopped / FPS).c_str(),
 		Text::Turquoise, (workersProductionStopped / FPS) / 12.5);
 	static int lastCheckedFrame45 = 0;
 	if (FPS != 24 && !Broodwar->isPaused())
@@ -1496,7 +1503,7 @@ void AnyRace_CoachAI::onFrame()	// Called every game frame.
 	int Minerals = Broodwar->self()->spentMinerals() - Broodwar->self()->refundedMinerals();
 	int Gas = Broodwar->self()->spentGas() - Broodwar->self()->refundedGas();
 
-	Broodwar->drawTextScreen(5, 15, "%cMinerals spent: %d + %cGas spent: %d = %cMacro: %d", 31, Minerals, 7, Gas, 17, Minerals + Gas);
+	Broodwar->drawTextScreen(52, 15, "%cSpent [%cMinerals: %d + %cGas: %d%c] = Macro: %d", 17, 31, Minerals, 7, Gas, 17, Minerals + Gas);
 	UnitType supplyName = Broodwar->self()->getRace().getSupplyProvider();
 	//	Broodwar->drawTextScreen(190, 330, "%cSupply blocked in: %c%d, %cmaxed with: %c%d %s", 3, Text::BrightRed, supplyAvailable / 2,
 	//		3, Text::BrightRed, (200 - Broodwar->self()->supplyTotal() / 2) / 8, formated(supplyName).c_str());
@@ -1619,7 +1626,7 @@ void AnyRace_CoachAI::onFrame()	// Called every game frame.
 			else
 				Multitasking(idleFightUnitsFinal, idleBuildingsFinal);
 		}
-		Broodwar->drawTextScreen(50, 8, "%cshift:%s", Text::Brown, lastShift.c_str());
+		Broodwar->drawTextScreen(590, 25, "%cshift:%s", Text::Grey, lastShift.c_str());
 	}
 
 	if (F6_Pressed == 1)
@@ -1901,11 +1908,13 @@ void AnyRace_CoachAI::TimedBo()
 
 	for (int i = 0; i < stepsArray.size(); i++)
 	{
-		if (i > 8)
-			Broodwar->drawTextScreen(0, yy, "%c%d", j["Preset Plan"]["TimedBo Color1"].get<int>(), i - 9);
-		else
-			Broodwar->drawTextScreen(0, yy, "%c%d", j["Preset Plan"]["TimedBo Color1"].get<int>(), i + 1);
-
+		if (button1 || button2)
+		{
+			if (i > 8)
+				Broodwar->drawTextScreen(0, yy, "%c%d", j["Preset Plan"]["TimedBo Color1"].get<int>(), i - 9);
+			else
+				Broodwar->drawTextScreen(0, yy, "%c%d", j["Preset Plan"]["TimedBo Color1"].get<int>(), i + 1);
+		}
 		if (strstr(stepsArray[i].c_str(), ";"))
 		{
 			pos = stepsArray[i].find(";");
@@ -1942,10 +1951,10 @@ void AnyRace_CoachAI::TimedBo()
 		Broodwar->drawTextScreen(7, yy, "%c%s\n", Text::LightYellow, tips.c_str());
 
 	static int lastCheckedFrame41 = 0;
-	if (F11_Pressed != 1 && (button1 || button2 || Broodwar->getKeyState(Key::K_SPACE)) && lastCheckedFrame41 < FrameCount)
+	if ((button1 || button2 || Broodwar->getKeyState(Key::K_SPACE)) && lastCheckedFrame41 < FrameCount)
 	{
 		lastCheckedFrame41 = FrameCount + FPS / 4;
-		if (button1)
+		if (button1)//comma
 		{
 			for (int i = 49; i < 58 && i - 49 < stepsArray.size(); i++)
 			{
@@ -1962,7 +1971,7 @@ void AnyRace_CoachAI::TimedBo()
 				WinExec(cmd.c_str(), SW_HIDE);
 			}
 		}
-		else if (button2)
+		else if (button2)//period
 		{
 			for (int i = 49; i < 58 && i - 39 < stepsArray.size(); i++)
 			{
