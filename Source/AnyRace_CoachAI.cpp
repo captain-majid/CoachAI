@@ -161,6 +161,7 @@ int replayLogSupplyFor;
 int stickyScreen;
 int dontDrift;
 int mineralsAboveValue;
+bool debug;
 
 int autoBuildSuppliesBeforeBlocked;
 int maxWorkers;
@@ -483,7 +484,6 @@ void AnyRace_CoachAI::onFrame()	// Called every game frame.
 	if (FPS < 1) //gamePaused
 		FPS = 24;
 
-
 	// FrameCount / (1000/42),  1000/42 = Broodwar->getAverageFPS(), when a saved game loaded FrameCount starts from 0.
 	// this why sscait/SAIDA doesn't bother themselves finding solution for an accurate time when a saved game loaded.
 
@@ -519,6 +519,7 @@ void AnyRace_CoachAI::onFrame()	// Called every game frame.
 			replayLogUnitsFor = j["Control Panel"]["replayLogUnitsFor"].get<int>();
 			replayLogSupplyFor = j["Control Panel"]["replayLogSupplyFor"].get<int>();
 			stickyScreen = j["Control Panel"]["stickyScreen"].get<int>();
+			debug = j["Control Panel"]["debug"].get<bool>();
 		}
 	}
 	catch (exception e)
@@ -529,6 +530,12 @@ void AnyRace_CoachAI::onFrame()	// Called every game frame.
 	{
 		Broodwar->drawTextScreen(150, 15, "%c:: Error parsing AnyRace_CoachAI.json, %cI'm off !%c ::", Text::BrightRed, Text::Tan, 8);
 		return;
+	}
+
+	if (debug)
+	{
+		Broodwar->drawTextScreen(320, 50, "F5_Pressed=%d\nF6_Pressed=%d\nF7_Pressed=%d\nF8_Pressed=%d\nF9_Pressed=%d\nF11_Pressed=%d\nF12_Pressed=%d\ntilde_Pressed=%d\n",
+			F5_Pressed, F6_Pressed, F7_Pressed, F8_Pressed, F9_Pressed, F11_Pressed, F12_Pressed, tilde_Pressed);
 	}
 
 	if (F12_Pressed == 0)
@@ -1515,7 +1522,7 @@ void AnyRace_CoachAI::onFrame()	// Called every game frame.
 		{
 			lastCheckedFrame40 = FrameCount + FPS * 4;
 			PlaySound(L".\\bwapi-data\\4- beep.wav", NULL, SND_ASYNC);
-			cmd = "bwapi-data\\balcon\\balcon.exe -t \"" + stepsArray[i] + "\"";
+			cmd = "bwapi-data\\balcon\\balcon.exe -ic -t \"" + stepsArray[i] + "\"";
 			WinExec(cmd.c_str(), SW_HIDE);
 		}
 
@@ -1960,14 +1967,14 @@ void AnyRace_CoachAI::TimedBo()
 			{
 				if (Broodwar->getKeyState((Key)i))
 				{
-					cmd = "bwapi-data\\balcon\\balcon.exe -t \"" + stepsArray[i - 49] + "\"";
+					cmd = "bwapi-data\\balcon\\balcon.exe -ic -t \"" + stepsArray[i - 49] + "\"";
 					WinExec(cmd.c_str(), SW_HIDE);
 					break;
 				}
 			}
 			if (Broodwar->getKeyState(Key::K_0) && stepsArray.size() > 9)
 			{
-				cmd = "bwapi-data\\balcon\\balcon.exe -t \"" + stepsArray[9] + "\"";
+				cmd = "bwapi-data\\balcon\\balcon.exe -ic -t \"" + stepsArray[9] + "\"";
 				WinExec(cmd.c_str(), SW_HIDE);
 			}
 		}
@@ -1977,7 +1984,7 @@ void AnyRace_CoachAI::TimedBo()
 			{
 				if (Broodwar->getKeyState((Key)i))
 				{
-					cmd = "bwapi-data\\balcon\\balcon.exe -t \"" + stepsArray[i - 39] + "\"";
+					cmd = "bwapi-data\\balcon\\balcon.exe -ic -t \"" + stepsArray[i - 39] + "\"";
 					WinExec(cmd.c_str(), SW_HIDE);
 					break;
 				}
@@ -1989,7 +1996,7 @@ void AnyRace_CoachAI::TimedBo()
 			{
 				if (parseTime(stepsArray[i].substr(0, 5)) > now)
 				{
-					cmd = "bwapi-data\\balcon\\balcon.exe -t \"" + stepsArray[i] + "\"";
+					cmd = "bwapi-data\\balcon\\balcon.exe -ic -t \"" + stepsArray[i] + "\"";
 					WinExec(cmd.c_str(), SW_HIDE);
 					break;
 				}
