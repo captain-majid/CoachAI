@@ -73,7 +73,7 @@ This config file allows the player to modify/disable/enable many values:
 - **_stickyScreen (default=1)_**: which screen to display by default ?, 1 = TimedBo, 2 = WorkersCut log & MineralsAbove log, 3 = Idle Production & Fighting units & Multitasking.
 - **_autoGameSpeed (default=true)_**: some values could go wrong if game speed isn't Fastest=24 FPS, like mine > 750 time, you can set it to false to allow game speed changes.
 - **_replayAutoMoveToScanOrStorm (default=false)_**: set it to true if you don't want to miss any action !
-- **_TimedBo1_**: an editable dynamic build order that appear on-game screen, it highlights/pronounces what should be done now JIT. Use ';' to move any extra step-details out of the succinct Bo form, to highlight an important TimedBo step (that you keep forgetting), add “!” as the 1st character, like: “04:00 !gascut end”, to comment extra text (that won't be pronounced by the TTS engine) do that: //**extra** or /\***extra\***/.
+- **_TimedBo1_**: an editable dynamic build order that appear on-game screen, it highlights/pronounces what should be done now JIT. **To move** any extra step-details out of the succinct Bo form use ";". **To highlight** an important TimedBo step (that you keep forgetting), add "!" as the 1st character, like: “04:00 !gascut end”. **To comment** extra text (that won't be pronounced by the TTS engine) do that: //extra or /\*extra\*/.
 - **_TimedBo1 Tips_**: a block of text that appear below a specific TimedBo, you can use "\n" to move to a new line, you can also use ';' here.
 - **_Tips1_**: an editable custom tips that appear on-game screen when pressing **_F7_**, you can use "\n" to move to a new line.
 # Message shortcuts::pencil:
