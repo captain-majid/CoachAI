@@ -94,9 +94,6 @@ The player can input some text the UDAI can understand:
 **_F9_**=Finds the idle workers (like in SC2).
 
 **_F11_**=Toggle CoachAI's sounds & notifications on/off.
-- In the TimedBo you can comment extra text (that won't be pronounced by the TTS engine) just like that: //**extra** or /\***extra**\*/
-- Updated [Screp](https://github.com/icza/screp/releases/tag/v1.1.3) to fix a bug with some replays.
-- Readme not updated..
 
 **_F12 (also in-replay)_**=Hide/show the CoachAI's drawing/text.
 
