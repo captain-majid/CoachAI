@@ -73,7 +73,7 @@ This config file allows the player to modify/disable/enable many values:
 - **_stickyScreen (default=1)_**: which screen to display by default ?, 1 = TimedBo, 2 = WorkersCut log & MineralsAbove log, 3 = Idle Production & Fighting units & Multitasking.
 - **_autoGameSpeed (default=true)_**: some values could go wrong if game speed isn't Fastest=24 FPS, like mine > 750 time, you can set it to false to allow game speed changes.
 - **_replayAutoMoveToScanOrStorm (default=false)_**: set it to true if you don't want to miss any action !
-- **_TimedBo1_**: an editable dynamic build order that appear on-game screen, it highlights/pronounces what should be done now JIT. Use ';' to move any extra step-details out of the succinct Bo form, to highlight an important TimedBo step (that you keep forgetting), add “!” as the 1st character, like: “04:00 !gascut end”.
+- **_TimedBo1_**: an editable dynamic build order that appear on-game screen, it highlights/pronounces what should be done now JIT. Use ';' to move any extra step-details out of the succinct Bo form, to highlight an important TimedBo step (that you keep forgetting), add “!” as the 1st character, like: “04:00 !gascut end”, to comment extra text (that won't be pronounced by the TTS engine) do that: //extra or /*extra*/.
 - **_TimedBo1 Tips_**: a block of text that appear below a specific TimedBo, you can use "\n" to move to a new line, you can also use ';' here.
 - **_Tips1_**: an editable custom tips that appear on-game screen when pressing **_F7_**, you can use "\n" to move to a new line.
 # Message shortcuts::pencil:
@@ -93,7 +93,10 @@ The player can input some text the UDAI can understand:
 
 **_F9_**=Finds the idle workers (like in SC2).
 
-**_F11_**=Toggle CoachAI's sounds on/off.
+**_F11_**=Toggle CoachAI's sounds & notifications on/off.
+- In the TimedBo you can comment extra text (that won't be pronounced by the TTS engine) just like that: //**extra** or /\***extra**\*/
+- Updated [Screp](https://github.com/icza/screp/releases/tag/v1.1.3) to fix a bug with some replays.
+- Readme not updated..
 
 **_F12 (also in-replay)_**=Hide/show the CoachAI's drawing/text.
 
