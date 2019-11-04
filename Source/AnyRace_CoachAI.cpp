@@ -2344,11 +2344,11 @@ void AnyRace_CoachAI::Replay()
 
 	if (screpOK)
 	{
-		Broodwar->drawTextScreen(180, 333, "%c%s / %s / %c%s\n\r  %c%s / %c%s / %s", 29, Broodwar->mapFileName().c_str(), mapName.c_str(), 7,
+		Broodwar->drawTextScreen(185, 333, "%c%s / %s / %c%s\n\r  %c%s / %c%s / %s", 29, Broodwar->mapFileName().c_str(), mapName.c_str(), 7,
 			getTime(ReplaySeconds).c_str(), Text::Teal, repDate.c_str(), 29, repGameTitle.c_str(), repType.c_str());
 	}
 	else
-		Broodwar->drawTextScreen(180, 333, "%c%s / %s / %c%s", 29, Broodwar->mapFileName().c_str(), mapName.c_str(), 7,
+		Broodwar->drawTextScreen(185, 333, "%c%s / %s / %c%s", 29, Broodwar->mapFileName().c_str(), mapName.c_str(), 7,
 			getTime(ReplaySeconds).c_str());
 
 	list<Player> playersList;
