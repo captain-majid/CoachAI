@@ -121,8 +121,8 @@ With some trick this allows pausing a multiplayer game for more than 3 times, wh
 in-game:
 
 ![CoachAI](https://i.ibb.co/qxhVVKY/Low-ground-bug.gif)
-
 in-replay:
+
 ![replay1](https://i.ibb.co/zf6Gkgd/replay.png)
 ![replay2](https://i.ibb.co/zNbZg67/replay-bo.png)
 # Installation::rocket:
