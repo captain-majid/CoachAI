@@ -15,7 +15,7 @@ It can help the players at-all-levels to improve, also to test and sense and rem
 - Displaying the number of the assigned mineral workers on each Nexus/CC/Hatchery.
 - WorkersCut measure, counts the time that Nexus/CC has been idle, if you have 2 bases the counter will be doubled, 3 -> tripled, etc.., it works for P & T, not Z.
 - Idle Workers measure displays the number of idle workers, and the total lost time (as with Workers Cut, this increase when there is more Idle Workers).
-- MineralsAbove measure for the time being above certain amount of minerals, see _**mineralsAboveLog**_ for customization.
+- MineralsAbove measure for the time being above certain amount of minerals, see _**mineralsAboveLog**_ for customization in-game.
 - Detecting the game speed, by just looking at the FPS value: 24=Fastest, 21=Faster, 18=Fast, 15=Normal, etc..
 # Features in-game::video_game:
 - The # of Minerals/Gas workers from all bases.
