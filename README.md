@@ -1,9 +1,4 @@
 ![GitHub top language](https://img.shields.io/github/languages/top/captain-majid/CoachAI?style=flat-square) or click the red bar ^, ![Hits](https://hitcounter.pythonanywhere.com/count/tag.svg?url=https%3A%2F%2Fgithub.com%2Fcaptain-majid%2FCoachAI)
-
-
-![Hits](https://hitcounter.pythonanywhere.com/count/tag.svg?url=https://github.com/mca64/netwars-replays)
-
-
 [![](https://i.ibb.co/0rwLYfN/111.png)](https://www.youtube.com/watch?v=GhJ0zlsOEyo)
 _**This BWAPI-AI/UDAI (User-defined AI) works as an in-game helper and also as an online replay analyzer.
 It can help the players at-all-levels to improve, also to test and sense and remember things that weren't easy/possible before.**_
