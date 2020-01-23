@@ -1,4 +1,4 @@
-![GitHub top language](https://img.shields.io/github/languages/top/captain-majid/CoachAI?style=flat-square) or click the red bar ^
+![GitHub top language](https://img.shields.io/github/languages/top/captain-majid/CoachAI?style=flat-square) or click the red bar ^, ![Hits](https://hitcounter.pythonanywhere.com/count/tag.svg?url=https%3A%2F%2Fgithub.com%2Fcaptain-majid%2FCoachAI)
 [![](https://i.ibb.co/0rwLYfN/111.png)](https://www.youtube.com/watch?v=GhJ0zlsOEyo)
 _**This BWAPI-AI/UDAI (User-defined AI) works as an in-game helper and also as an online replay analyzer.
 It can help the players at-all-levels to improve, also to test and sense and remember things that weren't easy/possible before.**_
@@ -15,7 +15,7 @@ It can help the players at-all-levels to improve, also to test and sense and rem
 - Displaying the number of the assigned mineral workers on each Nexus/CC/Hatchery.
 - WorkersCut measure, counts the time that Nexus/CC has been idle, if you have 2 bases the counter will be doubled, 3 -> tripled, etc.., it works for P & T, not Z.
 - Idle Workers measure displays the number of idle workers, and the total lost time (as with Workers Cut, this increase when there is more Idle Workers).
-- Minerals Above measure that counts the time of being above 750/1000 minerals.
+- MineralsAbove measure for the time being above certain amount of minerals, see _**mineralsAboveLog**_ for customization in-game.
 - Detecting the game speed, by just looking at the FPS value: 24=Fastest, 21=Faster, 18=Fast, 15=Normal, etc..
 # Features in-game::video_game:
 - The # of Minerals/Gas workers from all bases.
@@ -71,9 +71,9 @@ This config file allows the player to modify/disable/enable many values:
 - **_spend_more_minerals_WarningFor (default=900)_**: minerals sound warning "Spend more minerals", if minerals 500-750 its every 3s, if > 750 its every 1s, until the default 15 minutes, that doesn't happen in the [multitask/macro maps](https://liquipedia.net/starcraft/Micro_Training_Maps#Multitask/Macro_training), because it has it already.
 - **_mineralsAboveLog (default=750)_**: logs the time when you're above certain amount of minerals, and for how long that was, to see when exactly you forgot to Macro.
 - **_stickyScreen (default=1)_**: which screen to display by default ?, 1 = TimedBo, 2 = WorkersCut log & MineralsAbove log, 3 = Idle Production & Fighting units & Multitasking.
-- **_autoGameSpeed (default=true)_**: some values could go wrong if game speed isn't Fastest=24 FPS, like mine > 750 time, you can set it to false to allow game speed changes.
+- **_autoGameSpeed (default=true)_**: auto revert to 24 FPS if speed goes lower than that (**_Note_**: some values could be inaccurate if game speed isn't Fastest=24 FPS, like mine > 750 time).
 - **_replayAutoMoveToScanOrStorm (default=false)_**: set it to true if you don't want to miss any action !
-- **_TimedBo1_**: an editable dynamic build order that appear on-game screen, it highlights/pronounces what should be done now JIT. **To move** any extra step-details out of the succinct Bo form use ";". **To highlight** an important TimedBo step (that you keep forgetting), add "!" as the 1st character, like: “04:00 !gascut end”. **To comment** extra text (that won't be pronounced by the TTS engine) do that: //extra or /\*extra\*/.
+- **_TimedBo1_**: an editable dynamic build order that appear on-game screen, it highlights/pronounces what should be done now JIT. **To move** any extra step-details out of the succinct Bo form use ";". **To highlight** an important TimedBo step (that you keep forgetting), add "!" as the 1st character, like: “04:00 !gascut end”. **To comment** extra text (that won't be pronounced by the TTS engine) do that: //extra or /\*extra\*/. **To change game speed** of a certain TimedBO step add "!FPS:30" to it, speed will be changed until overridden by another step or the user, if you want it to be < 24, make sure autoGameSpeed: false.
 - **_TimedBo1 Tips_**: a block of text that appear below a specific TimedBo, you can use "\n" to move to a new line, you can also use ';' here.
 - **_Tips1_**: an editable custom tips that appear on-game screen when pressing **_F7_**, you can use "\n" to move to a new line.
 # Message shortcuts::pencil:
@@ -83,7 +83,7 @@ The player can input some text the UDAI can understand:
 
 **_?_** (Only in-replay, obviously!)=Who wins?
 # Hotkeys::key:
-**_F5_**=Toggle between the display of the MacroLog (**_Up,Down_**=Scroll through the MacroLog when more than one page exists) & the Hotkeys tracker. When on the Hotkeys tracker screen, you can briefly see other screens by pressing _**Ctrl or Shift**_, pressing _**Shift**_ will also show the game type. (in-replay **_F5_** switches between different screens).
+**_F5_**=Toggle between the display of the MacroLog (**_Up,Down_**=Scroll through the MacroLog when more than one page exists) & the Hotkeys tracker. When on the Hotkeys tracker screen, you can briefly see other screens by pressing _**Ctrl or Shift**_ , Ctrl/Shift last time pressed appear in gameplay, which allow stepping back to see a specific statistic when the screen is recorded, pressing _**Shift**_ will also show the game type. (in-replay **_F5_** switches between different screens).
 
 **_F6 (also in-replay)_**=Toggle the display mode of in-progress units/buildings.
 
@@ -99,7 +99,7 @@ The player can input some text the UDAI can understand:
 
 **_Ctrl+F1,F2,F3_**=Switches between the TimedBos.
 
-**_PgUp_**=increase game speed, **_PgDown_**=decrease game speed, **_End_**=/speed 0 will run EXTREMELY fast, **_Home_**=reset speed to Fastest (24 FPS) **_Note_**: speed will revert to 24 FPS if **_"autoGameSpeed: true"_**.
+**_PgUp_**=increase game speed, **_PgDown_**=decrease game speed, **_End_**=/speed 0 will run EXTREMELY fast, **_Home_**=reset speed to Fastest (24 FPS) **_Remember_**: speed will auto revert to 24 FPS only if its lower than 24 FPS and **_"autoGameSpeed: true"_**.
 
 **_Space_**=while busy you can press Space to pronounce the next step in the TimedBo.
 
@@ -121,11 +121,14 @@ With some trick this allows pausing a multiplayer game for more than 3 times, wh
 in-game:
 
 ![CoachAI](https://i.ibb.co/qxhVVKY/Low-ground-bug.gif)
+
 in-replay:
+
 ![replay1](https://i.ibb.co/zf6Gkgd/replay.png)
 ![replay2](https://i.ibb.co/zNbZg67/replay-bo.png)
 # Installation::rocket:
 - If you don't have Starcraft v1.16, a mini ver can be downloaded from [**ICCUP**](http://files.theabyss.ru/sc/starcraft.zip).
 - Extract [**BWAPI Revamped**](http://www.teamliquid.net/forum/brood-war/531310-human-like-broodwar-ais-revamped) pack contents to the game folder.
 - Extract [![GitHub release (latest SemVer)](https://img.shields.io/github/v/release/captain-majid/CoachAI?label=CoachAI&style=plastic)](https://github.com/captain-majid/CoachAI/releases/latest) contents to the game folder, replace any files, then run "**StarCraft ChaosLauncher.exe**".
-# Chat with someone now ? :speech_balloon: [![Discord](https://img.shields.io/discord/327968006779174913?label=Discord%20BWAPI)](https://discordapp.com/channels/327968006779174913) ![Hits](https://hitcounter.pythonanywhere.com/count/tag.svg?url=https%3A%2F%2Fgithub.com%2Fcaptain-majid%2FCoachAI)
+# Chat with someone now ? :speech_balloon: [![Discord](https://img.shields.io/discord/327968006779174913?label=Discord%20BWAPI)](https://discordapp.com/invite/w9wRRrF)
+or contact the developer: captain.majid@gmail.com
