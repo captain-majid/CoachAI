@@ -83,7 +83,7 @@ The player can input some text the UDAI can understand:
 
 **_?_** (Only in-replay, obviously!)=Who wins?
 # Hotkeys::key:
-**_F5_**=Toggle between the display of the MacroLog (**_Up,Down_**=Scroll through the MacroLog when more than one page exists) & the Hotkeys tracker. When on the Hotkeys tracker screen, you can briefly see other screens by pressing _**Ctrl or Shift**_ , Ctrl/Shift last time pressed appear in gameplay, which allow stepping back to see a specific statistic while recording, pressing _**Shift**_ will also show the game type. (in-replay **_F5_** switches between different screens).
+**_F5_**=Toggle between the display of the MacroLog (**_Up,Down_**=Scroll through the MacroLog when more than one page exists) & the Hotkeys tracker. When on the Hotkeys tracker screen, you can briefly see other screens by pressing _**Ctrl or Shift**_ , Ctrl/Shift last time pressed appear in gameplay, which allow stepping back to see a specific statistic when the screen is recorded, pressing _**Shift**_ will also show the game type. (in-replay **_F5_** switches between different screens).
 
 **_F6 (also in-replay)_**=Toggle the display mode of in-progress units/buildings.
 
