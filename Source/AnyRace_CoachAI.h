@@ -14,7 +14,7 @@ public:
   void Multitasking(std::string &idleFightUnitsFinal, std::string &idleBuildingsFinal);
   void drawWorkersCutLog();
   void TimedBo();
-  void DrawHotkeysAndEnemyKilled();
+  void DrawEnemyKilled();
   void custom();
   int parseTime(std::string str);
 
