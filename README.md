@@ -17,9 +17,10 @@ It can help the players at-all-levels to improve, also to test and sense and rem
 - Idle Workers measure displays the number of idle workers, and the total lost time (as with Workers Cut, this increase when there is more Idle Workers).
 - MineralsAbove measure for the time being above certain amount of minerals, see _**mineralsAboveLog**_ for customization in-game.
 - Detecting the game speed, by just looking at the FPS value: 24=Fastest, 21=Faster, 18=Fast, 15=Normal, etc..
+- Showing if a map is 2p/3p/4p on game/replay (just counting the start locations on it).
 # Features in-game::video_game:
 - The # of Minerals/Gas workers from all bases.
-- The # of idle production buildings (for Zerg, only the number of Larvae displayed), also the buildings IdleTime for Protoss.
+- The # of idle production buildings (for Zerg, only the number of Larvae displayed), also the buildings IdleTime + Shield Battery remaining energy for Protoss.
 - The # of idle of idle fighting units (only non-worker units that canAttackMove: HT, Siege-Mode Tank, Lurker cannot, Medics can !).
 - The # of all killed enemies during the game.
 - The # of all current enemies, their supplies, Minerals/Gas, upgrades, in-progress things and you can even see the enemies while they move in the dark/fog.
@@ -60,8 +61,10 @@ This config file allows the player to modify/disable/enable many values:
 - **_totalTimeOnScreenOrSelectionAbove (default=5)_**: see Multitasking above
 - **_sameScreenWarningEvery (default=30)_**: see Multitasking above
 - **_sameSelectionWarningEvery (default=20)_**: see Multitasking above
-- **_logWorkersAndSupplyProduction (default=false)_**: include Probes/Pylons, etc.. in the MacroLog.
+- **_logSupplyProduction (default=false)_**: include Pylons, Overloads, etc.. in the MacroLog.
 - **_logUnitsProduction (default=true)_**: include Dragoons/Zealots, etc.. in the MacroLog.
+- **_showMultitaskStats (default=false)_**: show Screen-Multitasking/Selection-Multitasking measures.
+
 - **_workersCutCalculationPeriod (default=540)_**: affects both game/replay, calculates WorkersCut for the specified 1st minutes in the game/replay.
 - **_replayLogUnitsFor (default=420)_**: in-replay Bo recorder, for how long to log units production. (until 7:00)
 - **_replayLogSupplyFor (default=40)_**: in-replay Bo recorder, for how long to log the supply units & the supply indicator. (like 12,Nexus --> until 40/?)
@@ -73,7 +76,11 @@ This config file allows the player to modify/disable/enable many values:
 - **_stickyScreen (default=1)_**: which screen to display by default ?, 1 = TimedBo, 2 = WorkersCut log & MineralsAbove log, 3 = Idle Production & Fighting units & Multitasking.
 - **_autoGameSpeed (default=true)_**: auto revert to 24 FPS if speed goes lower than that (**_Note_**: some values could be inaccurate if game speed isn't Fastest=24 FPS, like mine > 750 time).
 - **_replayAutoMoveToScanOrStorm (default=false)_**: set it to true if you don't want to miss any action !
-- **_TimedBo1_**: an editable dynamic build order that appear on-game screen, it highlights/pronounces what should be done now JIT. **To move** any extra step-details out of the succinct Bo form use ";". **To highlight** an important TimedBo step (that you keep forgetting), add "!" as the 1st character, like: “04:00 !gascut end”. **To comment** extra text (that won't be pronounced by the TTS engine) do that: //extra or /\*extra\*/. **To change game speed** of a certain TimedBO step add "!FPS:30" to it, speed will be changed until overridden by another step or the user, if you want it to be < 24, make sure autoGameSpeed: false.
+- **_TimedBo1_**: an editable dynamic build order that appear on-game screen, it highlights/pronounces what should be done now JIT. **To move** any extra step-details out of the succinct Bo form use ";". **To highlight** an important TimedBo step/word/phrase (that you keep forgetting), just make it like this: “04:00 |!gascut| end”. **To comment** extra text (that won't be pronounced by the TTS engine) do that: //extra or /\*extra\*/. **To change game speed** of a certain TimedBO step add "!FPS:30" to it, speed will be changed until overridden by another step or the user, if you want it to be < 24, make sure autoGameSpeed: false.
+
+You can highlight a specific word/phrase in the TimedBo that you keep forgetting (previously the whole step was highlighted), just make it like this |!don't forget that|
+
+- You can specify a TTS engine name (like Cortana or whatever), and also change the pronunciation speed, check json file for more details.
 - **_TimedBo1 Tips_**: a block of text that appear below a specific TimedBo, you can use "\n" to move to a new line, you can also use ';' here.
 - **_Tips1_**: an editable custom tips that appear on-game screen when pressing **_F7_**, you can use "\n" to move to a new line.
 # Message shortcuts::pencil:
