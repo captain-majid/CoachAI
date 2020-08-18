@@ -85,7 +85,7 @@ The player can input some text the UDAI can understand:
 **_c1_**="show me the money", **_c2_**="black sheep wall", **_c3_**="operation cwal", **_c4_**="power overwhelming", **_c5_**="staying alive", **_c6_**="there is no cow level".
 
 **_?_** (Only in-replay, obviously!)=Who wins?
-# Hotkeys::key:
+# Hotkeys: :key:
 **_F5_**=Toggle between the display of the MacroLog (**_Up,Down_**=Scroll through the MacroLog when more than one page exists) & the Hotkeys tracker. When on the Hotkeys tracker screen, you can briefly see other screens by pressing _**Ctrl or Shift**_ , Ctrl/Shift last time pressed appear in gameplay, which allow stepping back to see a specific statistic when the screen is recorded, pressing _**Shift**_ will also show the game type. (in-replay **_F5_** switches between different screens).
 
 **_F6 (also in-replay)_**=Toggle the display mode of in-progress units/buildings.
@@ -133,6 +133,6 @@ in-replay:
 - If you don't have Starcraft v1.16, a mini ver can be downloaded from [**ICCUP**](http://files.theabyss.ru/sc/starcraft.zip).
 - Extract [**BWAPI Revamped**](http://www.teamliquid.net/forum/brood-war/531310-human-like-broodwar-ais-revamped) pack contents to the game folder.
 - Extract [![GitHub release (latest SemVer)](https://img.shields.io/github/v/release/captain-majid/CoachAI?label=CoachAI&style=plastic)](https://github.com/captain-majid/CoachAI/releases) contents to the game folder, replace any files, then run "**StarCraft ChaosLauncher.exe**".
-# Chat with someone now ? :speech_balloon: [![Discord](https://img.shields.io/discord/327968006779174913?label=Discord%20BWAPI)](https://discordapp.com/invite/w9wRRrF)
+# Chat with someone now ? :speech_balloon: [![Discord](https://img.shields.io/discord/327968006779174913?label=Discord%20CoachAI)](https://discord.gg/F3Ds69M)
 - or join this thread: https://us.forums.blizzard.com/en/starcraft/t/coachai-has-arrived
 - or contact the developer: captain.majid@gmail.com
