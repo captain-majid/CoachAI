@@ -134,6 +134,6 @@ in-replay:
 - Extract [**BWAPI Revamped**](http://www.teamliquid.net/forum/brood-war/531310-human-like-broodwar-ais-revamped) pack contents to the game folder.
 - Extract [![GitHub release (latest SemVer)](https://img.shields.io/github/v/release/captain-majid/CoachAI?label=CoachAI&style=plastic)](https://github.com/captain-majid/CoachAI/releases) contents to the game folder, replace any files, then run "**StarCraft ChaosLauncher.exe**".
 # Chat with someone now ? :speech_balloon:
-- [![Discord](https://img.shields.io/discord/629001720336482324?label=Discord%20CoachAI)](https://discord.gg/F3Ds69M)
+- [![Discord](https://img.shields.io/discord/629001720336482324?label=StarCraft1%20CoachAI)](https://discord.gg/F3Ds69M)
 - or join this thread: https://us.forums.blizzard.com/en/starcraft/t/coachai-has-arrived
 - or contact the developer: captain.majid@gmail.com
