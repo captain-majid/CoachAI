@@ -130,7 +130,7 @@ in-replay:
 ![replay1](https://i.ibb.co/zf6Gkgd/replay.png)
 ![replay2](https://i.ibb.co/zNbZg67/replay-bo.png)
 # Installation ::rocket:
-- If you don't have Starcraft v1.16, a mini ver can be downloaded from [**ICCUP**](http://files.theabyss.ru/sc/starcraft.zip).
+- If you don't have Starcraft v1.16, a mini ver can be downloaded from [**ICCUP**](http://files.theabyss.ru/sc/starcraft.zip), or a [full version here](http://www.staredit.net/topic/17625/).
 - Extract [**BWAPI Revamped**](http://www.teamliquid.net/forum/brood-war/531310-human-like-broodwar-ais-revamped) pack contents to the game folder.
 - Extract [![GitHub release (latest SemVer)](https://img.shields.io/github/v/release/captain-majid/CoachAI?label=CoachAI&style=plastic)](https://github.com/captain-majid/CoachAI/releases) contents to the game folder, replace any files, then run "**StarCraft ChaosLauncher.exe**".
 # Chat with someone now ? :speech_balloon:
