@@ -115,11 +115,16 @@ With some trick this allows pausing a multiplayer game for more than 3 times, wh
 # To re-build this project::hammer:
 * Setup Visual Studio 2017 choosing the following components:
 ![requirements](https://github.com/captain-majid/CoachAI/blob/master/c%2B%2B%20BWAPI%20requirements.png)
+# Not done yet, wanna do it ?:tokyo_tower:
+* GUI for native Custom Hotkeys like in SCR.
+* GUI for more automated intutive Human vs AI scenarios, using BWAPI Revamped.
+* GUI for the CoachAI .json/config file.
+* Integrate CoachAI TimedBo .json/text format with external bo formats, like with SC2's Spawning Tool & SALT .
+* Integrate Voice Recognition tools like VoiceAttack/VoiceBot that make [the AI do game actions just by voice](https://www.youtube.com/watch?v=dOwL2rJ0uEo).
+
 # Known issues::space_invader:
 - The hotkey tracker is buggy when adding units using shift, also when a unit is lost it still shows as an existing one.
 - Cancelled unit/building/upgrade/tech appears in ReplayBo/MacroLog, for a cancelled upgrade/tech you'll additionally get a 'None' item below it.
-# What about ?:tokyo_tower:
-* VR tools like VoiceAttack/VoiceBot that make the AI do game actions just by voice.
 # Screenshots::camera:
 in-game:
 
@@ -130,7 +135,7 @@ in-replay:
 ![replay1](https://i.ibb.co/zf6Gkgd/replay.png)
 ![replay2](https://i.ibb.co/zNbZg67/replay-bo.png)
 # Installation ::rocket:
-- If you don't have Starcraft v1.16, a mini ver can be downloaded from [**ICCUP**](http://files.theabyss.ru/sc/starcraft.zip), or a [full version here](http://www.staredit.net/topic/17625/).
+- If you don't have Starcraft v1.16, a mini ver can be downloaded from [ICCUP](http://files.theabyss.ru/sc/starcraft.zip), or a [**full version here**](http://www.staredit.net/topic/17625/).
 - Extract [**BWAPI Revamped**](http://www.teamliquid.net/forum/brood-war/531310-human-like-broodwar-ais-revamped) pack contents to the game folder.
 - Extract [![GitHub release (latest SemVer)](https://img.shields.io/github/v/release/captain-majid/CoachAI?label=CoachAI&style=plastic)](https://github.com/captain-majid/CoachAI/releases) contents to the game folder, replace any files, then run "**StarCraft ChaosLauncher.exe**".
 # Chat with someone now ? :speech_balloon:
