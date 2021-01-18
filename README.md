@@ -5,7 +5,7 @@ It can help the players at-all-levels to improve, also to test and sense and rem
 > Note:
 > * CoachAI works only with StarCraft v1.16.1 using ChaosLauncher.
 > * When playing in ICCUP, the game is logged and you'll get the win/lose points, this won't happen if one of the players is Computer.
-> * In multiplayer matches (ICCUP/Lan), CoachAI will auto send message every 10s (for the 1st 2m) to each human enemy until they all acknowledge/accept that CoachAI-player has multiple advantages (cheats), so nobody can use it as a deceiving/hack tool. Also the non-CoachAI-player can send a messsage “noCoachAI” during the 1st 2m, to force the CoachAI-player to leave. (in team matches, messages sent automatically to allies, press Shift+Enter to send to all, or the CoachAI-player won't get it)
+> * In multiplayer matches (ICCUP/Lan), CoachAI will auto send message every 10s (for the 1st 2m) to each human enemy until they all acknowledge/accept that CoachAI-player has multiple advantages (cheats), so nobody can use it as a hack/deceiving/cheat tool. Also the non-CoachAI-player can send a messsage “noCoachAI” during the 1st 2m, to force the CoachAI-player to leave. (in team matches, messages sent automatically to allies, press Shift+Enter to send to all, or the CoachAI-player won't get it), I also made this topic in [Blizzard official forums to end this horrible fake accusation forever, which was only said by envious/jealous/very-short-sighted people](https://us.forums.blizzard.com/en/starcraft/t/can-a-topic-about-this-be-closedremoved).
 > * The CoachAI can run on Windows XP starting from BWAPI v4.4.
 # Features in-game & in-replay::video_game: :movie_camera:
 - A RealTime measure for _**Macro = spent minerals + spent gas**_ (Terran repairs not accounted), many players still measure it just by the used supplies at specific time or by inaccurate replay analysis tools, in-replay you can know @any second who is the best Macro player (same as the score screen you see at the end of game/replay).
@@ -85,7 +85,7 @@ The player can input some text the UDAI can understand:
 **_c1_**="show me the money", **_c2_**="black sheep wall", **_c3_**="operation cwal", **_c4_**="power overwhelming", **_c5_**="staying alive", **_c6_**="there is no cow level".
 
 **_?_** (Only in-replay, obviously!)=Who wins?
-# Hotkeys::key:
+# Hotkeys: :key:
 **_F5_**=Toggle between the display of the MacroLog (**_Up,Down_**=Scroll through the MacroLog when more than one page exists) & the Hotkeys tracker. When on the Hotkeys tracker screen, you can briefly see other screens by pressing _**Ctrl or Shift**_ , Ctrl/Shift last time pressed appear in gameplay, which allow stepping back to see a specific statistic when the screen is recorded, pressing _**Shift**_ will also show the game type. (in-replay **_F5_** switches between different screens).
 
 **_F6 (also in-replay)_**=Toggle the display mode of in-progress units/buildings.
@@ -115,11 +115,16 @@ With some trick this allows pausing a multiplayer game for more than 3 times, wh
 # To re-build this project::hammer:
 * Setup Visual Studio 2017 choosing the following components:
 ![requirements](https://github.com/captain-majid/CoachAI/blob/master/c%2B%2B%20BWAPI%20requirements.png)
+# Not done yet, wanna do it ?:tokyo_tower:
+* GUI for native Custom Hotkeys like in SCR.
+* GUI for more automated intutive Human vs AI scenarios, using BWAPI Revamped.
+* GUI for the CoachAI .json/config file.
+* Integrate CoachAI TimedBo .json/text format with external bo formats, like with SC2's Spawning Tool & SALT .
+* Integrate Voice Recognition tools like VoiceAttack/VoiceBot that make [the AI do game actions just by voice](https://www.youtube.com/watch?v=dOwL2rJ0uEo).
+
 # Known issues::space_invader:
 - The hotkey tracker is buggy when adding units using shift, also when a unit is lost it still shows as an existing one.
 - Cancelled unit/building/upgrade/tech appears in ReplayBo/MacroLog, for a cancelled upgrade/tech you'll additionally get a 'None' item below it.
-# What about ?:tokyo_tower:
-* VR tools like VoiceAttack/VoiceBot that make the AI do game actions just by voice.
 # Screenshots::camera:
 in-game:
 
@@ -129,9 +134,11 @@ in-replay:
 
 ![replay1](https://i.ibb.co/zf6Gkgd/replay.png)
 ![replay2](https://i.ibb.co/zNbZg67/replay-bo.png)
-# Installation::rocket:
-- If you don't have Starcraft v1.16, a mini ver can be downloaded from [**ICCUP**](http://files.theabyss.ru/sc/starcraft.zip).
+# Installation ::rocket:
+- If you don't have Starcraft v1.16, a mini ver can be downloaded from [ICCUP](http://files.theabyss.ru/sc/starcraft.zip), or a [**full version here**](http://www.staredit.net/topic/17625/).
 - Extract [**BWAPI Revamped**](http://www.teamliquid.net/forum/brood-war/531310-human-like-broodwar-ais-revamped) pack contents to the game folder.
-- Extract [![GitHub release (latest SemVer)](https://img.shields.io/github/v/release/captain-majid/CoachAI?label=CoachAI&style=plastic)](https://github.com/captain-majid/CoachAI/releases/latest) contents to the game folder, replace any files, then run "**StarCraft ChaosLauncher.exe**".
-# Chat with someone now ? :speech_balloon: [![Discord](https://img.shields.io/discord/327968006779174913?label=Discord%20BWAPI)](https://discordapp.com/invite/w9wRRrF)
-or contact the developer: captain.majid@gmail.com
+- Extract [![GitHub release (latest SemVer)](https://img.shields.io/github/v/release/captain-majid/CoachAI?label=CoachAI&style=plastic)](https://github.com/captain-majid/CoachAI/releases) contents to the game folder, replace any files, then run "**StarCraft ChaosLauncher.exe**".
+# Chat with someone now ? :speech_balloon:
+- [![Discord](https://img.shields.io/discord/629001720336482324?label=StarCraft1%20CoachAI)](https://discord.gg/F3Ds69M)
+- or join this thread: https://us.forums.blizzard.com/en/starcraft/t/coachai-has-arrived
+- or contact the developer: captain.majid@gmail.com
