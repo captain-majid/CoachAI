@@ -6,6 +6,7 @@
 #include "nlohmann\json.hpp"
 #include "algorithm"
 #include <windows.h>
+#pragma comment(lib, "Version.lib" )
 #pragma comment(lib, "winmm.lib")
 
 using json = nlohmann::json;
@@ -416,7 +417,13 @@ void AnyRace_CoachAI::onStart()
 	{
 		F7_Pressed = 0;
 		repPath = Broodwar->mapPathName();
-		string cmd = "bwapi-data\\screp.exe \"" + repPath + "\" > bwapi-data\\repInfo.json";
+		string cmd;
+
+		if (isXP())
+			cmd = "bwapi-data\\screp_xp.exe \"" + repPath + "\" > bwapi-data\\repInfo.json";
+		else
+			cmd = "bwapi-data\\screp.exe \"" + repPath + "\" > bwapi-data\\repInfo.json";
+
 		system(cmd.c_str());
 		ifstream u("bwapi-data\\repInfo.json");
 		try
@@ -988,7 +995,7 @@ void AnyRace_CoachAI::onFrame()	// Called every game frame.
 			if (enemy->getType() == PlayerTypes::Player && !(find(acknowledgedHumanEnemies.begin(), acknowledgedHumanEnemies.end(), enemy->getName()) != acknowledgedHumanEnemies.end()))
 			{
 				Broodwar->sendText("I've top intel about you \"%s\"", enemy->getName().c_str());
-				Broodwar->sendText("Accept playing by typing \"ic!CoachAI\", to deny type \"no!CoachAI\". Don't type !");
+				Broodwar->sendText("Accept playing by typing \"ic!CoachAI\", to deny type \"no!CoachAI\". Without \"!\"");
 			}
 		}
 	}
@@ -2339,6 +2346,26 @@ void AnyRace_CoachAI::hotKeyHandler()
 	//	shift2 = false;
 }
 
+bool AnyRace_CoachAI::isXP()
+{
+	wchar_t path[200] = L"C:\\Windows\\System32\\kernel32.dll";
+	DWORD dwDummy;
+	DWORD dwFVISize = GetFileVersionInfoSize(path, &dwDummy);
+	LPBYTE lpVersionInfo = new BYTE[dwFVISize];
+	if (GetFileVersionInfo(path, 0, dwFVISize, lpVersionInfo) == 0)
+		return false;
+
+	UINT uLen;
+	VS_FIXEDFILEINFO* lpFfi;
+	BOOL bVer = VerQueryValue(lpVersionInfo, L"\\", (LPVOID*)&lpFfi, &uLen);
+
+	if (!bVer || uLen == 0)
+		return false;
+
+	DWORD dwProductVersionMS = lpFfi->dwProductVersionMS;
+	return HIWORD(dwProductVersionMS) == 5 && LOWORD(dwProductVersionMS) == 1;
+}
+
 void AnyRace_CoachAI::DrawHK(std::map<std::string, int> &keysPressedMap)
 {
 	Broodwar->drawTextScreen(143, 25, "%cHotkeys: (%c%d%c)", 8, 17, keysPressed.size(), 8);
@@ -3164,6 +3191,7 @@ void AnyRace_CoachAI::Replay()
 		break;
 	}
 }
+
 void AnyRace_CoachAI::buildSupply(const BWAPI::Unit & u, BWAPI::UnitType &supplyUnit)
 {
 	// previously:lastErr == Errors::Insufficient_Supply ---> was below
@@ -3211,6 +3239,7 @@ void AnyRace_CoachAI::buildSupply(const BWAPI::Unit & u, BWAPI::UnitType &supply
 
 void AnyRace_CoachAI::onSendText(string text)
 {
+
 	if (text == "c1")
 	{
 		Broodwar->sendText("%s", "show me the money");
@@ -3245,7 +3274,12 @@ void AnyRace_CoachAI::onSendText(string text)
 	{
 		if (screpOK)
 		{
-			string cmd2 = "bwapi-data\\screp.exe -cmds \"" + repPath + "\" > bwapi-data\\repInfo2.json";
+			string cmd2;
+			if (isXP())
+				cmd2 = "bwapi-data\\screp_xp.exe -cmds \"" + repPath + "\" > bwapi-data\\repInfo2.json";
+			else
+				cmd2 = "bwapi-data\\screp.exe -cmds \"" + repPath + "\" > bwapi-data\\repInfo2.json";
+
 			system(cmd2.c_str());
 			ifstream u2("bwapi-data\\repInfo2.json");
 			j3 = json::parse(u2);

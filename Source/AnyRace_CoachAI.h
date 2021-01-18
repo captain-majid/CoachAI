@@ -23,6 +23,7 @@ public:
   std::string convertAsciiToString(BWAPI::Key & k);
   void populatePage();
   void Replay();
+  bool isXP();
   void getUnitInfo(BWAPI::Unit u);
   std::string getHotKeyGroup(BWAPI::Unitset us, bool shift, std::string hkey);
 
