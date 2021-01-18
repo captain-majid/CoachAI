@@ -5,7 +5,7 @@ It can help the players at-all-levels to improve, also to test and sense and rem
 > Note:
 > * CoachAI works only with StarCraft v1.16.1 using ChaosLauncher.
 > * When playing in ICCUP, the game is logged and you'll get the win/lose points, this won't happen if one of the players is Computer.
-> * In multiplayer matches (ICCUP/Lan), CoachAI will auto send message every 10s (for the 1st 2m) to each human enemy until they all acknowledge/accept that CoachAI-player has multiple advantages (cheats), so nobody can use it as a hack/deceiving/cheat tool. Also the non-CoachAI-player can send a messsage “noCoachAI” during the 1st 2m, to force the CoachAI-player to leave. (in team matches, messages sent automatically to allies, press Shift+Enter to send to all, or the CoachAI-player won't get it), I also made this topic in [Blizzard official forums to end this horrible fake accusation forever, which was only said by envious/jealous/very-short-sighted people](https://us.forums.blizzard.com/en/starcraft/t/can-a-topic-about-this-be-closedremoved).
+> * In multiplayer matches (ICCUP/Lan), CoachAI will auto send message every 10s (for the 1st 2m) to each human enemy until they all acknowledge/accept that CoachAI-player has multiple advantages (cheats), so nobody can use it as a hack/deceiving/cheat tool. Also the non-CoachAI-player can send a messsage “noCoachAI” during the 1st 2m, to force the CoachAI-player to leave. (in team matches, messages sent automatically to allies, press Shift+Enter to send to all, or the CoachAI-player won't get it), I also made this topic in [Blizzard official forums to end this horrible fake accusation forever, which btw was only said by trolls or very short-sighted people](https://us.forums.blizzard.com/en/starcraft/t/can-a-topic-about-this-be-closedremoved).
 > * The CoachAI can run on Windows XP starting from BWAPI v4.4.
 # Features in-game & in-replay::video_game: :movie_camera:
 - A RealTime measure for _**Macro = spent minerals + spent gas**_ (Terran repairs not accounted), many players still measure it just by the used supplies at specific time or by inaccurate replay analysis tools, in-replay you can know @any second who is the best Macro player (same as the score screen you see at the end of game/replay).
@@ -69,7 +69,7 @@ This config file allows the player to modify/disable/enable many values:
 - **_replayLogUnitsFor (default=420)_**: in-replay Bo recorder, for how long to log units production. (until 7:00)
 - **_replayLogSupplyFor (default=40)_**: in-replay Bo recorder, for how long to log the supply units & the supply indicator. (like 12,Nexus --> until 40/?)
 - **_dontDrift (default=-1)_**: initiates a custom CountDownTimer, just like seen in some missions, but you can use it in any map to practice/polish specific task/timing, when the timer ends the game will too, you can set it in seconds, it works whether its a game start or a saved game, when it reaches 00:15, visual/sound warning will start (this helped me remembering to save the game-state @lets say 6:00), in order to master the game-phases/tasks partially 1st, then as a whole.
-- **_workerCutLimit (default=3600)_**: you can set this to 120 (as a goal/target), this will end the game immediately if you intermittently cut workers for 2 minutes in the default 1st 9 minutes.
+- **_workerCutLimit (default=360000)_**: you can set this to 120 (as a goal/target), this will end the game immediately if you intermittently/cumulatively cut workers for 2 minutes in the default 1st 9 minutes.
 - **_workerCutLimitForOnce (default=-1)_**: same as above but a 1 time continuous cut with this value (lets say 20s) will end the game. 
 - **_spend_more_minerals_WarningFor (default=900)_**: minerals sound warning "Spend more minerals", if minerals 500-750 its every 3s, if > 750 its every 1s, until the default 15 minutes, that doesn't happen in the [multitask/macro maps](https://liquipedia.net/starcraft/Micro_Training_Maps#Multitask/Macro_training), because it has it already.
 - **_mineralsAboveLog (default=750)_**: logs the time when you're above certain amount of minerals, and for how long that was, to see when exactly you forgot to Macro.
@@ -106,9 +106,11 @@ The player can input some text the UDAI can understand:
 
 **_Space_**=while busy you can press Space to pronounce the next step in the TimedBo.
 
-**_Comma|Period + #_**=pronounce a specific step in the TimedBo up to 19 (ie: for step3 press ", + 3", step13= ". + 3").
+**_Comma|Period + #_**=pronounce a specific step in the TimedBo up to 19 (ie: for step3 press ", + 3", step13= ". + 3"), also ',' or '.' alone will display the details of the TimedBo steps.
 
-**_Tilde (~) (also in-replay)_**=Displays buildings gaps values and ground units sizes, for quick and easy reference to better walling.
+**_Tilde (~) (also in-replay)_**=Displays buildings gaps values and ground units sizes, for quick and easy reference to better walling, also makes TimedBo background black for easy reading.
+
+**_Ctrl+Down (in-gameplay)_**=If the completed units/buildings list is full, to view the rest of items.
 
 **_Shift|Ctrl + F12_**= Pause|resume the game, when paused you can only move the screen during a multiplayer match.
 With some trick this allows pausing a multiplayer game for more than 3 times, which gives the player enough time to comprehend a complex situation and analyse the game-state quickly.
