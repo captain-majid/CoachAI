@@ -19,6 +19,7 @@ public:
   int parseTime(std::string str);
 
   void hotKeyHandler();
+  void DrawHK(std::map<std::string, int> &keysPressedMap);
   std::string convertAsciiToString(BWAPI::Key & k);
   void populatePage();
   void Replay();
