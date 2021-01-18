@@ -15,6 +15,12 @@ using namespace std;
 
 vector<string> acknowledgedHumanEnemies;
 
+Unitset usTemp;
+string hkeyTemp;
+
+list<Key> keysList = { Key::K_1, Key::K_2, Key::K_3, Key::K_4, Key::K_5, Key::K_6, Key::K_7, Key::K_8, Key::K_9, Key::K_0,
+Key::K_F2, Key::K_F3, Key::K_F4 };
+
 double gameSeconds;
 bool speedChanged = false;
 string cmd;
@@ -81,6 +87,8 @@ string str1;
 string str2;
 multimap<string, string>::iterator iter;
 multimap<string, string>::iterator pos;
+map<string, int>::iterator pos1;
+
 int indexNow;
 bool replayCenteredOnNexus;
 string mapName;
@@ -109,6 +117,8 @@ int F7_Pressed = -1;
 bool F8;
 int F8_Pressed = -1;
 bool shift;
+bool shift2;
+int shift2Int;
 bool ctrl;
 bool F9;
 int F9_Pressed = -1;
@@ -295,6 +305,10 @@ std::string formated(UnitType ut)
 	if (strstr(unitName.c_str(), "Resource_"))
 		unitName.replace(unitName.find("Resource_"), 9, "");
 
+	if (strstr(unitName.c_str(), "Powerup_"))
+		unitName.replace(unitName.find("Powerup_"), 8, "");
+
+
 	return unitName;
 }
 //std::string formatedReplay(UnitType ut)
@@ -367,7 +381,7 @@ bool idleWorkersEvery()
 void AnyRace_CoachAI::onStart()
 {
 	gameType = Broodwar->getGameType().getName();
-	mapName = Broodwar->mapName() + " (" + to_string(Broodwar->getStartLocations().size()) + "p)";
+	mapName = Broodwar->mapName() + "|" + to_string(Broodwar->getStartLocations().size()) + "p";
 
 	if (strstr(mapName.c_str(), "| iCCup | "))
 		mapName.replace(mapName.find("| iCCup | "), 10, "");
@@ -382,7 +396,7 @@ void AnyRace_CoachAI::onStart()
 	hkAll["8"];
 	hkAll["9"];
 	hkAll["0"];
-	hkAll["F2"] = "Set";
+	hkAll["F2"];
 	hkAll["F3"];
 	hkAll["F4"];
 
@@ -490,7 +504,7 @@ void AnyRace_CoachAI::onFrame()	// Called every game frame.
 	else
 		Broodwar->drawTextScreen(134, 0, "%cCoachAI ", Text::Grey);
 	Broodwar->setTextSize();
-	Broodwar->drawTextScreen(213, 4, "%c4.25", Text::Turquoise);
+	Broodwar->drawTextScreen(213, 4, "%c4.26", Text::Turquoise);
 
 	if (FPS < 1) //gamePaused
 		FPS = 24;
@@ -725,7 +739,6 @@ void AnyRace_CoachAI::onFrame()	// Called every game frame.
 			}
 		}
 	}
-	hotKeyHandler();
 
 	DOWN = Broodwar->getKeyState(Key::K_DOWN);
 	UP = Broodwar->getKeyState(Key::K_UP);
@@ -751,6 +764,7 @@ void AnyRace_CoachAI::onFrame()	// Called every game frame.
 	button1 = Broodwar->getKeyState(Key::K_OEM_COMMA);
 	button2 = Broodwar->getKeyState(Key::K_OEM_PERIOD);
 	F12_method();
+	hotKeyHandler();
 
 	//speed = 39fps/26ms --- 36fps/28ms --- 33fps/31ms --- 30fps/34ms --- 27fps/37ms --- 24fps/42ms --- 21fps/48ms
 	static int lastCheckedFrame95 = 0;
@@ -974,7 +988,7 @@ void AnyRace_CoachAI::onFrame()	// Called every game frame.
 			if (enemy->getType() == PlayerTypes::Player && !(find(acknowledgedHumanEnemies.begin(), acknowledgedHumanEnemies.end(), enemy->getName()) != acknowledgedHumanEnemies.end()))
 			{
 				Broodwar->sendText("I've top intel about you \"%s\"", enemy->getName().c_str());
-				Broodwar->sendText("Accept playing by typing \"icCoachAI\", to deny type \"noCoachAI\"");
+				Broodwar->sendText("Accept playing by typing \"ic!CoachAI\", to deny type \"no!CoachAI\". Don't type !");
 			}
 		}
 	}
@@ -1169,9 +1183,19 @@ void AnyRace_CoachAI::onFrame()	// Called every game frame.
 			UnitsFinal_Enemy += to_string(entry.second) + " " + entry.first + "\n\r";
 		for (string item : listOfBuildings_Enemy)
 			BuildingsMap_Enemy[item]++;
-		for (auto entry : BuildingsMap_Enemy)
-			BuildingsFinal_Enemy += to_string(entry.second) + " " + entry.first + "\n\r";
 
+		pos1 = BuildingsMap_Enemy.begin();
+		advance(pos1, 21);
+		if (BuildingsMap_Enemy.size() > 22 && (ctrl && DOWN))
+			for (pos1; pos1 != BuildingsMap_Enemy.end(); pos1++)
+			{
+				BuildingsFinal_Enemy += to_string(pos1->second) + " " + pos1->first + "\n\r";
+			}
+		else
+			for (auto entry : BuildingsMap_Enemy)
+			{
+				BuildingsFinal_Enemy += to_string(entry.second) + " " + entry.first + "\n\r";
+			}
 		if (ctrl && P_F8 != Broodwar->self())
 		{
 			if (shift)
@@ -1400,21 +1424,48 @@ void AnyRace_CoachAI::onFrame()	// Called every game frame.
 		UnitsMap[item]++;
 	for (string item : listOfBuildings)
 		BuildingsMap[item]++;
-	for (auto entry : BuildingsMap)
-	{
-		if (entry.first == "Gateway")
-			BuildingsFinal += to_string(entry.second) + " " + entry.first + " " + getTime(idleGateTime / FPS) + "\n\r";
-		else if (entry.first == "Robotics_Facility")
-			BuildingsFinal += to_string(entry.second) + " " + entry.first + " " + getTime(idleRoboTime / FPS) + "\n\r";
-		else if (entry.first == "Stargate")
-			BuildingsFinal += to_string(entry.second) + " " + entry.first + " " + getTime(idleStarTime / FPS) + "\n\r";
-		else if (entry.first == "Shield_Battery")
-			BuildingsFinal += to_string(entry.second) + " " + entry.first + " " + to_string(battEnergy * 2) + "e\n\r";
-		else
-			BuildingsFinal += to_string(entry.second) + " " + entry.first + "\n\r";
-	}
-	for (auto entry : UnitsMap)
-		UnitsFinal += to_string(entry.second) + " " + entry.first + "\n\r";
+
+	pos1 = BuildingsMap.begin();
+	advance(pos1, 21);
+	if (BuildingsMap.size() > 22 && (ctrl && DOWN))
+		for (pos1; pos1 != BuildingsMap.end(); pos1++)
+		{
+			if (pos1->first == "Gateway")
+				BuildingsFinal += to_string(pos1->second) + " " + pos1->first + " " + getTime(idleGateTime / FPS) + "\n\r";
+			else if (pos1->first == "Robotics_Facility")
+				BuildingsFinal += to_string(pos1->second) + " " + pos1->first + " " + getTime(idleRoboTime / FPS) + "\n\r";
+			else if (pos1->first == "Stargate")
+				BuildingsFinal += to_string(pos1->second) + " " + pos1->first + " " + getTime(idleStarTime / FPS) + "\n\r";
+			else if (pos1->first == "Shield_Battery")
+				BuildingsFinal += to_string(pos1->second) + " " + pos1->first + " " + to_string(battEnergy * 2) + "e\n\r";
+			else
+				BuildingsFinal += to_string(pos1->second) + " " + pos1->first + "\n\r";
+		}
+	else
+		for (auto entry : BuildingsMap)
+		{
+			if (entry.first == "Gateway")
+				BuildingsFinal += to_string(entry.second) + " " + entry.first + " " + getTime(idleGateTime / FPS) + "\n\r";
+			else if (entry.first == "Robotics_Facility")
+				BuildingsFinal += to_string(entry.second) + " " + entry.first + " " + getTime(idleRoboTime / FPS) + "\n\r";
+			else if (entry.first == "Stargate")
+				BuildingsFinal += to_string(entry.second) + " " + entry.first + " " + getTime(idleStarTime / FPS) + "\n\r";
+			else if (entry.first == "Shield_Battery")
+				BuildingsFinal += to_string(entry.second) + " " + entry.first + " " + to_string(battEnergy * 2) + "e\n\r";
+			else
+				BuildingsFinal += to_string(entry.second) + " " + entry.first + "\n\r";
+		}
+
+	pos1 = UnitsMap.begin();
+	advance(pos1, 21);
+	if (UnitsMap.size() > 22 && (ctrl && DOWN))
+		for (pos1; pos1 != UnitsMap.end(); pos1++)
+		{
+			UnitsFinal += to_string(pos1->second) + " " + pos1->first + "\n\r";
+		}
+	else
+		for (auto entry : UnitsMap)
+			UnitsFinal += to_string(entry.second) + " " + entry.first + "\n\r";
 
 	map<string, int> idleFightUnitsMap;
 	for (string item : listOfIdleFightUnits)
@@ -1473,8 +1524,9 @@ void AnyRace_CoachAI::onFrame()	// Called every game frame.
 			match += e->getRace().getName().substr(0, 1);
 	}
 
-	if (!Broodwar->isPaused() && !gameover && workersProductionStopped / 24 > workerCutLimit)
+	if (!Broodwar->isPaused() && !gameover && workersProductionStopped / 24 > workerCutLimit)//accumulative cut by seconds 120 > 3600
 	{
+		workerCutLimit = j["Control Panel"]["workerCutLimit"].get<int>();
 		Broodwar << Text::Blue << Text::Align_Center << "You cut workers intermittently for " << workerCutLimit << "s" << endl;
 		gameover = true;
 		lastChecked16 = FrameCount + 96;
@@ -1482,6 +1534,7 @@ void AnyRace_CoachAI::onFrame()	// Called every game frame.
 
 	if (workerCutLimitForOnce != -1 && !Broodwar->isPaused() && !gameover && workersProductionStopped_LastTimeCounter / 24 > workerCutLimitForOnce)
 	{
+		workerCutLimitForOnce = j["Control Panel"]["workerCutLimitForOnce"].get<int>();
 		Broodwar << Text::Orange << Text::Align_Center << "You cut workers continuously for " << workerCutLimitForOnce << "s" << endl;
 		gameover = true;
 		lastChecked16 = FrameCount + 96;
@@ -1846,7 +1899,7 @@ void AnyRace_CoachAI::onFrame()	// Called every game frame.
 	prevSelectedUnits = selectedUnits;
 	battEnergy_Old = battEnergy;
 }
-void AnyRace_CoachAI::F12_method()
+void AnyRace_CoachAI::F12_method()//F12 is used by Windows os ?
 {
 	F12 = Broodwar->getKeyState(Key::K_F12);
 	static int lastCheckedFrame93 = 0;
@@ -1912,24 +1965,28 @@ void AnyRace_CoachAI::drawWorkersCutLog()
 }
 void AnyRace_CoachAI::TimedBo()
 {
-	Broodwar->drawBoxScreen(5, 57, 124, 67, 0, true);
-	Broodwar->drawBoxScreen(5, 57, 124, 301, 0, false);
+	if (tilde_Pressed == 1)
+		Broodwar->drawBoxScreen(5, 57, 124, 301, 0, true);
+	else
+		Broodwar->drawBoxScreen(5, 57, 124, 68, 0, true);
+
+	Broodwar->drawBoxScreen(5, 57, 124, 301, 7, false);
 
 	if (ctrlF1)
 	{
-		Broodwar->drawTextScreen(5, 55, "%c%s\n", j["Preset Plan"]["TimedBo Color1"].get<int>(), j["Preset Plan"]["TimedBo1 Title"].get<string>().c_str());
+		Broodwar->drawTextScreen(6, 56, "%c%s\n", j["Preset Plan"]["TimedBo Color1"].get<int>(), j["Preset Plan"]["TimedBo1 Title"].get<string>().c_str());
 		stepsArray = j["Preset Plan"]["TimedBo1"].get<vector<string>>();
 		tips = j["Preset Plan"]["TimedBo1 Tips"].get<string>();
 	}
 	if (ctrlF2)
 	{
-		Broodwar->drawTextScreen(5, 55, "%c%s\n", j["Preset Plan"]["TimedBo Color1"].get<int>(), j["Preset Plan"]["TimedBo2 Title"].get<string>().c_str());
+		Broodwar->drawTextScreen(6, 56, "%c%s\n", j["Preset Plan"]["TimedBo Color1"].get<int>(), j["Preset Plan"]["TimedBo2 Title"].get<string>().c_str());
 		stepsArray = j["Preset Plan"]["TimedBo2"].get<vector<string>>();
 		tips = j["Preset Plan"]["TimedBo2 Tips"].get<string>();
 	}
 	if (ctrlF3)
 	{
-		Broodwar->drawTextScreen(5, 55, "%c%s\n", j["Preset Plan"]["TimedBo Color1"].get<int>(), j["Preset Plan"]["TimedBo3 Title"].get<string>().c_str());
+		Broodwar->drawTextScreen(6, 56, "%c%s\n", j["Preset Plan"]["TimedBo Color1"].get<int>(), j["Preset Plan"]["TimedBo3 Title"].get<string>().c_str());
 		stepsArray = j["Preset Plan"]["TimedBo3"].get<vector<string>>();
 		tips = j["Preset Plan"]["TimedBo3 Tips"].get<string>();
 	}
@@ -1959,78 +2016,62 @@ void AnyRace_CoachAI::TimedBo()
 
 	for (int i = 0; i < stepsArray.size(); i++)
 	{
-		string main, main2, extra;
+		string main, extra;
 		vector<string> coloredList;
-		string colored;
+		string coloredString;
 		if (strstr(stepsArray[i].c_str(), ";"))
 		{
 			pos = stepsArray[i].find(";");
 			main = stepsArray[i].substr(0, pos + 1);
-			main2 = main.substr(6, main.size());
-
 			extra = stepsArray[i].substr(pos + 1, stepsArray[i].size());
 		}
 		else
 		{
 			main = stepsArray[i];
-			main2 = main.substr(6, main.size());
-
 			extra = "";
 		}
-		//showMultitaskStats for json, easily forgettable
+
+		if (i > 8)
+			Broodwar->drawTextScreen(0, yy, "%c%d", j["Preset Plan"]["TimedBo Color1"].get<int>(), i - 9);
+		else
+			Broodwar->drawTextScreen(0, yy, "%c%d", j["Preset Plan"]["TimedBo Color1"].get<int>(), i + 1);
+
 		if (i == currentStepIndex)//currentStep
 		{
 			if (button1 || button2)
 				Broodwar->drawTextScreen(7, yy, "%c%s\n", j["Preset Plan"]["TimedBo Color1"].get<int>(), stepsArray[i].c_str());
 			else
-				Broodwar->drawTextScreen(7, yy, "%c%s\n", j["Preset Plan"]["TimedBo Color1"].get<int>(), main2.c_str());
-
+				Broodwar->drawTextScreen(7, yy, "%c%s\n", j["Preset Plan"]["TimedBo Color1"].get<int>(), main.c_str());
 		}
 		else
 		{
 			if (button1 || button2)
 			{
-				if (i > 8)
-					Broodwar->drawTextScreen(0, yy, "%c%d", j["Preset Plan"]["TimedBo Color1"].get<int>(), i - 9);
-				else
-					Broodwar->drawTextScreen(0, yy, "%c%d", j["Preset Plan"]["TimedBo Color1"].get<int>(), i + 1);
-
-
 				Broodwar->drawTextScreen(7, yy, "%c%s\n", j["Preset Plan"]["TimedBo Color2"].get<int>(), stepsArray[i].c_str());
-
 			}
 			else
 			{
-				//no whole red step !
-				//if (main.substr(6, 1) == "!")
-				//	Broodwar->drawTextScreen(7, yy, "%c%s\n", 8, main.erase(0, 6).c_str());
-				//else Broodwar->drawTextScreen(7, yy, "%c%s\n", j["Preset Plan"]["TimedBo Color2"].get<int>(), main.erase(0, 6).c_str());
-
-				//==================
 				string delimiter = "|";
-				while ((pos = main2.find(delimiter)) != string::npos)
+				while ((pos = main.find(delimiter)) != string::npos)
 				{
-					//if (main.substr(pos + 1, 1) == "|")
-					coloredList.push_back(main2.substr(0, pos));
-					main2.erase(0, pos + delimiter.length());
+					coloredList.push_back(main.substr(0, pos));
+					main.erase(0, pos + delimiter.length());
 				}
-				coloredList.push_back(main2);
+				coloredList.push_back(main);
 
 				//"06:10 Shuttle|!2goon|pyloBay
 				for (int i = 0; i < coloredList.size(); i++)
 				{
 					if (coloredList[i].substr(0, 1) == "!")
-						colored = coloredList[i];
+						coloredString = coloredList[i];
 				}
 				if (coloredList.size() > 1)
 				{
 					Broodwar->drawTextScreen(7, yy, "%c%s%c%s%c%s\n", j["Preset Plan"]["TimedBo Color2"].get<int>(), coloredList[0].c_str(),
-						8, colored.c_str(), j["Preset Plan"]["TimedBo Color2"].get<int>(), coloredList[2].c_str());
+						8, coloredString.c_str(), j["Preset Plan"]["TimedBo Color2"].get<int>(), coloredList[2].c_str());
 				}
 				else
-					Broodwar->drawTextScreen(7, yy, "%c%s\n", j["Preset Plan"]["TimedBo Color2"].get<int>(), main.erase(0, 6).c_str());
-				//=================================
-
+					Broodwar->drawTextScreen(7, yy, "%c%s\n", j["Preset Plan"]["TimedBo Color2"].get<int>(), main.c_str());
 			}
 		}
 		yy += 10;
@@ -2196,48 +2237,75 @@ void AnyRace_CoachAI::custom()
 }
 void AnyRace_CoachAI::hotKeyHandler()
 {
-	bool shift = Broodwar->getKeyState(Key::K_SHIFT);
-
-	if ((Broodwar->getKeyState(Key::K_CONTROL) || shift) && Broodwar->getKeyState(Key::K_1))
-		hkAll["1"] = getHotKeyGroup(selectedUnits, shift, "1");
-	if ((Broodwar->getKeyState(Key::K_CONTROL) || shift) && Broodwar->getKeyState(Key::K_2))
-		hkAll["2"] = getHotKeyGroup(selectedUnits, shift, "2");
-	if ((Broodwar->getKeyState(Key::K_CONTROL) || shift) && Broodwar->getKeyState(Key::K_3))
-		hkAll["3"] = getHotKeyGroup(selectedUnits, shift, "3");
-	if ((Broodwar->getKeyState(Key::K_CONTROL) || shift) && Broodwar->getKeyState(Key::K_4))
-		hkAll["4"] = getHotKeyGroup(selectedUnits, shift, "4");
-	if ((Broodwar->getKeyState(Key::K_CONTROL) || shift) && Broodwar->getKeyState(Key::K_5))
-		hkAll["5"] = getHotKeyGroup(selectedUnits, shift, "5");
-	if ((Broodwar->getKeyState(Key::K_CONTROL) || shift) && Broodwar->getKeyState(Key::K_6))
-		hkAll["6"] = getHotKeyGroup(selectedUnits, shift, "6");
-	if ((Broodwar->getKeyState(Key::K_CONTROL) || shift) && Broodwar->getKeyState(Key::K_7))
-		hkAll["7"] = getHotKeyGroup(selectedUnits, shift, "7");
-	if ((Broodwar->getKeyState(Key::K_CONTROL) || shift) && Broodwar->getKeyState(Key::K_8))
-		hkAll["8"] = getHotKeyGroup(selectedUnits, shift, "8");
-	if ((Broodwar->getKeyState(Key::K_CONTROL) || shift) && Broodwar->getKeyState(Key::K_9))
-		hkAll["9"] = getHotKeyGroup(selectedUnits, shift, "9");
-	if ((Broodwar->getKeyState(Key::K_CONTROL) || shift) && Broodwar->getKeyState(Key::K_0))
-		hkAll["0"] = getHotKeyGroup(selectedUnits, shift, "0");
-	if (shift && Broodwar->getKeyState(Key::K_F3))
-		hkAll["F3"] = "Set";
-	if (shift && Broodwar->getKeyState(Key::K_F4))
-		hkAll["F4"] = "Set";
-
-	list<Key> keysList = { Key::K_1, Key::K_2, Key::K_3, Key::K_4, Key::K_5, Key::K_6, Key::K_7, Key::K_8, Key::K_9, Key::K_0,
-		Key::K_F2, Key::K_F3, Key::K_F4 };
-
-	static int lastCheckedFrame12 = 0;
-	if (lastCheckedFrame12 < FrameCount)
+	if (shift)
 	{
-		lastCheckedFrame12 = FrameCount + 1;
+		shift2Int = FrameCount;
+	}
 
-		for (Key &k : keysList)
+	if (shift2Int < FrameCount)
+	{
+		shift2 = false;
+	}
+	else
+		shift2 = true;
+
+	for (Key &k : keysList)
+	{
+		if (Broodwar->getKeyState(k))
 		{
-			if (Broodwar->getKeyState(k) && !Broodwar->getKeyState(Key::K_CONTROL) && !Broodwar->getKeyState(Key::K_SHIFT)
-				&& hkAll[convertAsciiToString(k)].size() > 0)
-				keysPressed.push_back(k);
+			if (shift2)
+			{
+				if (selectedUnits == usTemp && hkeyTemp == convertAsciiToString(k))
+					continue;
+				if (k == Key::K_F2 || k == Key::K_F3 || k == Key::K_F4)
+				{
+					hkAll[convertAsciiToString(k)] = to_string(Broodwar->getScreenPosition().x) + "x" + to_string(Broodwar->getScreenPosition().y);
+				}
+				else
+					hkAll[convertAsciiToString(k)] = getHotKeyGroup(selectedUnits, shift2, convertAsciiToString(k));
+			}
+			if (ctrl)
+			{
+				if (k == Key::K_F2 || k == Key::K_F3 || k == Key::K_F4)
+					continue;
+
+				hkAll[convertAsciiToString(k)] = getHotKeyGroup(selectedUnits, shift, convertAsciiToString(k));
+			}
 		}
 	}
+
+	//if (Broodwar->getKeyState(Key::K_1))
+	//	hkAll["1"] = getHotKeyGroup(selectedUnits, shift, "1");
+	//if (Broodwar->getKeyState(Key::K_2))
+	//	hkAll["2"] = getHotKeyGroup(selectedUnits, shift, "2");
+	//if (Broodwar->getKeyState(Key::K_3))
+	//	hkAll["3"] = getHotKeyGroup(selectedUnits, shift, "3");
+	//if (Broodwar->getKeyState(Key::K_4))
+	//	hkAll["4"] = getHotKeyGroup(selectedUnits, shift, "4");
+	//if (Broodwar->getKeyState(Key::K_5))
+	//	hkAll["5"] = getHotKeyGroup(selectedUnits, shift, "5");
+	//if (Broodwar->getKeyState(Key::K_6))
+	//	hkAll["6"] = getHotKeyGroup(selectedUnits, shift, "6");
+	//if (Broodwar->getKeyState(Key::K_7))
+	//	hkAll["7"] = getHotKeyGroup(selectedUnits, shift, "7");
+	//if (Broodwar->getKeyState(Key::K_8))
+	//	hkAll["8"] = getHotKeyGroup(selectedUnits, shift, "8");
+	//if (Broodwar->getKeyState(Key::K_9))
+	//	hkAll["9"] = getHotKeyGroup(selectedUnits, shift, "9");
+	//if (Broodwar->getKeyState(Key::K_0))
+	//	hkAll["0"] = getHotKeyGroup(selectedUnits, shift, "0");
+
+	//count # keyspressed
+	for (Key &k : keysList)
+	{
+		if (Broodwar->getKeyState(k))
+		{
+			if (hkeyTemp != convertAsciiToString(k))
+				keysPressed.push_back(k);
+			hkeyTemp = convertAsciiToString(k);
+		}
+	}
+
 	map<string, int> keysPressedMap;
 	keysPressedMap["1"];
 	keysPressedMap["2"];
@@ -2252,29 +2320,42 @@ void AnyRace_CoachAI::hotKeyHandler()
 	keysPressedMap["F2"];
 	keysPressedMap["F3"];
 	keysPressedMap["F4"];
+
 	for (auto k : keysPressed)
 		keysPressedMap[convertAsciiToString(k)]++;
 
-	if (F5_Pressed == 0)
+	//detect hotkeys
+	if (Broodwar->getKeyState(Key::K_CAPITAL))
 	{
-		Broodwar->drawTextScreen(143, 25, "%cHotkeys: (%c%d%c)", 8, 17, keysPressed.size(), 8);
-		int y = 35;
-		for (auto entry : keysPressedMap)
+		for (Key &k : keysList)
 		{
-			Broodwar->drawTextScreen(125, y, "%c%d", Text::Orange, entry.second);
-			y += 10;
+			if (Broodwar->getKeyState(k) && selectedUnits != usTemp)
+				hkAll[convertAsciiToString(k)] = getHotKeyGroup(selectedUnits, false, convertAsciiToString(k));
 		}
-		y = 35;
-		for (auto entry : hkAll)
-		{
-			Broodwar->drawTextScreen(143, y, "%c%s: %c%s", 8, entry.first.c_str(), 27, entry.second.c_str());
-			y += 10;
-		}
+	}
+
+	if (F5_Pressed == 0)
+		DrawHK(keysPressedMap);
+	//	shift2 = false;
+}
+
+void AnyRace_CoachAI::DrawHK(std::map<std::string, int> &keysPressedMap)
+{
+	Broodwar->drawTextScreen(143, 25, "%cHotkeys: (%c%d%c)", 8, 17, keysPressed.size(), 8);
+	int y = 35;
+	for (auto entry : keysPressedMap)
+	{
+		Broodwar->drawTextScreen(125, y, "%c%d", Text::Orange, entry.second);
+		y += 10;
+	}
+	y = 35;
+	for (auto entry : hkAll)
+	{
+		Broodwar->drawTextScreen(143, y, "%c%s: %c%s", 8, entry.first.c_str(), 27, entry.second.c_str());
+		y += 10;
 	}
 }
 
-Unitset usTemp;
-string hkeyTemp;
 std::string AnyRace_CoachAI::getHotKeyGroup(Unitset us, bool shift, string hkey)
 {
 	if (usTemp == us && hkeyTemp == hkey)
@@ -2311,7 +2392,6 @@ std::string AnyRace_CoachAI::getHotKeyGroup(Unitset us, bool shift, string hkey)
 		hkSelfUnitsMap[item]++;
 	for (auto entry : hkSelfUnitsMap)
 		hkSelfString += to_string(entry.second) + " " + entry.first + ", ";
-
 	usTemp = us;
 	hkeyTemp = hkey;
 	return hkSelfString;
