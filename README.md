@@ -2,11 +2,14 @@
 [![](https://i.ibb.co/0rwLYfN/111.png)](https://www.youtube.com/watch?v=GhJ0zlsOEyo)
 _**This BWAPI-AI/UDAI (User-defined AI) works as an in-game helper and also as an online replay analyzer.
 It can help the players at-all-levels to improve, also to test and sense and remember things that weren't easy/possible before.**_
-> Note:
+<details><summary>Note:</summary>
+
 > * CoachAI works only with StarCraft v1.16.1 using ChaosLauncher.
 > * When playing in ICCUP, the game is logged and you'll get the win/lose points, this won't happen if one of the players is Computer.
-> * In multiplayer matches (ICCUP/Lan), CoachAI will auto send message every 10s (for the 1st 2m) to each human enemy until they all acknowledge/accept that CoachAI-player has multiple advantages (cheats), so nobody can use it as a hack/deceiving/cheat tool. Also the non-CoachAI-player can send a messsage “noCoachAI” during the 1st 2m, to force the CoachAI-player to leave. (in team matches, messages sent automatically to allies, press Shift+Enter to send to all, or the CoachAI-player won't get it), I also made this topic in [Blizzard official forums to end this horrible fake accusation forever, which was only said by envious/jealous/very-short-sighted people](https://us.forums.blizzard.com/en/starcraft/t/can-a-topic-about-this-be-closedremoved).
+> * In multiplayer matches (ICCUP/Lan), CoachAI will auto send message every 10s (for the 1st 2m) to each human enemy until they all acknowledge/accept that CoachAI-player has multiple advantages (cheats), so nobody can use it as a hack/deceiving/cheat tool. Also the non-CoachAI-player can send a messsage “noCoachAI” during the 1st 2m, to force the CoachAI-player to leave. (in team matches, messages sent automatically to allies, press Shift+Enter to send to all, or the CoachAI-player won't get it), I also made this topic in [Blizzard official forums to end this horrible fake accusation forever, which btw was only said by trolls or very short-sighted people](https://us.forums.blizzard.com/en/starcraft/t/can-a-topic-about-this-be-closedremoved).
 > * The CoachAI can run on Windows XP starting from BWAPI v4.4.
+</details>
+
 # Features in-game & in-replay::video_game: :movie_camera:
 - A RealTime measure for _**Macro = spent minerals + spent gas**_ (Terran repairs not accounted), many players still measure it just by the used supplies at specific time or by inaccurate replay analysis tools, in-replay you can know @any second who is the best Macro player (same as the score screen you see at the end of game/replay).
 - Want to know how many unit/building has been lost in-game/in-replay ?, just select one of the same type.
@@ -18,6 +21,7 @@ It can help the players at-all-levels to improve, also to test and sense and rem
 - MineralsAbove measure for the time being above certain amount of minerals, see _**mineralsAboveLog**_ for customization in-game.
 - Detecting the game speed, by just looking at the FPS value: 24=Fastest, 21=Faster, 18=Fast, 15=Normal, etc..
 - Showing if a map is 2p/3p/4p on game/replay (just counting the start locations on it).
+
 # Features in-game::video_game:
 - The # of Minerals/Gas workers from all bases.
 - The # of idle production buildings (for Zerg, only the number of Larvae displayed), also the buildings IdleTime + Shield Battery remaining energy for Protoss.
@@ -35,6 +39,7 @@ A counter for each screen you step into, with total jumps during the game, the a
 - **_Selection-Multitasking_**:
 A counter for each selection you select, with total switches during the game, the average focus @1 selection, the total focus on each selection for above 5s (customizable live, by editing totalTimeOnScreenOrSelectionAbove) and finally, a customizable notification sound when you focus @1 selection for above 20s (customizable live, by editing sameSelectionWarningEvery).
 - **_The TimedBo_**: all of us forget 1 or more things that was planned before the game, so a written Bo and tips on the game screen that dynamically highlights "What now/next?" while alerting with sound and pronouncing the current step in English JIT and allowing for more step-details to be shown/pronounced out of the succinct Bo form, will accelerate the familiarity with a specific build remarkably.
+
 # Features in-replay::movie_camera:
 - Showing the # of units/buildings & the types of tech/upgrade for each player (just select any player's unit to display the infos).
 - Showing the replay duration beforehand, and also the replay name, date, game title, game type and the map used.
@@ -47,6 +52,7 @@ A counter for each selection you select, with total switches during the game, th
 - The screen will automatically move to where a Nuclear launch is positioned (Comsat scan or Storm autoMove is disabled by default).
 - An intuitive/easier way to toggle vision of the selected player (and his allies) by pressing F7 (SC:R requires that you blind ALL other players individually to get the vision of 1 player which is not smart, here we just need to select a player/or 1 of his allies to see the required vision).
 - Displaying live score of produced/killed/lost units/buildings, to get the current state of players, this is about unit/building control (more close to micro, same as the score screen you see at the end of game/replay).
+
 # AnyRace_CoachAI.json::wrench:
 This config file allows the player to modify/disable/enable many values:
 - _**autoTrainWorkers (default=false)**_: trains 1 worker @time from each base until "maxWorkers" number reached (for Zerg only 1 Hatchery is used for producing).
@@ -69,22 +75,24 @@ This config file allows the player to modify/disable/enable many values:
 - **_replayLogUnitsFor (default=420)_**: in-replay Bo recorder, for how long to log units production. (until 7:00)
 - **_replayLogSupplyFor (default=40)_**: in-replay Bo recorder, for how long to log the supply units & the supply indicator. (like 12,Nexus --> until 40/?)
 - **_dontDrift (default=-1)_**: initiates a custom CountDownTimer, just like seen in some missions, but you can use it in any map to practice/polish specific task/timing, when the timer ends the game will too, you can set it in seconds, it works whether its a game start or a saved game, when it reaches 00:15, visual/sound warning will start (this helped me remembering to save the game-state @lets say 6:00), in order to master the game-phases/tasks partially 1st, then as a whole.
-- **_workerCutLimit (default=3600)_**: you can set this to 120 (as a goal/target), this will end the game immediately if you intermittently cut workers for 2 minutes in the default 1st 9 minutes.
+- **_workerCutLimit (default=3600)_**: you can set this to 120 (as a goal/target), this will end the game immediately if you intermittently/cumulatively cut workers for 2 minutes in the default 1st 9 minutes.
 - **_workerCutLimitForOnce (default=-1)_**: same as above but a 1 time continuous cut with this value (lets say 20s) will end the game. 
 - **_spend_more_minerals_WarningFor (default=900)_**: minerals sound warning "Spend more minerals", if minerals 500-750 its every 3s, if > 750 its every 1s, until the default 15 minutes, that doesn't happen in the [multitask/macro maps](https://liquipedia.net/starcraft/Micro_Training_Maps#Multitask/Macro_training), because it has it already.
 - **_mineralsAboveLog (default=750)_**: logs the time when you're above certain amount of minerals, and for how long that was, to see when exactly you forgot to Macro.
 - **_stickyScreen (default=1)_**: which screen to display by default ?, 1 = TimedBo, 2 = WorkersCut log & MineralsAbove log, 3 = Idle Production & Fighting units & Multitasking.
 - **_autoGameSpeed (default=true)_**: auto revert to 24 FPS if speed goes lower than that (**_Note_**: some values could be inaccurate if game speed isn't Fastest=24 FPS, like mine > 750 time).
 - **_replayAutoMoveToScanOrStorm (default=false)_**: set it to true if you don't want to miss any action !
-- **_TimedBo1_**: an editable dynamic build order that appear on-game screen, it highlights/pronounces what should be done now JIT. **To move** any extra step-details out of the succinct Bo form use ";". **To highlight** an important TimedBo step/word/phrase (that you keep forgetting), just make it like this: “04:00 |!gascut| end”. **To comment** extra text (that won't be pronounced by the TTS engine) do that: //extra or /\*extra\*/. **To change game speed** of a certain TimedBO step add "!FPS:30" to it, speed will be changed until overridden by another step or the user, if you want it to be < 24, make sure autoGameSpeed: false. **To change the pronunciation speed/person** (like Cortana or whatever), please modify TTSspeed/TTSname.
+- **_TimedBo1_**: an editable dynamic build order that appear on-game screen, it highlights/pronounces what should be done now JIT. **To move** any extra step-details out of the succinct Bo form, make it after ";". **To highlight** an important TimedBo step/word/phrase (that you keep forgetting), just make it like this: “04:00 |!gascut| end”. **To comment** extra text (that won't be pronounced by the TTS engine) do that: //extra or /\*extra\*/. **To change game speed** of a certain TimedBo step add "!FPS:30" to it, speed will be changed until overridden by another step or the user, if you want it to be < 24, make sure autoGameSpeed: false. **To change the pronunciation speed/person** (like Cortana or whatever), please modify TTSspeed/TTSname.
 - **_TimedBo1 Tips_**: a block of text that appear below a specific TimedBo, you can use "\n" to move to a new line, you can also use ';' here.
 - **_Tips1_**: an editable custom tips that appear on-game screen when pressing **_F7_**, you can use "\n" to move to a new line.
+  
 # Message shortcuts::pencil:
 The player can input some text the UDAI can understand:
 
 **_c1_**="show me the money", **_c2_**="black sheep wall", **_c3_**="operation cwal", **_c4_**="power overwhelming", **_c5_**="staying alive", **_c6_**="there is no cow level".
 
 **_?_** (Only in-replay, obviously!)=Who wins?
+  
 # Hotkeys: :key:
 **_F5_**=Toggle between the display of the MacroLog (**_Up,Down_**=Scroll through the MacroLog when more than one page exists) & the Hotkeys tracker. When on the Hotkeys tracker screen, you can briefly see other screens by pressing _**Ctrl or Shift**_ , Ctrl/Shift last time pressed appear in gameplay, which allow stepping back to see a specific statistic when the screen is recorded, pressing _**Shift**_ will also show the game type. (in-replay **_F5_** switches between different screens).
 
@@ -106,12 +114,15 @@ The player can input some text the UDAI can understand:
 
 **_Space_**=while busy you can press Space to pronounce the next step in the TimedBo.
 
-**_Comma|Period + #_**=pronounce a specific step in the TimedBo up to 19 (ie: for step3 press ", + 3", step13= ". + 3").
+**_Comma|Period + #_**=pronounce a specific step in the TimedBo up to 19 (ie: for step3 press ", + 3", step13= ". + 3"), also ',' or '.' alone will display the details of the TimedBo steps.
 
-**_Tilde (~) (also in-replay)_**=Displays buildings gaps values and ground units sizes, for quick and easy reference to better walling.
+**_Tilde (~) (also in-replay)_**=Displays buildings gaps values and ground units sizes, for quick and easy reference to better walling, also makes TimedBo background black for easy reading.
+
+**_Ctrl+Down (in-gameplay)_**=If the completed units/buildings list is full, to view the rest of items.
 
 **_Shift|Ctrl + F12_**= Pause|resume the game, when paused you can only move the screen during a multiplayer match.
 With some trick this allows pausing a multiplayer game for more than 3 times, which gives the player enough time to comprehend a complex situation and analyse the game-state quickly.
+  
 # To re-build this project::hammer:
 * Setup Visual Studio 2017 choosing the following components:
 ![requirements](https://github.com/captain-majid/CoachAI/blob/master/c%2B%2B%20BWAPI%20requirements.png)
