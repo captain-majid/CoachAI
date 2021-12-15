@@ -749,7 +749,7 @@ namespace BWAPI
     ///   nullptr or excluded, then the unit will be excluded in the check.
     /// </param>
     /// <param name="checkCanIssueCommandType"> (optional)
-    ///   TODO fill this in
+    ///   fill this in
     /// </param>
     ///
     /// @returns true indicating that the type can be researched. If \p unit is provided, then it is
@@ -769,7 +769,7 @@ namespace BWAPI
     ///   nullptr or excluded, then the unit will be excluded in the check.
     /// </param>
     /// <param name="checkCanIssueCommandType"> (optional)
-    ///   TODO fill this in
+    ///   fill this in
     /// </param>
     ///
     /// @returns true indicating that the type can be upgraded. If \p unit is provided, then it is

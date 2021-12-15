@@ -100,6 +100,7 @@ bool replayCenteredOnNexus;
 string mapName;
 string gameType;
 bool isThereAllies;
+int alliesMaxLength = 0;
 
 int minutes;
 int hours;
@@ -343,7 +344,7 @@ bool idleWorkersEvery()
 
 	for (auto& u : Broodwar->self()->getUnits())
 	{
-		if (u->getType().isResourceDepot() && u->isCompleted())
+		if (u->getType().isResourceDepot() && u->getType().getRace() != Races::Zerg && u->isCompleted())
 			completedResourceDepots++;
 		if (u->getType().isWorker())
 		{
@@ -395,6 +396,9 @@ void AnyRace_CoachAI::onStart()
 
 	if (strstr(mapName.c_str(), "| iCCup | "))
 		mapName.replace(mapName.find("| iCCup | "), 10, "");
+
+	if (strstr(mapName.c_str(), "\n"))
+		mapName.replace(mapName.find("\n"), 2, " ");
 
 	hkAll["1"];
 	hkAll["2"];
@@ -545,7 +549,7 @@ void AnyRace_CoachAI::onFrame()	// Called every game frame.
 	else
 		Broodwar->drawTextScreen(134, 0, "%cCoachAI ", Text::Grey);
 	Broodwar->setTextSize();
-	Broodwar->drawTextScreen(213, 4, "%c4.27", Text::Turquoise);
+	Broodwar->drawTextScreen(213, 4, "%c4.28", Text::Turquoise);
 
 	if (FPS < 1) //gamePaused
 		FPS = 24;
@@ -2493,6 +2497,8 @@ void AnyRace_CoachAI::Replay()
 	F5 = Broodwar->getKeyState(Key::K_F5);
 	F6 = Broodwar->getKeyState(Key::K_F6);
 	F7 = Broodwar->getKeyState(Key::K_F7);
+	F8 = Broodwar->getKeyState(Key::K_F8);
+	F9 = Broodwar->getKeyState(Key::K_F9);
 	tilde = Broodwar->getKeyState(Key::K_OEM_3);
 
 	static int lastCheckedFrame4 = 0;
@@ -2521,6 +2527,176 @@ void AnyRace_CoachAI::Replay()
 			F7_Pressed = 0;
 	}
 
+	static int lastCheckedFrame16 = 0;
+	if (F8 && lastCheckedFrame16 < FrameCount)
+	{
+		lastCheckedFrame16 = FrameCount + FPS / 6;
+		if (screpOK)
+		{
+			string cmd, arg;
+			if (isXP())
+			{
+				Broodwar << "Sorry, there is no EAPM for Windows XP !" << endl;
+				return;
+			}
+			else
+			{
+				cmd = "bwapi-data\\screp.exe";
+
+				wstring_convert<codecvt_utf8_utf16<wchar_t>> converter;
+				wstring cmdW = converter.from_bytes(cmd);
+
+				USES_CONVERSION_EX;
+				arg = "-cmds -outfile bwapi-data\\repInfo2.json \"" + repPath + "\"";
+				LPWSTR argW = A2W_EX(arg.c_str(), arg.length());
+
+				SHELLEXECUTEINFO ShExecInfo = { 0 };
+				ShExecInfo.cbSize = sizeof(SHELLEXECUTEINFO);
+				ShExecInfo.fMask = SEE_MASK_NOCLOSEPROCESS;
+				ShExecInfo.lpFile = cmdW.c_str();
+				ShExecInfo.lpParameters = argW;
+				ShExecInfo.lpDirectory = NULL;
+				ShExecInfo.nShow = SW_HIDE;
+				ShExecInfo.hInstApp = NULL;
+
+				ShellExecuteEx(&ShExecInfo);
+				WaitForSingleObject(ShExecInfo.hProcess, INFINITE);
+				CloseHandle(ShExecInfo.hProcess);
+			}
+			ifstream u2("bwapi-data\\repInfo2.json");
+			j3 = json::parse(u2);
+
+			auto playersArray = j3["Header"]["Players"];
+			auto playerDescs = j3["Computed"]["PlayerDescs"];
+			u2.close();
+
+			map<int, string> playersEAPM;
+			for (auto it2 = playersArray.begin(); it2 != playersArray.end(); it2++)
+			{
+				playersEAPM[it2.value()["ID"].get<int>()] = it2.value()["Name"].get<string>();
+			}
+			string pName;
+			int EAPM, Actions;
+			Broodwar << Text::Green << Text::Align_Right << "Actions/EAPM:" << endl;
+			Broodwar << Text::Green << Text::Align_Right << "============" << endl;
+
+			string all = "";
+			if (!playerDescs.is_null())
+			{
+				multimap <int, string, greater<int>> mapDescend;
+				for (auto it3 = playerDescs.begin(); it3 != playerDescs.end(); it3++)
+				{
+					pName = playersEAPM[it3.value()["PlayerID"]];
+					EAPM = it3.value()["EAPM"];
+					Actions = it3.value()["CmdCount"];
+					mapDescend.insert(make_pair(EAPM, pName + ": " + to_string(Actions)));
+				}
+				for (auto entry : mapDescend)
+					Broodwar << Text::DarkGreen << Text::Align_Right << entry.second + "/" << Text::Turquoise << to_string(entry.first) << endl;
+			}
+		}
+	}
+	static int lastCheckedFrame17 = 0;
+	if (F9 && lastCheckedFrame17 < FrameCount)
+	{
+		lastCheckedFrame17 = FrameCount + FPS / 6;
+		if (screpOK)
+		{
+			string cmd, arg;
+			if (isXP())
+			{
+				cmd = "bwapi-data\\screp_xp.exe -cmds \"" + repPath + "\" > bwapi-data\\repInfo2.json";
+				system(cmd.c_str());
+			}
+			else
+			{
+				cmd = "bwapi-data\\screp.exe";
+
+				wstring_convert<codecvt_utf8_utf16<wchar_t>> converter;
+				wstring cmdW = converter.from_bytes(cmd);
+
+				USES_CONVERSION_EX;
+				arg = "-cmds -outfile bwapi-data\\repInfo2.json \"" + repPath + "\"";
+				LPWSTR argW = A2W_EX(arg.c_str(), arg.length());
+
+				SHELLEXECUTEINFO ShExecInfo = { 0 };
+				ShExecInfo.cbSize = sizeof(SHELLEXECUTEINFO);
+				ShExecInfo.fMask = SEE_MASK_NOCLOSEPROCESS;
+				ShExecInfo.lpFile = cmdW.c_str();
+				ShExecInfo.lpParameters = argW;
+				ShExecInfo.lpDirectory = NULL;
+				ShExecInfo.nShow = SW_HIDE;
+				ShExecInfo.hInstApp = NULL;
+
+				ShellExecuteEx(&ShExecInfo);
+				WaitForSingleObject(ShExecInfo.hProcess, INFINITE);
+				CloseHandle(ShExecInfo.hProcess);
+			}
+
+			ifstream u2("bwapi-data\\repInfo2.json");
+			j3 = json::parse(u2);
+			auto framesArray = j3["Commands"]["Cmds"];
+			auto playersArray = j3["Header"]["Players"];
+			auto gameCreator = j3["Header"]["Host"];
+			u2.close();
+
+			Broodwar << Text::Turquoise << Text::Align_Right << "Game creator: " << gameCreator.get<string>() << endl;
+			string name = "";
+			string origin = "Unknown";
+			string timeHappened = "";
+			for (auto it = framesArray.begin(); it != framesArray.end(); it++)
+			{
+				auto check = it.value()["Type"]["Name"];
+				if (check == "Leave Game")
+				{
+					isLeave = true;
+					int pid = it.value()["PlayerID"];
+					timeHappened = getTime(it.value()["Frame"].get<int>() / 23.809523809523809523809523809524);
+
+					for (auto it2 = playersArray.begin(); it2 != playersArray.end(); it2++)
+					{
+						if (it2.value()["ID"] == pid)
+							name = it2.value()["Name"].get<string>();
+					}
+					Broodwar << Text::Align_Right << name << " leaves @" << timeHappened << endl;
+				}
+
+				auto check2 = it.value()["Message"];
+				if (!check2.is_null())
+				{
+					int pid = it.value()["PlayerID"];
+					for (auto it2 = playersArray.begin(); it2 != playersArray.end(); it2++)
+					{
+						if (it2.value()["ID"] == pid)
+							origin = it2.value()["Name"].get<string>();
+					}
+				}
+
+				int SlotID;
+				if (check2 == "gg" || check2 == "GG")
+				{
+					isGG = true;
+					if (isXP())
+						SlotID = it.value()["TargetPlayerID"];
+					else
+						SlotID = it.value()["SenderSlotID"];
+
+					timeHappened = getTime(it.value()["Frame"].get<int>() / 23.809523809523809523809523809524);
+
+					for (auto it2 = playersArray.begin(); it2 != playersArray.end(); it2++)
+					{
+						if (it2.value()["SlotID"] == SlotID)
+							name = it2.value()["Name"].get<string>();
+					}
+					Broodwar << Text::Align_Right << name << " types gg @" << timeHappened << endl;
+				}
+			}
+			if (!isLeave && !isGG)
+				Broodwar << Text::Align_Right << "I don't know !" << endl;
+
+			Broodwar << Text::Turquoise << Text::Align_Right << "Replay origin: " << origin << endl;
+		}
+	}
 	static int lastCheckedFrame99 = 0;
 	if (tilde && lastCheckedFrame99 < FrameCount)
 	{
@@ -2567,8 +2743,8 @@ void AnyRace_CoachAI::Replay()
 	//Broodwar->drawTextScreen(180, 333, "%c%s / %s / %c%s\n\r \t\t\t\t%02d/%02d/%d %02d:%02d", 29, Broodwar->mapFileName().c_str(), mapName.c_str(), 7,
 	//	getTime(ReplaySeconds).c_str(), stLocal.wDay, stLocal.wMonth, stLocal.wYear, stLocal.wHour, stLocal.wMinute);
 
-	if (screpOK)
 
+	if (screpOK)
 	{
 		Broodwar->drawTextScreen(185, 333, "%c%s %c/%s/ %c%s\n\r  %c%s / %c%s / %s", 29, mapName.c_str(), 7, getTime(ReplaySeconds).c_str(), 29, Broodwar->mapFileName().c_str(),
 			Text::Teal, repDate.c_str(), 29, repGameTitle.c_str(), repType.c_str());
@@ -2577,13 +2753,18 @@ void AnyRace_CoachAI::Replay()
 		Broodwar->drawTextScreen(185, 333, "%c%s %c/%s/ %c%s", 29, mapName.c_str(), 7, getTime(ReplaySeconds).c_str(), 29, Broodwar->mapFileName().c_str());
 
 	list<Player> playersList;
+	list<string> forceList;
 	for (auto p : players)
 	{
 		if (!p->isNeutral() && !p->isObserver() && p->spentMinerals() != 0)
+		{
+			string name = p->getName();
 			playersList.push_back(p);
+			forceList.push_back(p->getForce()->getName());
+		}
 	}
+	forceList.unique();
 
-	list<string> forceList;
 	int y = 205;
 	int y1 = 105;
 	int pid;
@@ -2680,7 +2861,7 @@ void AnyRace_CoachAI::Replay()
 			//	}
 			//}
 
-			if (u->getType().isResourceDepot() && u->isCompleted())
+			if (u->getType().isResourceDepot() && u->getType().getRace() != Races::Zerg && u->isCompleted())
 				completedResourceDepots++;
 			if (u->getType().isWorker() && u->isCompleted() && u->isIdle()) //idle worker
 			{
@@ -2729,83 +2910,46 @@ void AnyRace_CoachAI::Replay()
 		if (F5_Pressed == 1)
 			Broodwar->drawTextScreen(5, 95, "Produced/killed/lost %cUnits+%cBuildings=%cState/Score", 31, 7, 17);
 
-		if (forceName == "" || forceName == "Random Teams")// no team players
+		//==================================================================
+		int Minerals = p->spentMinerals() - p->refundedMinerals();
+		int Gas = p->spentGas() - p->refundedGas();
+		char color2 = 15;
+
+		string pTempName, allies = "allied ";
+		for (auto& pTemp : playersList) //test it on maps with manual obs (lift CC)
 		{
-			int Minerals = p->spentMinerals() - p->refundedMinerals();
-			int Gas = p->spentGas() - p->refundedGas();
-			char color2 = 15;
-
-			Player pTemp;
-			string allies = "allied ";
-			for (int i = 0; i < playersList.size(); i++)
+			if (p != pTemp && p->isAlly(pTemp) && !pTemp->leftGame())
 			{
-				pTemp = Broodwar->getPlayer(i);
-				if (p != pTemp && p->isAlly(pTemp) && !pTemp->leftGame())
-				{
-					isThereAllies = true;
-					string pTempName = pTemp->getName().substr(0, 3);
-					allies.append(pTempName + " ");
-					color2 = pTemp->getTextColor();
-					if (pTemp->getColor() == 185)
-						color2 = 24;
-				}
-			}
-
-			if (!isThereAllies)
-				allies = "";
-
-			if (F5_Pressed == 0)
-			{
-				Broodwar->drawTextScreen(5, y1, "%c(%s) %s %c%s: %c%d+%c%d=%c%d %c%d/%d",
-					color, p->getRace().getName().substr(0, 1).c_str(), p->getName().substr(0, 3).c_str(), color2, allies.c_str(), 31, Minerals, 7, Gas, 17, Minerals + Gas, 15, p->supplyUsed() / 2, p->supplyTotal() / 2);
-				y1 += 10;
-			}
-			if (F5_Pressed == 1)
-			{
-				int uScore = p->getUnitScore();
-				int bScore = p->getBuildingScore();
-				Broodwar->drawTextScreen(5, y1, "%c(%s) %s : %c%d+%c%d=%c%d",
-					color, p->getRace().getName().substr(0, 1).c_str(), p->getName().substr(0, 3).c_str(),
-					31, uScore, 7, bScore, 17, bScore + uScore);
-				y1 += 10;
+				isThereAllies = true;
+				pTempName = pTemp->getName().substr(0, 3);
+				pName = pName.substr(0, 3);
+				allies.append(pTempName + " ");
+				color2 = pTemp->getTextColor();
+				if (pTemp->getColor() == 185)
+					color2 = 24;
+				if (allies.length() > alliesMaxLength)
+					alliesMaxLength = allies.length();
 			}
 		}
-		else
-		{	//team
-			if (!(find(forceList.begin(), forceList.end(), forceName) != forceList.end()))
-			{	// if this force not looped-through.
-				for (auto f_p : p->getForce()->getPlayers())
-				{
-					int Minerals = f_p->spentMinerals() - f_p->refundedMinerals();
-					int Gas = f_p->spentGas() - f_p->refundedGas();
-					char color = f_p->getTextColor();
-					if (f_p->getColor() == 185)
-						color = 24;
 
 
-					if (F5_Pressed == 0)
-					{
-						Broodwar->drawTextScreen(5, y1, "%c(%s) %s: %c%d+%c%d=%c%d %c%d/%d", color, f_p->getRace().getName().substr(0, 1).c_str(), f_p->getName().c_str(), 31, Minerals, 7, Gas, 17, Minerals + Gas, 15, f_p->supplyUsed() / 2, f_p->supplyTotal() / 2);
-						y1 += 10;
-					}
-					if (F5_Pressed == 1)
-					{
-						int uScore = f_p->getUnitScore();
-						int bScore = f_p->getBuildingScore();
-						Broodwar->drawTextScreen(5, y1, "%c(%s) %s : %c%d+%c%d=%c%d",
-							color, f_p->getRace().getName().substr(0, 1).c_str(), f_p->getName().substr(0, 3).c_str(),
-							31, uScore, 7, bScore, 17, bScore + uScore);
-						y1 += 10;
-					}
-				}
+		if (!isThereAllies)
+			allies = "";
 
-				if (F5_Pressed < 2)
-					Broodwar->drawTextScreen(0, y1, "\n\r");
-
-				y1 += 10;
-				forceList.push_back(forceName);
-				forceList.unique();
-			}
+		if (F5_Pressed == 0)
+		{
+			Broodwar->drawTextScreen(5, y1, "%c(%s) %s %s: %c%d+%c%d=%c%d %c%d/%d",
+				color, p->getRace().getName().substr(0, 1).c_str(), pName.c_str(), allies.c_str(), 31, Minerals, 7, Gas, 17, Minerals + Gas, 15, p->supplyUsed() / 2, p->supplyTotal() / 2);
+			y1 += 10;
+		}
+		if (F5_Pressed == 1)
+		{
+			int uScore = p->getUnitScore();
+			int bScore = p->getBuildingScore();
+			Broodwar->drawTextScreen(5, y1, "%c(%s) %s : %c%d+%c%d=%c%d",
+				color, p->getRace().getName().substr(0, 1).c_str(), pName.c_str(),
+				31, uScore, 7, bScore, 17, bScore + uScore);
+			y1 += 10;
 		}
 	}
 
@@ -2928,8 +3072,8 @@ void AnyRace_CoachAI::Replay()
 		}
 
 		Broodwar->drawTextScreen(590, 15, "%cFPS:%c%d", 14, 4, FPS);
-		Broodwar->drawTextScreen(270, 15, "%c%s: Minerals above: 750: %c%s, %c1000: %c%s", color, plSelected->getName().c_str(),
-			25, getTime(mineralsAbove[pid + 16] / FPS).c_str(), color, 25, getTime(mineralsAbove[pid + 24] / FPS).c_str());
+		Broodwar->drawTextScreen(270, 15, "%c%s: Minerals above: 750: %c%s, %c1000: %c%s\n      %cForce: %s", color, plSelected->getName().c_str(),
+			25, getTime(mineralsAbove[pid + 16] / FPS).c_str(), color, 25, getTime(mineralsAbove[pid + 24] / FPS).c_str(), color, plSelected->getForce()->getName().c_str());
 
 		list<string> upgrades;
 		list<string> techno;
@@ -3083,8 +3227,16 @@ void AnyRace_CoachAI::Replay()
 				Broodwar->drawTextScreen(530, 25, "%cBuildings:\n\r%c%s%cBuildings in progress:\n\r%c%s", Text::DarkGreen, Text::GreyGreen, BuildingsFinal.c_str(), 28, Text::GreyGreen, inCompleteBuildingsFinal.c_str());
 			}
 		}
-		if (F5_Pressed != 3)
-			Broodwar->drawTextScreen(270, 25, "%cTech:\n\r%c%s%cUpgrade:\n\r%c%s", Text::Blue, Text::Teal, technoFinal.c_str(), Text::Blue, Text::Teal, upgradesFinal.c_str());
+		if (alliesMaxLength < 24)
+		{
+			if (F5_Pressed != 3)
+				Broodwar->drawTextScreen(270, 28, "%cTech:\n\r%c%s%cUpgrade:\n\r%c%s", Text::Blue, Text::Teal, technoFinal.c_str(), Text::Blue, Text::Teal, upgradesFinal.c_str());
+		}
+		else
+		{
+			if (F5_Pressed != 0 && F5_Pressed != 3)
+				Broodwar->drawTextScreen(270, 28, "%cTech:\n\r%c%s%cUpgrade:\n\r%c%s", Text::Blue, Text::Teal, technoFinal.c_str(), Text::Blue, Text::Teal, upgradesFinal.c_str());
+		}
 
 		//replay BO log:
 		if (F5_Pressed == 2)
@@ -3294,172 +3446,6 @@ void AnyRace_CoachAI::onSendText(string text)
 	{
 		Broodwar->sendText("%s", "there is no cow level");
 		Broodwar << "there is no cow level" << endl;
-	}
-	else if (text == "eapm")
-	{
-		if (screpOK)
-		{
-			string cmd, arg;
-			if (isXP())
-			{
-				Broodwar << "Sorry, there is no EAPM for Windows XP !" << endl;
-				return;
-			}
-			else
-			{
-				cmd = "bwapi-data\\screp.exe";
-
-				wstring_convert<codecvt_utf8_utf16<wchar_t>> converter;
-				wstring cmdW = converter.from_bytes(cmd);
-
-				USES_CONVERSION_EX;
-				arg = "-cmds -outfile bwapi-data\\repInfo2.json \"" + repPath + "\"";
-				LPWSTR argW = A2W_EX(arg.c_str(), arg.length());
-
-				SHELLEXECUTEINFO ShExecInfo = { 0 };
-				ShExecInfo.cbSize = sizeof(SHELLEXECUTEINFO);
-				ShExecInfo.fMask = SEE_MASK_NOCLOSEPROCESS;
-				ShExecInfo.lpFile = cmdW.c_str();
-				ShExecInfo.lpParameters = argW;
-				ShExecInfo.lpDirectory = NULL;
-				ShExecInfo.nShow = SW_HIDE;
-				ShExecInfo.hInstApp = NULL;
-
-				ShellExecuteEx(&ShExecInfo);
-				WaitForSingleObject(ShExecInfo.hProcess, INFINITE);
-				CloseHandle(ShExecInfo.hProcess);
-			}
-			ifstream u2("bwapi-data\\repInfo2.json");
-			j3 = json::parse(u2);
-
-			auto playersArray = j3["Header"]["Players"];
-			auto playerDescs = j3["Computed"]["PlayerDescs"];
-			u2.close();
-
-			map<int, string> playersEAPM;
-			for (auto it2 = playersArray.begin(); it2 != playersArray.end(); it2++)
-			{
-				playersEAPM[it2.value()["ID"].get<int>()] = it2.value()["Name"].get<string>();
-			}
-			string pName;
-			int EAPM, Actions;
-			Broodwar << Text::Green << Text::Align_Right << "Actions/EAPM:" << endl;
-			Broodwar << Text::Green << Text::Align_Right << "============" << endl;
-
-			string all = "";
-			if (!playerDescs.is_null())
-			{
-				multimap <int, string, greater<int>> mapDescend;
-				for (auto it3 = playerDescs.begin(); it3 != playerDescs.end(); it3++)
-				{
-					pName = playersEAPM[it3.value()["PlayerID"]];
-					EAPM = it3.value()["EAPM"];
-					Actions = it3.value()["CmdCount"];
-					mapDescend.insert(make_pair(EAPM, pName + ": " + to_string(Actions)));
-				}
-				for (auto entry : mapDescend)
-					Broodwar << Text::DarkGreen << Text::Align_Right << entry.second + "/" << Text::Turquoise << to_string(entry.first) << endl;
-			}
-		}
-	}
-	else if (text == "?")
-	{
-		if (screpOK)
-		{
-			string cmd, arg;
-			if (isXP())
-			{
-				cmd = "bwapi-data\\screp_xp.exe -cmds \"" + repPath + "\" > bwapi-data\\repInfo2.json";
-				system(cmd.c_str());
-			}
-			else
-			{
-				cmd = "bwapi-data\\screp.exe";
-
-				wstring_convert<codecvt_utf8_utf16<wchar_t>> converter;
-				wstring cmdW = converter.from_bytes(cmd);
-
-				USES_CONVERSION_EX;
-				arg = "-cmds -outfile bwapi-data\\repInfo2.json \"" + repPath + "\"";
-				LPWSTR argW = A2W_EX(arg.c_str(), arg.length());
-
-				SHELLEXECUTEINFO ShExecInfo = { 0 };
-				ShExecInfo.cbSize = sizeof(SHELLEXECUTEINFO);
-				ShExecInfo.fMask = SEE_MASK_NOCLOSEPROCESS;
-				ShExecInfo.lpFile = cmdW.c_str();
-				ShExecInfo.lpParameters = argW;
-				ShExecInfo.lpDirectory = NULL;
-				ShExecInfo.nShow = SW_HIDE;
-				ShExecInfo.hInstApp = NULL;
-
-				ShellExecuteEx(&ShExecInfo);
-				WaitForSingleObject(ShExecInfo.hProcess, INFINITE);
-				CloseHandle(ShExecInfo.hProcess);
-			}
-
-			ifstream u2("bwapi-data\\repInfo2.json");
-			j3 = json::parse(u2);
-			auto framesArray = j3["Commands"]["Cmds"];
-			auto playersArray = j3["Header"]["Players"];
-			auto gameCreator = j3["Header"]["Host"];
-			u2.close();
-
-			Broodwar << Text::Turquoise << Text::Align_Right << "Game creator: " << gameCreator.get<string>() << endl;
-			string name = "";
-			string origin = "Unknown";
-			string timeHappened = "";
-			for (auto it = framesArray.begin(); it != framesArray.end(); it++)
-			{
-				auto check = it.value()["Type"]["Name"];
-				if (check == "Leave Game")
-				{
-					isLeave = true;
-					int pid = it.value()["PlayerID"];
-					timeHappened = getTime(it.value()["Frame"].get<int>() / 23.809523809523809523809523809524);
-
-					for (auto it2 = playersArray.begin(); it2 != playersArray.end(); it2++)
-					{
-						if (it2.value()["ID"] == pid)
-							name = it2.value()["Name"].get<string>();
-					}
-					Broodwar << Text::Align_Right << name << " leaves @" << timeHappened << endl;
-				}
-
-				auto check2 = it.value()["Message"];
-				if (!check2.is_null())
-				{
-					int pid = it.value()["PlayerID"];
-					for (auto it2 = playersArray.begin(); it2 != playersArray.end(); it2++)
-					{
-						if (it2.value()["ID"] == pid)
-							origin = it2.value()["Name"].get<string>();
-					}
-				}
-
-				int SlotID;
-				if (check2 == "gg" || check2 == "GG")
-				{
-					isGG = true;
-					if (isXP())
-						SlotID = it.value()["TargetPlayerID"];
-					else
-						SlotID = it.value()["SenderSlotID"];
-
-					timeHappened = getTime(it.value()["Frame"].get<int>() / 23.809523809523809523809523809524);
-
-					for (auto it2 = playersArray.begin(); it2 != playersArray.end(); it2++)
-					{
-						if (it2.value()["SlotID"] == SlotID)
-							name = it2.value()["Name"].get<string>();
-					}
-					Broodwar << Text::Align_Right << name << " types gg @" << timeHappened << endl;
-				}
-			}
-			if (!isLeave && !isGG)
-				Broodwar << Text::Align_Right << "I don't know !" << endl;
-
-			Broodwar << Text::Turquoise << Text::Align_Right << "Replay origin: " << origin << endl;
-		}
 	}
 	// Send the text to the game if it is not being processed.
 	else Broodwar->sendText("%s", text.c_str());

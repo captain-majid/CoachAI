@@ -1115,7 +1115,7 @@ class binary_reader
     {
         if (get_char)
         {
-            get();  // TODO: may we ignore N here?
+            get();  // may we ignore N here?
         }
 
         unexpect_eof();
