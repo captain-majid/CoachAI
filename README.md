@@ -42,7 +42,7 @@ A counter for each selection you select, with total switches during the game, th
 
 # Features in-replay::movie_camera:
 - Showing the # of units/buildings & the types of tech/upgrade for each player (just select any player's unit to display the infos).
-- Showing the replay duration beforehand, and also the replay name, date, game title, game type and the map used.
+- Showing the replay duration beforehand, and also the replay name, date/time in UTC (+/- your own Time Zone), game title, game type and the map used.
 - Showing each unit order and drawing a line to the order target if there is a target.
 - Recording each player Bo. Only the 6th worker is logged for each player to see his split skill, for more info see replayLogUnitsFor/replayLogSupplyFor in the json file.
 - Easily distinguishing which players against which on team replays, (even SC:R doesn't has this !, maybe time to write some code lazy Blizzard ?)
@@ -91,10 +91,6 @@ The player can input some text the UDAI can understand:
 
 **_c1_**="show me the money", **_c2_**="black sheep wall", **_c3_**="operation cwal", **_c4_**="power overwhelming", **_c5_**="staying alive", **_c6_**="there is no cow level".
 
-**_?_** (Only in-replay)=Shows who wins (just the time of players that type gg and leave the game), replay origin, the game creator (host)
-  
-**_eapm_** (Only in-replay)=Shows total actions and the eAPM of all players sorted by the highest eAPM.
-
 # Hotkeys: :key:
 **_F5_**=Toggle between the display of the MacroLog (**_Up,Down_**=Scroll through the MacroLog when more than one page exists) & the Hotkeys tracker. When on the Hotkeys tracker screen, you can briefly see other screens by pressing _**Ctrl or Shift**_ , Ctrl/Shift last time pressed appear in gameplay, which allow stepping back to see a specific statistic when the screen is recorded, pressing _**Shift**_ will also show the game type. (in-replay **_F5_** switches between different screens).
 
@@ -103,8 +99,10 @@ The player can input some text the UDAI can understand:
 **_F7_**=Switches between the preset custom tips.(in-replay **_F7_** toggles the vision of the selected player)
 
 **_F8_**=Switches between all players infos (press Ctrl for more), this is useful while observing games and will draw the selected player's army/orders/destinations even while moving in the dark/fog, pressing Ctrl+Shift toggles the in-progress mode.
+**_F8 in-replay_**=Shows total actions and the eAPM of all players sorted by the highest eAPM.
 
 **_F9_**=Finds the idle workers (like in SC2).
+**_F9 in-replay_**=Shows who wins (just the time of players that type gg and leave the game), also shows replay origin and the game creator (host).
 
 **_F11_**=Toggle CoachAI's sounds & notifications on/off.
 
