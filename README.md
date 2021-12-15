@@ -91,8 +91,10 @@ The player can input some text the UDAI can understand:
 
 **_c1_**="show me the money", **_c2_**="black sheep wall", **_c3_**="operation cwal", **_c4_**="power overwhelming", **_c5_**="staying alive", **_c6_**="there is no cow level".
 
-**_?_** (Only in-replay, obviously!)=Who wins?
+**_?_** (Only in-replay)=Shows who wins (just the time of players that type gg and leave the game), replay origin, the game creator (host)
   
+**_eapm_** (Only in-replay)=Shows total actions and the eAPM of all players sorted by the highest eAPM.
+
 # Hotkeys: :key:
 **_F5_**=Toggle between the display of the MacroLog (**_Up,Down_**=Scroll through the MacroLog when more than one page exists) & the Hotkeys tracker. When on the Hotkeys tracker screen, you can briefly see other screens by pressing _**Ctrl or Shift**_ , Ctrl/Shift last time pressed appear in gameplay, which allow stepping back to see a specific statistic when the screen is recorded, pressing _**Shift**_ will also show the game type. (in-replay **_F5_** switches between different screens).
 
@@ -112,9 +114,11 @@ The player can input some text the UDAI can understand:
 
 **_PgUp_**=increase game speed, **_PgDown_**=decrease game speed, **_End_**=/speed 0 will run EXTREMELY fast, **_Home_**=reset speed to Fastest (24 FPS) **_Remember_**: speed will auto revert to 24 FPS only if its lower than 24 FPS and **_"autoGameSpeed: true"_**.
 
-**_Space_**=while busy you can press Space to pronounce the next step in the TimedBo.
+**_Left Alt + Space_**=While busy you can press this hotkey to pronounce the next step in the TimedBo.
 
-**_Comma|Period + #_**=pronounce a specific step in the TimedBo up to 19 (ie: for step3 press ", + 3", step13= ". + 3"), also ',' or '.' alone will display the details of the TimedBo steps.
+**_Right Alt + Space_**=Pause/resume the pronunciation of the TimedBo steps.
+
+**_Comma|Period + #_**=Pronounce a specific step in the TimedBo up to 19 (ie: for step3 press ", + 3", step13= ". + 3"), also ',' or '.' alone will display the details of the TimedBo steps.
 
 **_Tilde (~) (also in-replay)_**=Displays buildings gaps values and ground units sizes, for quick and easy reference to better walling, also makes TimedBo background black for easy reading.
 
