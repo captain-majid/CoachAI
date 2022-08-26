@@ -77,7 +77,7 @@ This config file allows the player to modify/disable/enable many values:
 - **_dontDrift (default=-1)_**: initiates a custom CountDownTimer, just like seen in some missions, but you can use it in any map to practice/polish specific task/timing, when the timer ends the game will too, you can set it in seconds, it works whether its a game start or a saved game, when it reaches 00:15, visual/sound warning will start (this helped me remembering to save the game-state @lets say 6:00), in order to master the game-phases/tasks partially 1st, then as a whole.
 - **_workerCutLimit (default=3600)_**: you can set this to 120 (as a goal/target), this will end the game immediately if you intermittently/cumulatively cut workers for 2 minutes in the default 1st 9 minutes.
 - **_workerCutLimitForOnce (default=-1)_**: same as above but a 1 time continuous cut with this value (lets say 20s) will end the game. 
-- **_spend_more_minerals_WarningFor (default=900)_**: minerals sound warning "Spend more minerals", if minerals 500-750 its every 3s, if > 750 its every 1s, until the default 15 minutes, that doesn't happen in the [multitask/macro maps](https://liquipedia.net/starcraft/Micro_Training_Maps#Multitask/Macro_training), because it has it already.
+- **_spend_more_minerals_WarningFor (default=900)_**: minerals sound warning "Spend more minerals", if minerals 500-750 its every 3s, if > 750 its every 1s, until the default 15 minutes, that doesn't happen in the [SC1 Multitask maps or MacroAlone map](https://cutt.ly/sc1_multitask), because it has it already.
 - **_mineralsAboveLog (default=750)_**: logs the time when you're above certain amount of minerals, and for how long that was, to see when exactly you forgot to Macro.
 - **_stickyScreen (default=1)_**: which screen to display by default ?, 1 = TimedBo, 2 = WorkersCut log & MineralsAbove log, 3 = Idle Production & Fighting units & Multitasking.
 - **_autoGameSpeed (default=true)_**: auto revert to 24 FPS if speed goes lower than that (**_Note_**: some values could be inaccurate if game speed isn't Fastest=24 FPS, like mine > 750 time).
@@ -154,8 +154,9 @@ in-replay:
 
 # Videos: :movie_camera:
 [![CoachAI](https://img.youtube.com/vi/NEqF2v-uiWU/maxresdefault.jpg)](http://www.youtube.com/watch?v=NEqF2v-uiWU)
+[![CoachAI](https://img.youtube.com/vi/pjUetaN4z9s/maxresdefault.jpg)](http://www.youtube.com/watch?v=pjUetaN4z9s)
 
 # Chat with someone now ? :speech_balloon:
 - [![Discord](https://img.shields.io/discord/629001720336482324?label=StarCraft1%20CoachAI)](https://discord.gg/F3Ds69M)
-- or join this thread: https://us.forums.blizzard.com/en/starcraft/t/coachai-has-arrived
-- or contact the developer: captain.majid@gmail.com
+- https://www.reddit.com/r/CoachAI
+- https://us.forums.blizzard.com/en/starcraft/t/coachai-has-arrived
