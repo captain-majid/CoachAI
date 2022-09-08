@@ -157,6 +157,6 @@ in-replay:
 [![CoachAI](https://img.youtube.com/vi/pjUetaN4z9s/maxresdefault.jpg)](http://www.youtube.com/watch?v=pjUetaN4z9s)
 
 # Chat with someone now ? :speech_balloon:
-- [![Discord](https://img.shields.io/discord/629001720336482324?label=StarCraft1%20CoachAI)](https://discord.gg/F3Ds69M)
+- [![Discord Banner 3](https://discordapp.com/api/guilds/629001720336482324/widget.png?style=banner3)](https://discord.gg/F3Ds69M)
 - https://www.reddit.com/r/CoachAI
 - https://us.forums.blizzard.com/en/starcraft/t/coachai-has-arrived
