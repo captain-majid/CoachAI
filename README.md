@@ -168,3 +168,5 @@ in-replay:
 - [x] Design a new Bo using the [TimedBo](https://www.reddit.com/r/broodwar/comments/s7sls6), or make a variant of an existing one, post it somewhere, and tell us how the AI is helping to memorize that.
 - [x] :star: this C++ open-source project.
 - [ ] Make me rich & donate to my Bitcoin wallet address :moneybag:: **12JGXAVNktYEdjsMPWTpRCSY9DKXrspMiK**
+
+[![Never give up](https://img.youtube.com/vi/NEsQfb4xWY0/maxresdefault.jpg)](http://www.youtube.com/watch?v=NEsQfb4xWY0)
