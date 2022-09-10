@@ -162,9 +162,9 @@ in-replay:
 - https://us.forums.blizzard.com/en/starcraft/t/coachai-has-arrived
 
 # Spread it to the world ? :globe_with_meridians:
-***Strangely***, this is one of the most underrated projects in the history of SC1 & SC2, [SC2 players are deprived from something like CoachAI in gameplay mode or replay mode, and they're ready to pay good money if that's even possible](https://www.reddit.com/r/coachai/comments/rakb9i/a_new_starcraft1_coachai_has_arrived/hnyi7hz). So, if you think this real-time practice tool & real-time replay analyzer is useful or phenomenal in the scene of StarCraft, then plz show ur support:
-- Stream your live gameplay with it on Twitch/Youtube (vs another BWAPI-AI/human or even computer or maybe just re-visiting the campaign with it, doesn’t have to be a high-level play), showing the benefits of that to you, and your audience.
-- Analyze/cast a replay in a smarter/deeper way than SCR replay system, showing what features save innocent lives in CoachAI replay system.
-- Design a new Bo using the [TimedBo](https://www.reddit.com/r/broodwar/comments/s7sls6), or make a variant of an existing one, post it somewhere, and tell us how the AI is helping to memorize that.
-- :star: this open-source project.
-- Donate to my Bitcoin wallet address :moneybag:: **12JGXAVNktYEdjsMPWTpRCSY9DKXrspMiK**
+***Strangely***, this is one of [**the most underrated projects in the history of SC1 & SC2**](https://www.reddit.com/r/broodwar/comments/si07k2), even SC2 players are deprived from something like CoachAI in gameplay mode or replay mode, and they're ready to pay good money if that's even possible as some1 mentioned [here](https://www.reddit.com/r/coachai/comments/rakb9i/a_new_starcraft1_coachai_has_arrived/hnyi7hz). So, if you think this real-time practice tool & real-time replay analyzer is useful or phenomenal in the scene of StarCraft, then plz show ur support:
+- [x] Stream your live gameplay with it on Twitch/Youtube (vs another BWAPI-AI/human or even computer or maybe just re-visiting the campaign with it, doesn’t have to be a high-level play), showing the benefits of that to you, and your audience.
+- [x] Analyze/cast a replay in a smarter/deeper way than SCR replay system, showing what features save innocent lives in CoachAI replay system.
+- [x] Design a new Bo using the [TimedBo](https://www.reddit.com/r/broodwar/comments/s7sls6), or make a variant of an existing one, post it somewhere, and tell us how the AI is helping to memorize that.
+- [x] :star: this C++ open-source project.
+- [ ] Make me rich & donate to my Bitcoin wallet address :moneybag:: **12JGXAVNktYEdjsMPWTpRCSY9DKXrspMiK**
