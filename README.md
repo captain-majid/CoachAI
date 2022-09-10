@@ -160,3 +160,11 @@ in-replay:
 - [![Discord Banner 3](https://discordapp.com/api/guilds/629001720336482324/widget.png?style=banner3)](https://discord.gg/F3Ds69M)
 - https://www.reddit.com/r/CoachAI
 - https://us.forums.blizzard.com/en/starcraft/t/coachai-has-arrived
+
+# Spread it to the world ? :globe_with_meridians:
+***Strangely***, this is one of the most underrated projects in the scence of SC1 & SC2, [SC2 players are deprived from something like CoachAI in gameplay mode or replay mode, and they're ready to pay good money if that's even possible](https://www.reddit.com/r/coachai/comments/rakb9i/a_new_starcraft1_coachai_has_arrived/hnyi7hz). So, if you think this real-time practice tool & real-time replay analyzer is useful or phenomenal in the scene of StarCraft, then plz show ur support:
+- Stream your live gameplay with it on Twitch/Youtube (vs another BWAPI-AI/human or even computer or maybe just re-visiting tha campaign with it), doesn’t have to be a high-level play), showing the benefits of that to you, and your audience.
+- Analyze/cast a replay in a smarter/deeper way than what in SCR replay system, showing what features save innocent lives in CoachAI replay system.
+- Design a new Bo using the [TimedBo](https://www.reddit.com/r/broodwar/comments/s7sls6), or make a variant of an existing one, post it somewhere, and tell us how the AI is helping to memorize that.
+- :star: this repository.
+- Donate to my Bitcoin wallet address :moneybag:: **12JGXAVNktYEdjsMPWTpRCSY9DKXrspMiK**
