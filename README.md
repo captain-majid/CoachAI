@@ -10,7 +10,7 @@ It can help the players at-all-levels to improve, also to test and sense and rem
 > * The CoachAI can run on Windows XP starting from BWAPI v4.4.
 </details>
 
-# Features in-game & in-replay::video_game: :movie_camera:
+# Features in-game & in-replay: :video_game: :movie_camera:
 - A RealTime measure for _**Macro = spent minerals + spent gas**_ (Terran repairs not accounted), many players still measure it just by the used supplies at specific time or by inaccurate replay analysis tools, in-replay you can know @any second who is the best Macro player (same as the score screen you see at the end of game/replay).
 - Want to know how many unit/building has been lost in-game/in-replay ?, just select one of the same type.
 - The # of units/buildings and also the ones in-progress, and the remaining build time for each one in progress, also the remaining time for each Tech/Upgrade in progress.
@@ -22,7 +22,7 @@ It can help the players at-all-levels to improve, also to test and sense and rem
 - Detecting the game speed, by just looking at the FPS value: 24=Fastest, 21=Faster, 18=Fast, 15=Normal, etc..
 - Showing if a map is 2p/3p/4p on game/replay (just counting the start locations on it).
 
-# Features in-game::video_game:
+# Features in-game: :video_game:
 - The # of Minerals/Gas workers from all bases.
 - The # of idle production buildings (for Zerg, only the number of Larvae displayed), also the buildings IdleTime + Shield Battery remaining energy for Protoss.
 - The # of idle of idle fighting units (only non-worker units that canAttackMove: HT, Siege-Mode Tank, Lurker cannot, Medics can !).
@@ -40,9 +40,9 @@ A counter for each screen you step into, with total jumps during the game, the a
 A counter for each selection you select, with total switches during the game, the average focus @1 selection, the total focus on each selection for above 5s (customizable live, by editing totalTimeOnScreenOrSelectionAbove) and finally, a customizable notification sound when you focus @1 selection for above 20s (customizable live, by editing sameSelectionWarningEvery).
 - **_The TimedBo_**: all of us forget 1 or more things that was planned before the game, so a written Bo and tips on the game screen that dynamically highlights "What now/next?" while alerting with sound and pronouncing the current step in English JIT and allowing for more step-details to be shown/pronounced out of the succinct Bo form, will accelerate the familiarity with a specific build remarkably.
 
-# Features in-replay::movie_camera:
+# Features in-replay: :movie_camera:
 - Showing the # of units/buildings & the types of tech/upgrade for each player (just select any player's unit to display the infos).
-- Showing the replay duration beforehand, and also the replay name, date, game title, game type and the map used.
+- Showing the replay duration beforehand, and also the replay name, date/time in UTC (+/- your own Time Zone), game title, game type and the map used.
 - Showing each unit order and drawing a line to the order target if there is a target.
 - Recording each player Bo. Only the 6th worker is logged for each player to see his split skill, for more info see replayLogUnitsFor/replayLogSupplyFor in the json file.
 - Easily distinguishing which players against which on team replays, (even SC:R doesn't has this !, maybe time to write some code lazy Blizzard ?)
@@ -53,7 +53,7 @@ A counter for each selection you select, with total switches during the game, th
 - An intuitive/easier way to toggle vision of the selected player (and his allies) by pressing F7 (SC:R requires that you blind ALL other players individually to get the vision of 1 player which is not smart, here we just need to select a player/or 1 of his allies to see the required vision).
 - Displaying live score of produced/killed/lost units/buildings, to get the current state of players, this is about unit/building control (more close to micro, same as the score screen you see at the end of game/replay).
 
-# AnyRace_CoachAI.json::wrench:
+# AnyRace_CoachAI.json: :wrench:
 This config file allows the player to modify/disable/enable many values:
 - _**autoTrainWorkers (default=false)**_: trains 1 worker @time from each base until "maxWorkers" number reached (for Zerg only 1 Hatchery is used for producing).
 - **_maxWorkers (default=50)_**: only works if autoTrainWorkers = true
@@ -77,7 +77,7 @@ This config file allows the player to modify/disable/enable many values:
 - **_dontDrift (default=-1)_**: initiates a custom CountDownTimer, just like seen in some missions, but you can use it in any map to practice/polish specific task/timing, when the timer ends the game will too, you can set it in seconds, it works whether its a game start or a saved game, when it reaches 00:15, visual/sound warning will start (this helped me remembering to save the game-state @lets say 6:00), in order to master the game-phases/tasks partially 1st, then as a whole.
 - **_workerCutLimit (default=3600)_**: you can set this to 120 (as a goal/target), this will end the game immediately if you intermittently/cumulatively cut workers for 2 minutes in the default 1st 9 minutes.
 - **_workerCutLimitForOnce (default=-1)_**: same as above but a 1 time continuous cut with this value (lets say 20s) will end the game. 
-- **_spend_more_minerals_WarningFor (default=900)_**: minerals sound warning "Spend more minerals", if minerals 500-750 its every 3s, if > 750 its every 1s, until the default 15 minutes, that doesn't happen in the [multitask/macro maps](https://liquipedia.net/starcraft/Micro_Training_Maps#Multitask/Macro_training), because it has it already.
+- **_spend_more_minerals_WarningFor (default=900)_**: minerals sound warning "Spend more minerals", if minerals 500-750 its every 3s, if > 750 its every 1s, until the default 15 minutes, that doesn't happen in the [SC1 Multitask maps or MacroAlone map](https://cutt.ly/sc1_multitask), because it has it already.
 - **_mineralsAboveLog (default=750)_**: logs the time when you're above certain amount of minerals, and for how long that was, to see when exactly you forgot to Macro.
 - **_stickyScreen (default=1)_**: which screen to display by default ?, 1 = TimedBo, 2 = WorkersCut log & MineralsAbove log, 3 = Idle Production & Fighting units & Multitasking.
 - **_autoGameSpeed (default=true)_**: auto revert to 24 FPS if speed goes lower than that (**_Note_**: some values could be inaccurate if game speed isn't Fastest=24 FPS, like mine > 750 time).
@@ -86,14 +86,10 @@ This config file allows the player to modify/disable/enable many values:
 - **_TimedBo1 Tips_**: a block of text that appear below a specific TimedBo, you can use "\n" to move to a new line, you can also use ';' here.
 - **_Tips1_**: an editable custom tips that appear on-game screen when pressing **_F7_**, you can use "\n" to move to a new line.
   
-# Message shortcuts::pencil:
+# Message shortcuts: :pencil:
 The player can input some text the UDAI can understand:
 
 **_c1_**="show me the money", **_c2_**="black sheep wall", **_c3_**="operation cwal", **_c4_**="power overwhelming", **_c5_**="staying alive", **_c6_**="there is no cow level".
-
-**_?_** (Only in-replay)=Shows who wins (just the time of players that type gg and leave the game), replay origin, the game creator (host)
-  
-**_eapm_** (Only in-replay)=Shows total actions and the eAPM of all players sorted by the highest eAPM.
 
 # Hotkeys: :key:
 **_F5_**=Toggle between the display of the MacroLog (**_Up,Down_**=Scroll through the MacroLog when more than one page exists) & the Hotkeys tracker. When on the Hotkeys tracker screen, you can briefly see other screens by pressing _**Ctrl or Shift**_ , Ctrl/Shift last time pressed appear in gameplay, which allow stepping back to see a specific statistic when the screen is recorded, pressing _**Shift**_ will also show the game type. (in-replay **_F5_** switches between different screens).
@@ -103,8 +99,10 @@ The player can input some text the UDAI can understand:
 **_F7_**=Switches between the preset custom tips.(in-replay **_F7_** toggles the vision of the selected player)
 
 **_F8_**=Switches between all players infos (press Ctrl for more), this is useful while observing games and will draw the selected player's army/orders/destinations even while moving in the dark/fog, pressing Ctrl+Shift toggles the in-progress mode.
+**_F8 in-replay_**=Shows total actions and the eAPM of all players sorted by the highest eAPM.
 
 **_F9_**=Finds the idle workers (like in SC2).
+**_F9 in-replay_**=Shows who wins (just the time of players that type gg and leave the game), also shows replay origin and the game creator (host).
 
 **_F11_**=Toggle CoachAI's sounds & notifications on/off.
 
@@ -127,20 +125,20 @@ The player can input some text the UDAI can understand:
 **_Shift|Ctrl + F12_**= Pause|resume the game, when paused you can only move the screen during a multiplayer match.
 With some trick this allows pausing a multiplayer game for more than 3 times, which gives the player enough time to comprehend a complex situation and analyse the game-state quickly.
   
-# To re-build this project::hammer:
+# To re-build this project: :hammer:
 * Setup Visual Studio 2017 choosing the following components:
 ![requirements](https://github.com/captain-majid/CoachAI/blob/master/c%2B%2B%20BWAPI%20requirements.png)
-# Not done yet, wanna do it ?:tokyo_tower:
+# Not done yet, wanna do it ? :tokyo_tower:
 * GUI for native Custom Hotkeys like in SCR.
 * GUI for more automated intutive Human vs AI scenarios, using BWAPI Revamped.
 * GUI for the CoachAI .json/config file.
 * Integrate CoachAI TimedBo .json/text format with external bo formats, like with SC2's Spawning Tool & SALT .
 * Integrate Voice Recognition tools like VoiceAttack/VoiceBot that make [the AI do game actions just by voice](https://www.youtube.com/watch?v=dOwL2rJ0uEo).
 
-# Known issues::space_invader:
+# Known issues: :space_invader:
 - The hotkey tracker is buggy when adding units using shift, also when a unit is lost it still shows as an existing one.
 - Cancelled unit/building/upgrade/tech appears in ReplayBo/MacroLog, for a cancelled upgrade/tech you'll additionally get a 'None' item below it.
-# Screenshots::camera:
+# Screenshots: :camera:
 in-game:
 
 ![CoachAI](https://i.ibb.co/qxhVVKY/Low-ground-bug.gif)
@@ -149,11 +147,26 @@ in-replay:
 
 ![replay1](https://i.ibb.co/zf6Gkgd/replay.png)
 ![replay2](https://i.ibb.co/zNbZg67/replay-bo.png)
-# Installation ::rocket:
-- If you don't have Starcraft v1.16, a mini ver can be downloaded from [ICCUP](http://files.theabyss.ru/sc/starcraft.zip), or a [**full version here**](http://www.staredit.net/topic/17625/).
-- Extract [**BWAPI Revamped**](http://www.teamliquid.net/forum/brood-war/531310-human-like-broodwar-ais-revamped) pack contents to the game folder.
-- Extract [![GitHub release (latest SemVer)](https://img.shields.io/github/v/release/captain-majid/CoachAI?label=CoachAI&style=plastic)](https://github.com/captain-majid/CoachAI/releases) contents to the game folder, replace any files, then run "**StarCraft ChaosLauncher.exe**".
+# Installation: :rocket:
+0. If you don't have Starcraft v1.16, a mini ver can be downloaded from [ICCUP](http://files.theabyss.ru/sc/starcraft.zip), or a [**full version here**](http://www.staredit.net/topic/17625/).
+1. Extract [**BWAPI Revamped**](http://www.teamliquid.net/forum/brood-war/531310-human-like-broodwar-ais-revamped) contents to the game folder, then run **StarCraft ChaosLauncher.exe** (make sure its on the same path as StarCraft.exe).
+2. ~~There is no step 2, what are you waiting for.~~
+
+# Videos: :movie_camera:
+[![CoachAI](https://img.youtube.com/vi/NEqF2v-uiWU/maxresdefault.jpg)](http://www.youtube.com/watch?v=NEqF2v-uiWU)
+[![CoachAI](https://img.youtube.com/vi/pjUetaN4z9s/maxresdefault.jpg)](http://www.youtube.com/watch?v=pjUetaN4z9s)
+
 # Chat with someone now ? :speech_balloon:
-- [![Discord](https://img.shields.io/discord/629001720336482324?label=StarCraft1%20CoachAI)](https://discord.gg/F3Ds69M)
-- or join this thread: https://us.forums.blizzard.com/en/starcraft/t/coachai-has-arrived
-- or contact the developer: captain.majid@gmail.com
+- [![Discord Banner 3](https://discordapp.com/api/guilds/629001720336482324/widget.png?style=banner3)](https://discord.gg/F3Ds69M)
+- https://www.reddit.com/r/CoachAI
+- https://us.forums.blizzard.com/en/starcraft/t/coachai-has-arrived
+
+# Spread it to the world ? :globe_with_meridians:
+***Strangely***, this is one of [**the most underrated projects in the history of SC1 & SC2**](https://www.reddit.com/r/broodwar/comments/si07k2), even SC2 players are deprived from something like CoachAI in gameplay mode or replay mode, and they're ready to pay good money if that's even possible as some1 mentioned [here](https://www.reddit.com/r/coachai/comments/rakb9i/a_new_starcraft1_coachai_has_arrived/hnyi7hz). So, if you think this real-time practice tool & real-time replay analyzer is useful or phenomenal in the scene of StarCraft, then plz show ur support:
+- [x] Stream your live gameplay with it on Twitch/Youtube (vs another BWAPI-AI/human or even computer or maybe just re-visiting the campaign with it, doesn’t have to be a high-level play), showing the benefits of that to you, and your audience.
+- [x] Analyze/cast a replay in a smarter/deeper way than SCR replay system, showing what features save innocent lives in CoachAI replay system.
+- [x] Design a new Bo using the [TimedBo](https://www.reddit.com/r/broodwar/comments/s7sls6), or make a variant of an existing one, post it somewhere, and tell us how the AI is helping to memorize that.
+- [x] :star: this C++ open-source project.
+- [ ] Make me rich & donate to my Bitcoin wallet address :moneybag:: **12JGXAVNktYEdjsMPWTpRCSY9DKXrspMiK**
+
+[![Never give up](https://img.youtube.com/vi/NEsQfb4xWY0/maxresdefault.jpg)](http://www.youtube.com/watch?v=NEsQfb4xWY0)
