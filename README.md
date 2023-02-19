@@ -153,11 +153,9 @@ in-replay:
 2. ~~There is no step 2, what are you waiting for.~~
 
 # Videos: :movie_camera:
-[![CoachAI](https://img.youtube.com/vi/NEqF2v-uiWU/maxresdefault.jpg)](http://www.youtube.com/watch?v=NEqF2v-uiWU)
-[![CoachAI](https://img.youtube.com/vi/pjUetaN4z9s/maxresdefault.jpg)](http://www.youtube.com/watch?v=pjUetaN4z9s)
+<img src="https://img.youtube.com/vi/NEqF2v-uiWU/maxresdefault.jpg" width=150% height=150%>
 
-<img src="https://img.youtube.com/vi/NEqF2v-uiWU/maxresdefault.jpg" width=100% height=100%>
-![](https://img.youtube.com/vi/NEqF2v-uiWU/maxresdefault.jpg | width=1280)
+[![CoachAI](https://img.youtube.com/vi/pjUetaN4z9s/maxresdefault.jpg)](http://www.youtube.com/watch?v=pjUetaN4z9s)
 
 # Chat with someone now ? :speech_balloon:
 - [![Discord Banner 3](https://discordapp.com/api/guilds/629001720336482324/widget.png?style=banner3)](https://discord.gg/F3Ds69M)
