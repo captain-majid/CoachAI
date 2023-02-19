@@ -1,6 +1,5 @@
 ![GitHub top language](https://img.shields.io/github/languages/top/captain-majid/CoachAI?style=flat-square) or see the red line on the side bar, 
-[![Hits](https://hits.seeyoufarm.com/api/count/incr/badge.svg?url=https%3A%2F%2Fgithub.com%2Fcaptain-majid%2FCoachAI&count_bg=%2379C83D&title_bg=%23555555&icon=&icon_color=%23E7E7E7&title=hits&edge_flat=false)](https://hits.seeyoufarm.com)
-
+[![Hits](https://hits.sh/github.com/captain-majid/CoachAI.svg?view=today-total&label=Hits%3A%20today%2Ftotal)](https://hits.sh/github.com/captain-majid/CoachAI/)
 [![](https://i.imgur.com/Aq2aYMg.png)](https://www.youtube.com/watch?v=GhJ0zlsOEyo)
 
 _**This BWAPI-AI/UDAI (User-defined AI) works as an in-game helper and also as an online replay analyzer.
