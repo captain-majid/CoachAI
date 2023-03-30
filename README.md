@@ -155,8 +155,7 @@ in-replay:
 2. ~~There is no step 2, what are you waiting for.~~
 
 # Videos: :movie_camera:
-<img src="https://img.youtube.com/vi/NEqF2v-uiWU/maxresdefault.jpg" width=150% height=150%>
-
+[![CoachAI](https://img.youtube.com/vi/NEqF2v-uiWU/maxresdefault.jpg)](http://www.youtube.com/watch?v=NEqF2v-uiWU)
 [![CoachAI](https://img.youtube.com/vi/pjUetaN4z9s/maxresdefault.jpg)](http://www.youtube.com/watch?v=pjUetaN4z9s)
 
 # Chat with someone now ? :speech_balloon:
@@ -169,6 +168,7 @@ in-replay:
 - [x] Stream your live gameplay with it on Twitch/Youtube (vs another BWAPI-AI/human or even computer or maybe just re-visiting the campaign with it, doesn’t have to be a high-level play), showing the benefits of that to you, and your audience.
 - [x] Analyze/cast a replay in a smarter/deeper way than SCR replay system, showing what features save innocent lives in CoachAI replay system.
 - [x] Design a new Bo using the [TimedBo](https://www.reddit.com/r/broodwar/comments/s7sls6), or make a variant of an existing one, post it somewhere, and tell us how the AI is helping to memorize that.
+- [x] Publish it in social media (Twitter, Reddit, TL.net, Discord, etc..) by writing an article or review or just talk about it with friends mentioning any of its features from your own experience.
 - [x] :star: this C++ open-source project.
 - [ ] Make me rich & donate to my Bitcoin wallet address :moneybag:: **12JGXAVNktYEdjsMPWTpRCSY9DKXrspMiK**
 
