@@ -150,7 +150,7 @@ in-replay:
 ![replay1](https://i.ibb.co/zf6Gkgd/replay.png)
 ![replay2](https://i.ibb.co/zNbZg67/replay-bo.png)
 # Installation/Download: :rocket:
-This whole page serves as just a CoachAI help/manual, CoachAI is already included in [BWAPI Revamped](https://github.com/captain-majid/BWAPI-Revamped).
+CoachAI is already included in [BWAPI Revamped](https://github.com/captain-majid/BWAPI-Revamped) or from [here](https://drive.google.com/file/d/1ADvAvHhnokjLOmdd2GeWyWupFFrBz1sp).
 
 # Videos: :movie_camera:
 [![CoachAI](https://img.youtube.com/vi/NEqF2v-uiWU/maxresdefault.jpg)](http://www.youtube.com/watch?v=NEqF2v-uiWU)
