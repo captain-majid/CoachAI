@@ -149,10 +149,8 @@ in-replay:
 
 ![replay1](https://i.ibb.co/zf6Gkgd/replay.png)
 ![replay2](https://i.ibb.co/zNbZg67/replay-bo.png)
-# Installation: :rocket:
-0. If you don't have Starcraft v1.16, a mini ver can be downloaded from [ICCUP](http://files.theabyss.ru/sc/starcraft.zip), or a [**full version here**](http://www.staredit.net/topic/17625/).
-1. Extract [**BWAPI Revamped**](http://www.teamliquid.net/forum/brood-war/531310-human-like-broodwar-ais-revamped) contents to the game folder, then run **StarCraft ChaosLauncher.exe** (make sure its on the same path as StarCraft.exe).
-2. ~~There is no step 2, what are you waiting for.~~
+# Installation/Download: :rocket:
+The latest release of CoachAI is included in [BWAPI Revamped](https://github.com/captain-majid/BWAPI-Revamped)
 
 # Videos: :movie_camera:
 [![CoachAI](https://img.youtube.com/vi/NEqF2v-uiWU/maxresdefault.jpg)](http://www.youtube.com/watch?v=NEqF2v-uiWU)
